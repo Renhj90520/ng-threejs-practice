@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import Galaxy from './Galaxy';
-import OrbitControls from '../controls/OrbitControls';
+import TrackballControls from '../controls/TrackballControls';
 @Component({
   selector: 'app-webgl-galaxy',
   templateUrl: './webgl-galaxy.component.html',
@@ -17,7 +17,7 @@ export class WebglGalaxyComponent implements OnInit {
   galaxMaterial;
   t = 0;
   z = 0;
-  orbitControls;
+  trackballControls;
 
   vertexShader = `
     uniform float size;
@@ -86,6 +86,8 @@ export class WebglGalaxyComponent implements OnInit {
     );
     this.camera.position.set(-20, -155, 90);
     this.camera.lookAt(new THREE.Vector3());
+    const cameraHelper = new THREE.CameraHelper(this.camera);
+    this.scene.add(cameraHelper);
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(this.width, this.height);
@@ -94,7 +96,7 @@ export class WebglGalaxyComponent implements OnInit {
     const axesHelper = new THREE.AxesHelper(200);
     this.scene.add(axesHelper);
 
-    this.orbitControls = new OrbitControls(
+    this.trackballControls = new TrackballControls(
       this.camera,
       this.renderer.domElement
     );
@@ -121,7 +123,7 @@ export class WebglGalaxyComponent implements OnInit {
   }
 
   update() {
-    this.orbitControls.update();
+    this.trackballControls.update();
     this.renderer.render(this.scene, this.camera);
     this.galaxMaterial.uniforms.t.value = this.t;
     this.galaxMaterial.uniforms.z.value = this.z;

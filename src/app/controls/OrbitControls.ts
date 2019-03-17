@@ -54,10 +54,6 @@ export default class OrbitControls {
 
   // internals
 
-  private changeEvent = { type: 'change' };
-  private startEvent = { type: 'start' };
-  private endEvent = { type: 'end' };
-
   private state = STATE.NONE;
   private EPS = 0.000001;
 
@@ -393,7 +389,7 @@ export default class OrbitControls {
     this.panDelta
       .subVectors(this.panEnd, this.panStart)
       .multiplyScalar(this.panSpeed);
-    this.pan(this.panDelta.x, -this.panDelta.y);
+    this.pan(this.panDelta.x, this.panDelta.y);
     this.panStart.copy(this.panEnd);
     this.update();
   }

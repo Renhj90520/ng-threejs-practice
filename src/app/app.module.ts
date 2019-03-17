@@ -5,14 +5,9 @@ import { AppComponent } from './app.component';
 import { WebglGalaxyComponent } from './webgl-galaxy/webgl-galaxy.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    WebglGalaxyComponent
-  ],
-  imports: [
-    BrowserModule
-  ],
+  declarations: [AppComponent, WebglGalaxyComponent],
+  imports: [BrowserModule],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
