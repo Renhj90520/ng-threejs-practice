@@ -21,6 +21,7 @@
     "@angular/router": "~7.1.0",
     "core-js": "^2.5.4",
     "gsap": "^2.1.2",
+    "lodash": "^4.17.11",
     "normalize.css": "^8.0.1",
     "rxjs": "~6.3.3",
     "three": "^0.102.1",

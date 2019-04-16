@@ -3,9 +3,10 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { WebglGalaxyComponent } from './webgl-galaxy/webgl-galaxy.component';
+import { ProceduralCityComponent } from './procedural-city/procedural-city.component';
 
 @NgModule({
-  declarations: [AppComponent, WebglGalaxyComponent],
+  declarations: [AppComponent, WebglGalaxyComponent, ProceduralCityComponent],
   imports: [BrowserModule],
   providers: [],
   bootstrap: [AppComponent]
