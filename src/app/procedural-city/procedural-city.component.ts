@@ -361,13 +361,9 @@ export class ProceduralCityComponent implements OnInit {
         this.watermap.push(this.getNoiseValue(i, j, 10));
       }
     }
-    console.log(this.heightmap);
-    console.log(this.watermap);
 
     this.heightmap = this.normalizeArray(this.heightmap);
-    console.log(this.heightmap);
     this.heightmap = _.chunk(this.heightmap, this.city.blocks_x);
-    console.log(this.heightmap);
 
     this.watermap = this.normalizeArray(this.watermap);
     this.watermap = _.map(this.watermap, n =>
