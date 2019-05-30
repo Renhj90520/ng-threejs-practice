@@ -81,7 +81,8 @@ export class WindmillObjMtlComponent implements OnInit {
 
   addWindmill() {
     const objLoader = new OBJLoader2();
-    objLoader._loadMtl();
+    // TODO
+    // objLoader._loadMtl();
   }
   update() {
     requestAnimationFrame(this.update.bind(this));

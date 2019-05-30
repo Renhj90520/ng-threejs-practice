@@ -178,7 +178,9 @@ export class OBJLoader2 {
 
     this.meshBuilder.init();
     const parser = new Parser();
-    parser.setMaterial;
+
+    //TODO
+    // parser.setMaterial;
   }
 
   run(prepData, workerSupportExternal) {
@@ -472,7 +474,7 @@ export class Parser {
   setCallbackProgress(callbackProgress) {
     this.callbackProgress = callbackProgress;
   }
-  
+
   pushSmoothingGroup(smoothingGroup) {
     let smoothingGroupInt = parseInt(smoothingGroup);
     if (isNaN(smoothingGroupInt)) {
