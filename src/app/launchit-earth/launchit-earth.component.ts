@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import OrbitControls from '../controls/OrbitControls';
 import { dataMap } from './data-map';
+import { TimelineMax, Expo } from 'gsap';
 @Component({
   selector: 'app-launchit-earth',
   templateUrl: './launchit-earth.component.html',
@@ -61,6 +62,46 @@ export class LaunchitEarthComponent implements OnInit {
   dotSpikesVerticesArray = [];
   dotSpikesCloudVerticesArray = [];
   dotsCreated = false;
+  arcsSnakeObject: THREE.Group;
+  lineBufferDivisions = 25;
+  arcSnakeVerticesArray = [];
+  arcSnakeDetailsArray = [];
+
+  line_vertexshader = `
+    attribute float alpha;
+    varying float vAlpha;
+    void main() {
+      vAlpha = alpha;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `;
+
+  line_fragmentshader = `
+    uniform vec3 color;
+    varying float vAlpha;
+
+    uniform vec3 fogColor;
+    uniform float fogNear;
+    unifomr float fogFar;
+
+    void main() {
+      gl_FragColor = vec4(color, vAlpha);
+
+      #ifdef USE_FOG
+        #ifdef USE_LOGDEPTHBUF_EXT
+          float depth = gl_FragDepthEXT / gl_FragCoord.w;
+        #else
+          float depth = gl_FragCoord.z / gl_FragCoord.w;
+        #endif
+        float fogFactor = smoothstep(fogNear, fogFar, depth);
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, fogFactor);
+      #endif
+    }
+  `;
+  arcSnakeCreated = false;
+  arcSnakeAnimation: TimelineMax;
+  arcSnakeBufferGeometry: THREE.BufferGeometry;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -70,7 +111,173 @@ export class LaunchitEarthComponent implements OnInit {
     this.addUniverseBack();
     this.addGlobe();
     this.addDots();
+    this.addArcsSnake();
     this.update();
+  }
+  addArcsSnake() {
+    this.arcsSnakeObject = new THREE.Group();
+    this.arcsSnakeObject.name = 'arcSnake';
+
+    for (let i = 0; i < dataMap.length - 1; i++) {
+      const p1 = this.latLongToVector3(
+        dataMap[i][2],
+        dataMap[i][3],
+        this.globeRadius,
+        this.globeExtraDistance
+      );
+
+      const p4 = this.latLongToVector3(
+        dataMap[i + 1][2],
+        dataMap[i + 1][3],
+        this.globeRadius,
+        this.globeExtraDistance
+      );
+
+      const tempArcHeightMid = 1 + this.checkDistance(p1, p4) * 0.0065;
+      const pMid = new THREE.Vector3();
+      pMid.addVectors(p1, p4);
+      pMid.normalize().multiplyScalar(this.globeRadius * tempArcHeightMid);
+
+      const tempArcHeight = 1 + this.checkDistance(p1, pMid) * 0.0065;
+      const p2 = new THREE.Vector3();
+      p2.addVectors(p1, pMid);
+      p2.normalize().multiplyScalar(this.globeRadius * tempArcHeight);
+
+      const p3 = new THREE.Vector3();
+      p3.addVectors(pMid, p4);
+      p3.normalize().multiplyScalar(this.globeRadius * tempArcHeight);
+
+      const curve = new THREE.CubicBezierCurve3(p1, p2, p3, p4);
+      const curveVertices = curve.getPoints(this.lineBufferDivisions);
+      for (let j = 0; j < this.lineBufferDivisions; j++) {
+        this.arcSnakeVerticesArray.push(curveVertices[j]);
+        this.arcSnakeDetailsArray.push({ alpha: 0 });
+      }
+    }
+
+    this.arcSnakeBufferGeometry = new THREE.BufferGeometry();
+    const arcSnakeShaderUniforms = {
+      color: { value: this.colorHighlight },
+      fogColor: { type: 'c', value: this.scene.fog.color },
+      fogNear: { type: 'f', value: this.scene.fog.near },
+      fogFar: { type: 'f', value: this.scene.fog.far }
+    };
+    const arcSnakeShaderMaterial = new THREE.ShaderMaterial({
+      uniforms: arcSnakeShaderUniforms,
+      vertexShader: this.line_vertexshader,
+      fragmentShader: this.line_fragmentshader,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      fog: true,
+      transparent: true
+    });
+
+    const positions = new Float32Array(this.arcSnakeVerticesArray.length * 3);
+    const alphas = new Float32Array(this.arcSnakeVerticesArray.length);
+
+    for (let i = 0; i < this.arcSnakeVerticesArray.length; i++) {
+      const vertice = this.arcSnakeVerticesArray[i];
+      positions[i * 3] = vertice.x;
+      positions[i * 3 + 1] = vertice.y;
+      positions[i * 3 + 2] = vertice.z;
+      alphas[i] = 0;
+    }
+
+    this.arcSnakeBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+    this.arcSnakeBufferGeometry.addAttribute(
+      'alpha',
+      new THREE.BufferAttribute(alphas, 1)
+    );
+
+    const arcSnakeMesh = new THREE.Line(
+      this.arcSnakeBufferGeometry,
+      arcSnakeShaderMaterial
+    );
+    this.arcsSnakeObject.add(arcSnakeMesh);
+    this.earthObject.add(this.arcsSnakeObject);
+
+    this.arcSnakeCreated = true;
+
+    const that = this;
+    this.arcSnakeAnimation = new TimelineMax({
+      paused: true,
+      delay: 2,
+      repeat: -1,
+      onUpdate() {
+        debugger
+        that.renderArcsSnake();
+      }
+    });
+
+    for (let i = 0; i < this.dotSpritesHoverArray.length; i++) {
+      const tempTarget = this.dotSpritesHoverArray[i];
+      this.arcSnakeAnimation.fromTo(
+        tempTarget.scale,
+        1,
+        { x: 2, y: 2 },
+        { x: 10, y: 10, ease: Expo.easeOut },
+        this.lineBufferDivisions * 0.025 * i
+      );
+
+      this.arcSnakeAnimation.fromTo(
+        tempTarget.material,
+        1.5,
+        { opacity: 1 },
+        { opacity: 0 },
+        this.lineBufferDivisions * 0.025 * i
+      );
+
+      this.arcSnakeAnimation.fromTo(
+        tempTarget,
+        1.5,
+        {},
+        {
+          onStart: function() {
+            this.target.visible = true;
+          },
+          onComplete: function() {
+            this.target.visible = false;
+          }
+        },
+        this.lineBufferDivisions * 0.025 * i
+      );
+    }
+    this.arcSnakeAnimation.staggerTo(
+      this.arcSnakeDetailsArray,
+      0.25,
+      { alpha: 0 },
+      0.025,
+      2
+    );
+
+    this.arcSnakeAnimation.staggerFromTo(
+      this.arcSnakeDetailsArray,
+      0.25,
+      { alpha: 0 },
+      { alpha: 1 },
+      0.025,
+      0
+    );
+  }
+  renderArcsSnake() {
+    if (this.arcSnakeCreated) {
+      const attributes: any = this.arcSnakeBufferGeometry.attributes;
+      for (let i = 0; i < this.arcSnakeDetailsArray.length; i++) {
+        const pd = this.arcSnakeDetailsArray[i];
+        attributes.alpha.array[1] = pd.alpha;
+      }
+      attributes.alpha.needsUpdate = true;
+    }
+  }
+  checkDistance(p1: THREE.Vector3, p2: THREE.Vector3) {
+    return Math.sqrt(
+      (p2.x - p1.x) * (p2.x - p1.x) +
+        (p2.y - p1.y) * (p2.y - p1.y) +
+        (p2.z - p1.z) * (p2.z - p1.z)
+    );
   }
 
   initTHREE() {
@@ -78,6 +285,7 @@ export class LaunchitEarthComponent implements OnInit {
     this.height = this.el.nativeElement.clientHeight;
 
     this.scene = new THREE.Scene();
+    this.scene.fog = new THREE.Fog(0x000000, 0, 400);
 
     this.camera = new THREE.PerspectiveCamera(
       45,
@@ -549,7 +757,7 @@ export class LaunchitEarthComponent implements OnInit {
   generateRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-  latLongToVector3(lat: number, lng: number, radius: number, height: number) {
+  latLongToVector3(lat, lng, radius: number, height: number) {
     const phi = (lat * Math.PI) / 180;
     const theta = ((lng - 180) * Math.PI) / 180;
     const x = -(radius + height) * Math.cos(phi) * Math.cos(theta);
