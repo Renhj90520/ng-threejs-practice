@@ -190,6 +190,8 @@ export class LaunchitEarthComponent implements OnInit {
   rainGeometry: THREE.BufferGeometry;
   rainVelocityFactor = 0.0016;
   rainFadeDistance: number;
+  targetTiltX = 0;
+  targetTiltY = 0;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -1537,11 +1539,20 @@ export class LaunchitEarthComponent implements OnInit {
     if (this.rainCreated) {
       this.renderRain();
     }
+    if (this.ringsCreated) {
+      this.renderRings();
+    }
     // if (this.universeCreated) {
     //   this.universeBgMat.color = this.colorBase;
     //   this.universeBgMat.needsUpdate = true;
     // }
     requestAnimationFrame(this.update.bind(this));
+  }
+  renderRings() {
+    this.ringsObject.rotation.x +=
+      (this.targetTiltX - this.ringsObject.rotation.x) * 0.25;
+    this.ringsObject.rotation.z -=
+      (this.targetTiltY + this.ringsObject.rotation.z) * 0.25;
   }
   renderRain() {
     this.rainObject.rotation.y += this.rainObject.rotation.z + 0.0075;
