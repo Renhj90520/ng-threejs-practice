@@ -83,7 +83,7 @@ export class LaunchitEarthComponent implements OnInit {
 
     uniform vec3 fogColor;
     uniform float fogNear;
-    unifomr float fogFar;
+    uniform float fogFar;
 
     void main() {
       gl_FragColor = vec4(color, vAlpha);
@@ -99,9 +99,97 @@ export class LaunchitEarthComponent implements OnInit {
       #endif
     }
   `;
+
+  particle_vertexshader = `
+    attribute float size;
+    attribute float alpha;
+    varying float vAlpha;
+
+    void main() {
+      vAlpha = alpha;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (300.0 / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
+    }
+  `;
+
+  particle_fragmentshader = `
+    uniform vec3 color;
+    uniform sampler2D texture;
+    varying float vAlpha;
+    
+    void main() {
+      gl_FragColor = vec4(color, 1.0);
+      gl_FragColor = gl_FragColor * texture2D(texture, gl_PointCoord);
+      gl_FragColor.a *= vAlpha;
+    }
+  `;
   arcSnakeCreated = false;
   arcSnakeAnimation: TimelineMax;
   arcSnakeBufferGeometry: THREE.BufferGeometry;
+  arcRocketObject: THREE.Group;
+  arcRocketVerticesArray = [];
+  arcRocketBufferGeometry: THREE.BufferGeometry;
+  arcRocketMaterial: THREE.ShaderMaterial;
+  arcRocketCreated = false;
+  arcRocketAnimation: TimelineMax;
+  arcRocketDetailsArray = [];
+  arcAllObject: THREE.Group;
+  arcAllsVerticesArray = [];
+  arcAllMaterial: THREE.LineBasicMaterial;
+  arcAllBufferGeometry: THREE.BufferGeometry;
+  arcAllMesh: THREE.LineSegments;
+  arcAllAnimation: TimelineMax;
+  arcAllCreated = false;
+  ringsObject: THREE.Group;
+  ringLargeGeometry: THREE.RingGeometry;
+  ringMediumGeometry: THREE.RingGeometry;
+  ringsOuterMaterial: THREE.MeshBasicMaterial;
+  ringsInnerMaterial: THREE.MeshBasicMaterial;
+  ringsCreated = false;
+  spikesObject: THREE.Group;
+  spilesVerticesArray = [];
+  spikeRadius = this.globeRadius + 30;
+  spikesVerticesArray = [];
+  spikesBufferGeometry: THREE.BufferGeometry;
+  spikesCreated = false;
+  ringPulseObject: THREE.Group;
+  ringPulseTotal = 250;
+  ringPulseRadius = this.globeRadius + 25;
+  ringPulseAngle = (2 * Math.PI) / this.ringPulseTotal;
+  ringPulseVerticesArray = [];
+  ringPulseBufferGeometry: THREE.BufferGeometry;
+  ringExplosionSize = 100;
+  ringPointTotal = 250;
+  ringPointRadius = this.globeRadius + 20;
+  ringPointAngle = (2 * Math.PI) / this.ringPointTotal;
+  ringPointSize = 0.5;
+  ringPulseCreated: boolean;
+  rainObject: THREE.Group;
+  rainParticleTotal = 50;
+  rainRingRadius = 40;
+  rainMaxDistance = 100;
+  rainBuffer = this.globeRadius - 15;
+  rainSize = 5;
+  rainDetails = [];
+  rainCreated = false;
+  starsObject: THREE.Group;
+  starsObject2: THREE.Group;
+  starsTotal = 500;
+  starsMaxDistance = 400;
+  starsCenter = new THREE.Vector3(0, 0, 0);
+  starsMinDistance = 100;
+  starsVerticesArray = [];
+  starsSize = 1;
+  starsZoomObject: THREE.Group;
+  starZoomTotal = 150;
+  starsZoomMaxDistance = 200;
+  starsZoomVerticesArray = [];
+  starsCreated = false;
+  globeMaxZoom = 90;
+  rainGeometry: THREE.BufferGeometry;
+  rainVelocityFactor = 0.0016;
+  rainFadeDistance: number;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -112,7 +200,671 @@ export class LaunchitEarthComponent implements OnInit {
     this.addGlobe();
     this.addDots();
     this.addArcsSnake();
+    // this.addArcsRocket();
+    // this.addArcsAll();
+    this.addRings();
+    this.addSpikes();
+    this.addRingPulse();
+    this.addRain();
+    this.addMinimapBg();
+    this.addStars();
     this.update();
+  }
+  addStars() {
+    this.starsObject = new THREE.Group();
+    this.starsObject.name = 'starsObject';
+    this.scene.add(this.starsObject);
+
+    this.starsObject2 = new THREE.Group();
+    this.starsObject2.name = 'starsObject2';
+    this.scene.add(this.starsObject2);
+
+    for (let i = 0; i < this.starsTotal; i++) {
+      var vertex = new THREE.Vector3();
+      vertex.x =
+        Math.random() * this.starsMaxDistance - this.starsMaxDistance / 2;
+      vertex.y = Math.random() * 150 - 150 / 2;
+      vertex.z =
+        Math.random() * this.starsMaxDistance - this.starsMaxDistance / 2;
+
+      const tempDifference = this.checkDistance(this.starsCenter, vertex);
+      const tempBuffer = this.starsMinDistance;
+
+      if (tempDifference < tempBuffer) {
+        if (vertex.x < tempBuffer) vertex.x = tempBuffer;
+        if (vertex.y < tempBuffer) vertex.y = tempBuffer;
+        if (vertex.z < tempBuffer) vertex.z = tempBuffer;
+      }
+
+      this.starsVerticesArray.push(vertex);
+    }
+
+    const starsMaterial = new THREE.PointsMaterial({
+      size: this.starsSize,
+      sizeAttenuation: false,
+      color: this.colorBase,
+      fog: true
+    });
+    starsMaterial.needsUpdate = true;
+
+    const positions = new Float32Array(this.starsVerticesArray.length * 3);
+    for (let i = 0; i < this.starsVerticesArray.length; i++) {
+      const vertex = this.starsVerticesArray[i];
+      positions[i * 3] = vertex.x;
+      positions[i * 3 + 1] = vertex.y;
+      positions[i * 3 + 2] = vertex.z;
+    }
+
+    const starsBufferGeometry = new THREE.BufferGeometry();
+    starsBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+
+    const starsCloud1 = new THREE.Points(starsBufferGeometry, starsMaterial);
+    this.starsObject.add(starsCloud1);
+
+    const starsCloud2 = new THREE.Points(starsBufferGeometry, starsMaterial);
+    this.starsObject2.add(starsCloud2);
+    this.starsObject2.rotation.x = 180 * this.toRAD;
+
+    this.starsZoomObject = new THREE.Group();
+    this.starsZoomObject.name = 'starsObjectZoom';
+    this.scene.add(this.starsZoomObject);
+
+    const starZoomTexture = new THREE.TextureLoader().load(
+      'assets/images/star.jpg'
+    );
+
+    for (let i = 0; i < this.starZoomTotal; i++) {
+      const vertex = new THREE.Vector3();
+      vertex.x =
+        Math.random() * this.starsZoomMaxDistance -
+        this.starsZoomMaxDistance / 2;
+      vertex.y =
+        Math.random() * this.starsZoomMaxDistance -
+        this.starsZoomMaxDistance / 2;
+      vertex.z = Math.random() * 500;
+      this.starsZoomVerticesArray.push(vertex);
+    }
+
+    const starsZoomMaterial = new THREE.PointsMaterial({
+      map: starZoomTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      size: 5,
+      color: this.colorBase,
+      fog: true
+    });
+
+    const position = new Float32Array(this.starsZoomVerticesArray.length * 3);
+    for (let i = 0; i < this.starsZoomVerticesArray.length; i++) {
+      const vertex = this.starsZoomVerticesArray[i];
+      position[i * 3] = vertex.x;
+      position[i * 3 + 1] = vertex.y;
+      position[i * 3 + 2] = vertex.z;
+    }
+
+    const starsZoomBufferGeometry = new THREE.BufferGeometry();
+    starsZoomBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(position, 3)
+    );
+
+    const starsZoomCloud = new THREE.Points(
+      starsZoomBufferGeometry,
+      starsZoomMaterial
+    );
+    this.starsZoomObject.add(starsZoomCloud);
+
+    this.starsCreated = true;
+  }
+  addMinimapBg() {}
+  addRain() {
+    this.rainObject = new THREE.Group();
+    this.rainObject.name = 'raniObject';
+    this.scene.add(this.rainObject);
+
+    this.rainGeometry = new THREE.BufferGeometry();
+    const rainShaderUniforms = {
+      color: { value: this.colorBase },
+      texture: {
+        value: new THREE.TextureLoader().load('assets/images/dot-inverted.png')
+      }
+    };
+
+    const rainShaderMaterial = new THREE.ShaderMaterial({
+      uniforms: rainShaderUniforms,
+      vertexShader: this.particle_vertexshader,
+      fragmentShader: this.particle_fragmentshader,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthTest: false
+    });
+
+    const positions = new Float32Array(this.rainParticleTotal * 3);
+    const alphas = new Float32Array(this.rainParticleTotal);
+    const sizes = new Float32Array(this.rainParticleTotal);
+
+    const circleAngle = (2 * Math.PI) / this.rainParticleTotal;
+    for (let i = 0, i3 = 0; i < this.rainParticleTotal; i++, i3 += 3) {
+      const circleRadius = Math.random() * this.rainRingRadius;
+      const vertex = new THREE.Vector3();
+      vertex.x = circleRadius * Math.cos(circleAngle * i);
+      vertex.y = Math.random() * this.rainMaxDistance;
+      vertex.z = circleRadius * Math.sin(circleAngle * i);
+
+      let destinationY = this.rainBuffer + this.rainMaxDistance;
+      const startSize = Math.random() * this.rainSize;
+      const startAlpha = Math.random();
+      const startPercentage =
+        (this.rainMaxDistance - vertex.y) / this.rainMaxDistance;
+      const startVelocity =
+        (1 - startPercentage) * ((this.rainMaxDistance * 2) / 100);
+
+      vertex.y = vertex.y + this.rainBuffer;
+
+      let originY = this.rainBuffer;
+
+      if (i % 2 === 0) {
+        vertex.y = -vertex.y;
+        originY = -originY;
+        destinationY = -destinationY;
+      }
+
+      positions[i3] = vertex.x;
+      positions[i3 + 1] = vertex.y;
+      positions[i3 + 2] = vertex.z;
+      sizes[i] = startSize;
+      alphas[i] = 1;
+
+      this.rainDetails.push({
+        origin: new THREE.Vector3(vertex.x, originY, vertex.z),
+        current: new THREE.Vector3(vertex.x, vertex.y, vertex.z),
+        destination: new THREE.Vector3(vertex.x, destinationY, vertex.z),
+        size: startSize,
+        alpha: startAlpha,
+        velocity: startVelocity
+      });
+    }
+
+    this.rainGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+
+    this.rainGeometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    this.rainGeometry.addAttribute(
+      'alpha',
+      new THREE.BufferAttribute(alphas, 1)
+    );
+    const rainCloud = new THREE.Points(this.rainGeometry, rainShaderMaterial);
+    this.rainObject.add(rainCloud);
+
+    this.rainCreated = true;
+  }
+  addRingPulse() {
+    this.ringPulseObject = new THREE.Group();
+    this.ringPulseObject.name = 'ringPulse';
+
+    for (let i = 0; i < this.ringPulseTotal; i++) {
+      const vertex = new THREE.Vector3();
+      vertex.x = this.ringPulseRadius * Math.cos(this.ringPulseAngle * i);
+      vertex.y = 0;
+      vertex.z = this.ringPulseRadius * Math.sin(this.ringPulseAngle * i);
+      vertex.normalize();
+      vertex.multiplyScalar(this.ringPulseRadius);
+      this.ringPulseVerticesArray.push(vertex);
+    }
+
+    this.ringPulseBufferGeometry = new THREE.BufferGeometry();
+    const ringPulseShaderUniforms = {
+      color: { value: this.colorBase },
+      fogColor: { type: 'c', value: this.scene.fog.color },
+      fogNear: { type: 'f', value: this.scene.fog.near },
+      fogFar: { type: 'f', value: this.scene.fog.far }
+    };
+
+    const ringPulseShaderMaterial = new THREE.ShaderMaterial({
+      uniforms: ringPulseShaderUniforms,
+      vertexShader: this.line_vertexshader,
+      fragmentShader: this.line_fragmentshader,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      fog: true,
+      transparent: true
+    });
+
+    const positions = new Float32Array(this.ringPulseVerticesArray.length * 3);
+    const alphas = new Float32Array(this.ringPulseVerticesArray.length);
+
+    const maxOpacity = 0.5;
+    for (let i = 0; i < this.ringPulseVerticesArray.length; i++) {
+      const vertex = this.ringPulseVerticesArray[i];
+      positions[i * 3] = vertex.x;
+      positions[i * 3 + 1] = vertex.y;
+      positions[i * 3 + 2] = vertex.z;
+
+      let tempOpacity = 0;
+      const tempHalfOpacity = this.ringPulseTotal / 4;
+      if (i < this.ringPulseTotal / 2) {
+        if (i < tempHalfOpacity) {
+          tempOpacity = (i / tempHalfOpacity) * maxOpacity;
+        } else {
+          tempOpacity = 1 - (i / tempHalfOpacity) * maxOpacity;
+        }
+      }
+      alphas[i] = tempOpacity;
+    }
+
+    this.ringPulseBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+    this.ringPulseBufferGeometry.addAttribute(
+      'alpha',
+      new THREE.BufferAttribute(alphas, 1)
+    );
+
+    const ringPulseMesh = new THREE.LineLoop(
+      this.ringPulseBufferGeometry,
+      ringPulseShaderMaterial
+    );
+
+    this.ringPulseObject.add(ringPulseMesh);
+    this.rotationObject.add(this.ringPulseObject);
+
+    const ringExplosionTexture = new THREE.TextureLoader().load(
+      'assets/images/ring_explosion.jpg'
+    );
+    const ringExplosionBufferGeometry = new THREE.PlaneBufferGeometry(
+      this.ringExplosionSize,
+      this.ringExplosionSize,
+      1,
+      1
+    );
+
+    const ringExplosionMaterial = new THREE.MeshBasicMaterial({
+      map: ringExplosionTexture,
+      color: this.colorBase85,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+
+    const ringExplosionMesh = new THREE.Mesh(
+      ringExplosionBufferGeometry,
+      ringExplosionMaterial
+    );
+
+    ringExplosionMesh.rotation.x = 90 * this.toRAD;
+    ringExplosionMesh.name = 'ringExplosionMesh';
+    ringExplosionMesh.visible = false;
+    this.rotationObject.add(ringExplosionMesh);
+
+    const ringPointGeometry = new THREE.Geometry();
+    for (let i = 0; i < this.ringPointTotal; i++) {
+      const vertex = new THREE.Vector3();
+      vertex.x = this.ringPointRadius * Math.cos(this.ringPointAngle * i);
+      vertex.y = 0;
+      vertex.z = this.ringPointRadius * Math.sin(this.ringPointAngle * i);
+      ringPointGeometry.vertices.push(vertex);
+    }
+
+    const ringPointMaterial = new THREE.PointsMaterial({
+      size: this.ringPointSize,
+      color: this.colorBase75,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+
+    const ringPointMesh: any = new THREE.Points(
+      ringPointGeometry,
+      ringPointMaterial
+    );
+    ringPointMesh.sortParticles = true;
+    this.rotationObject.add(ringPointMesh);
+
+    this.ringPulseCreated = true;
+  }
+  addSpikes() {
+    this.spikesObject = new THREE.Group();
+    this.spikesObject.name = 'spikesObject';
+    this.rotationObject.add(this.spikesObject);
+
+    const sphereSpikeRadius = this.globeRadius + 40;
+    const sphereGeometry = new THREE.SphereGeometry(sphereSpikeRadius, 8, 4);
+    sphereGeometry.mergeVertices();
+
+    for (let i = 0; i < sphereGeometry.vertices.length; i++) {
+      const vertex1 = new THREE.Vector3();
+      vertex1.x = sphereGeometry.vertices[i].x;
+      vertex1.y = sphereGeometry.vertices[i].y;
+      vertex1.z = sphereGeometry.vertices[i].z;
+      vertex1.normalize();
+      vertex1.multiplyScalar(sphereSpikeRadius);
+
+      const vertex2 = vertex1.clone();
+      vertex2.multiplyScalar(1.03);
+      this.spilesVerticesArray.push(vertex1);
+      this.spilesVerticesArray.push(vertex2);
+    }
+
+    const spikeTotal = 400;
+    const spikeAngle = (2 * Math.PI) / spikeTotal;
+    for (let i = 0; i < spikeTotal; i++) {
+      const vertex1 = new THREE.Vector3();
+      vertex1.x = this.spikeRadius * Math.cos(spikeAngle * i);
+      vertex1.y = 0;
+      vertex1.z = this.spikeRadius * Math.sin(spikeAngle * i);
+      vertex1.normalize();
+      vertex1.multiplyScalar(this.spikeRadius);
+
+      const vertex2 = vertex1.clone();
+      if (i % 10 === 1) {
+        vertex2.multiplyScalar(1.02);
+      } else {
+        vertex2.multiplyScalar(1.01);
+      }
+
+      this.spikesVerticesArray.push(vertex1);
+      this.spikesVerticesArray.push(vertex2);
+    }
+
+    const positions = new Float32Array(this.spikesVerticesArray.length * 3);
+    for (let i = 0; i < this.spikesVerticesArray.length; i++) {
+      positions[i * 3] = this.spikesVerticesArray[i].x;
+      positions[i * 3 + 1] = this.spikesVerticesArray[i].y;
+      positions[i * 3 + 2] = this.spikesVerticesArray[i].z;
+    }
+
+    const spikesMaterial = new THREE.LineBasicMaterial({
+      linewidth: 1,
+      color: this.colorBase50,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      fog: true,
+      depthWrite: false
+    });
+
+    this.spikesBufferGeometry = new THREE.BufferGeometry();
+    this.spikesBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+
+    const spikesMesh = new THREE.LineSegments(
+      this.spikesBufferGeometry,
+      spikesMaterial
+    );
+    this.spikesObject.add(spikesMesh);
+    this.spikesCreated = true;
+  }
+  addRings() {
+    this.ringsObject = new THREE.Group();
+    this.ringsObject.name = 'ringsObject';
+    this.scene.add(this.ringsObject);
+
+    this.ringLargeGeometry = new THREE.RingGeometry(200, 195, 128);
+    this.ringMediumGeometry = new THREE.RingGeometry(100, 98, 120);
+
+    this.ringsOuterMaterial = new THREE.MeshBasicMaterial({
+      color: this.colorBase75,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      fog: true,
+      depthWrite: false
+    });
+
+    this.ringsInnerMaterial = new THREE.MeshBasicMaterial({
+      color: this.colorBase50,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      fog: true,
+      depthWrite: false
+    });
+
+    const ringLargeMesh1 = new THREE.Mesh(
+      this.ringLargeGeometry,
+      this.ringsOuterMaterial
+    );
+    ringLargeMesh1.rotation.x = 90 * this.toRAD;
+    const ringLargeMesh2 = ringLargeMesh1.clone();
+    ringLargeMesh1.position.y = 90;
+    ringLargeMesh2.position.y = -90;
+    this.ringsObject.add(ringLargeMesh1);
+    this.ringsObject.add(ringLargeMesh2);
+
+    const ringMediumMesh1 = new THREE.Mesh(
+      this.ringMediumGeometry,
+      this.ringsInnerMaterial
+    );
+    ringMediumMesh1.rotation.x = 90 * this.toRAD;
+    const ringMediumMesh2 = ringMediumMesh1.clone();
+    ringMediumMesh1.position.y = 100;
+    ringMediumMesh2.position.y = -100;
+    this.ringsObject.add(ringMediumMesh1);
+    this.ringsObject.add(ringMediumMesh2);
+
+    this.ringsCreated = true;
+  }
+  addArcsAll() {
+    this.arcAllObject = new THREE.Group();
+    this.arcAllObject.name = 'arcsAll';
+
+    for (let i = 0; i < dataMap.length - 1; i++) {
+      const p1 = this.latLongToVector3(
+        dataMap[0][2],
+        dataMap[0][3],
+        this.globeRadius,
+        this.globeExtraDistance
+      );
+
+      const p4 = this.latLongToVector3(
+        dataMap[i + 1][2],
+        dataMap[i + 1][3],
+        this.globeRadius,
+        this.globeExtraDistance
+      );
+
+      const tempArcHeightMid = 1 + this.checkDistance(p1, p4) * 0.005;
+      const pMid = new THREE.Vector3();
+      pMid.addVectors(p1, p4);
+      pMid.normalize().multiplyScalar(this.globeRadius * tempArcHeightMid);
+
+      const tempArcHeight = 1 + this.checkDistance(p1, pMid) * 0.005;
+
+      const p2 = new THREE.Vector3();
+      p2.addVectors(p1, pMid);
+      p2.normalize().multiplyScalar(this.globeRadius * tempArcHeight);
+
+      const p3 = new THREE.Vector3();
+      p3.addVectors(pMid, p4);
+      p3.normalize().multiplyScalar(this.globeRadius * tempArcHeight);
+
+      const curve = new THREE.CubicBezierCurve3(p1, p2, p3, p4);
+      const curveVertices = curve.getPoints(this.lineBufferDivisions);
+      for (let j = 0; j < this.lineBufferDivisions; j++) {
+        this.arcAllsVerticesArray.push(curveVertices[j]);
+        this.arcAllsVerticesArray.push(curveVertices[j + 1]);
+      }
+    }
+
+    this.arcAllMaterial = new THREE.LineBasicMaterial({
+      linewidth: 1,
+      color: this.colorHighlight,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      fog: true,
+      depthWrite: false
+    });
+
+    const positions = new Float32Array(this.arcAllsVerticesArray.length * 3);
+    for (let i = 0; i < this.arcAllsVerticesArray.length; i++) {
+      const vertice = this.arcAllsVerticesArray[i];
+      positions[i * 3] = vertice.x;
+      positions[i * 3 + 1] = vertice.y;
+      positions[i * 3 + 2] = vertice.z;
+    }
+
+    this.arcAllBufferGeometry = new THREE.BufferGeometry();
+    this.arcAllBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+
+    this.arcAllMesh = new THREE.LineSegments(
+      this.arcAllBufferGeometry,
+      this.arcAllMaterial
+    );
+    this.arcAllObject.add(this.arcAllMesh);
+    this.arcAllObject.add(this.arcAllMesh);
+    this.arcAllObject.visible = false;
+
+    this.arcAllAnimation = new TimelineMax({ paused: true });
+    this.arcAllAnimation.fromTo(
+      this.arcAllMesh.material,
+      2,
+      { opacity: 0 },
+      { opacity: 1 },
+      0
+    );
+    this.arcAllAnimation.timeScale(1);
+    this.arcAllCreated = true;
+  }
+  addArcsRocket() {
+    this.arcRocketObject = new THREE.Group();
+    this.arcRocketObject.name = 'arcsRocket';
+
+    for (let i = 0; i < dataMap.length - 1; i++) {
+      const p1 = this.latLongToVector3(
+        dataMap[0][2],
+        dataMap[0][3],
+        this.globeRadius,
+        this.globeExtraDistance
+      );
+      const p4 = this.latLongToVector3(
+        dataMap[i + 1][2],
+        dataMap[i + 1][3],
+        this.globeRadius,
+        this.globeExtraDistance
+      );
+
+      const tempArcHeightMid = 1 + this.checkDistance(p1, p4) * 0.006;
+      const pMid = new THREE.Vector3();
+      pMid.addVectors(p1, p4);
+      pMid.normalize().multiplyScalar(this.globeRadius * tempArcHeightMid);
+
+      const tempArcHeight = 1 + this.checkDistance(p1, pMid) * 0.006;
+      const p2 = new THREE.Vector3();
+      p2.addVectors(p1, pMid);
+      p2.normalize().multiplyScalar(this.globeRadius * tempArcHeight);
+
+      const p3 = new THREE.Vector3();
+      p3.addVectors(pMid, p4);
+      p3.normalize().multiplyScalar(this.globeRadius * tempArcHeight);
+
+      const curve = new THREE.CubicBezierCurve3(p1, p2, p3, p4);
+      const curveVertices = curve.getPoints(this.lineBufferDivisions);
+      for (let j = 0; j < this.lineBufferDivisions; j++) {
+        this.arcRocketVerticesArray.push(curveVertices[j]);
+        this.arcRocketDetailsArray.push({ alpha: 0 });
+        this.arcRocketVerticesArray.push(curveVertices[j + 1]);
+        this.arcRocketDetailsArray.push({ alpha: 0 });
+      }
+    }
+
+    this.arcRocketBufferGeometry = new THREE.BufferGeometry();
+    const arcRocketShaderUniforms = {
+      color: { value: this.colorHighlight },
+      fogColor: { type: 'c', value: this.scene.fog.color },
+      fogNear: { type: 'f', value: this.scene.fog.near },
+      fogFar: { type: 'f', value: this.scene.fog.far }
+    };
+
+    this.arcRocketMaterial = new THREE.ShaderMaterial({
+      uniforms: arcRocketShaderUniforms,
+      vertexShader: this.line_vertexshader,
+      fragmentShader: this.line_fragmentshader,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      fog: true,
+      transparent: true
+    });
+
+    const positions = new Float32Array(this.arcRocketVerticesArray.length * 3);
+    const alphas = new Float32Array(this.arcRocketVerticesArray.length);
+
+    for (let i = 0; i < this.arcRocketVerticesArray.length; i++) {
+      const vertice = this.arcRocketVerticesArray[i];
+
+      positions[i * 3] = vertice.x;
+      positions[i * 3 + 1] = vertice.y;
+      positions[i * 3 + 2] = vertice.z;
+      alphas[i] = 0;
+    }
+
+    this.arcRocketBufferGeometry.addAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+
+    this.arcRocketBufferGeometry.addAttribute(
+      'alpha',
+      new THREE.BufferAttribute(alphas, 1)
+    );
+
+    const arcRocketMesh = new THREE.LineSegments(
+      this.arcRocketBufferGeometry,
+      this.arcRocketMaterial
+    );
+    this.arcRocketObject.add(arcRocketMesh);
+    this.arcRocketObject.visible = false;
+    this.arcRocketCreated = true;
+
+    const that = this;
+    this.arcRocketAnimation = new TimelineMax({
+      paused: true,
+      repeat: -1,
+      onUpdate() {
+        that.renderArcsRocket();
+      }
+    });
+
+    this.arcRocketAnimation.staggerTo(
+      this.arcRocketDetailsArray,
+      0.25,
+      { alpha: 0 },
+      0.025,
+      0
+    );
+    this.arcRocketAnimation.staggerFromTo(
+      this.arcRocketDetailsArray,
+      0.25,
+      { alpha: 0 },
+      { alpha: 1 },
+      0.025,
+      0
+    );
+
+    this.arcRocketAnimation.timeScale(2);
+  }
+
+  renderArcsRocket() {
+    if (this.arcRocketCreated) {
+      const attributes: any = this.arcRocketBufferGeometry.attributes;
+      for (let i = 0; i < this.arcRocketDetailsArray.length; i++) {
+        const pd = this.arcRocketDetailsArray[i];
+        attributes.alpha[i] = pd.value;
+      }
+      attributes.alpha.needsUpdate = true;
+    }
   }
   addArcsSnake() {
     this.arcsSnakeObject = new THREE.Group();
@@ -207,7 +959,7 @@ export class LaunchitEarthComponent implements OnInit {
       delay: 2,
       repeat: -1,
       onUpdate() {
-        debugger
+        debugger;
         that.renderArcsSnake();
       }
     });
@@ -770,12 +1522,85 @@ export class LaunchitEarthComponent implements OnInit {
     this.renderer.render(this.scene, this.camera);
     this.controls.update();
 
-    if (this.universeCreated) {
-      this.universeBgMat.color = this.colorBase;
-      this.universeBgMat.needsUpdate = true;
+    if (this.globeCreated) {
+      this.renderGlobe();
     }
+    if (this.dotsCreated) {
+      this.renderDots();
+    }
+    if (this.starsCreated) {
+      this.renderStars();
+    }
+    if (this.ringPulseCreated) {
+      this.renderRingPulse();
+    }
+    if (this.rainCreated) {
+      this.renderRain();
+    }
+    // if (this.universeCreated) {
+    //   this.universeBgMat.color = this.colorBase;
+    //   this.universeBgMat.needsUpdate = true;
+    // }
     requestAnimationFrame(this.update.bind(this));
   }
+  renderRain() {
+    this.rainObject.rotation.y += this.rainObject.rotation.z + 0.0075;
+    const attributes: any = this.rainGeometry.attributes;
+    for (let i = 0, i3 = 0; i < this.rainDetails.length; i++, i3 += 3) {
+      const pd = this.rainDetails[i];
+
+      pd.velocity += this.rainVelocityFactor;
+      if (pd.current.y > 0) {
+        if (pd.current.y > pd.destination.y) {
+          pd.current.y = this.rainBuffer;
+          pd.velocity = 0;
+        }
+        pd.current.y = pd.current.y + pd.velocity;
+      } else if (pd.current.y < 0) {
+        if (pd.current.y < pd.destination.y) {
+          pd.current.y = pd.origin.y;
+          pd.velocity = 0;
+        }
+        pd.current.y = pd.current.y - pd.velocity;
+      }
+      attributes.position.array[i3 + 1] = pd.current.y;
+
+      if (pd.current.y > 0) {
+        pd.alpha =
+          (pd.current.y - this.rainBuffer) /
+          (pd.origin.y - this.rainBuffer + this.rainFadeDistance);
+      }
+    }
+  }
+  renderRingPulse() {
+    this.ringPulseObject.rotation.y += 0.025;
+  }
+  renderStars() {
+    this.starsObject.rotation.y += 0.00025;
+    this.starsObject2.rotation.y += 0.00025;
+  }
+  renderDots() {
+    const cameraThresholdZ = 200;
+    const tempCameraZ = this.camera.position.z;
+    let dotScale = 0;
+    if (tempCameraZ < cameraThresholdZ && tempCameraZ > this.globeMaxZoom) {
+      const tempDifference = cameraThresholdZ - this.globeMaxZoom;
+      const tempScale = (cameraThresholdZ - tempCameraZ) / tempDifference;
+      dotScale = tempScale * 1.25;
+    }
+    for (let i = 0; i < this.dotDetailsArray.length; i++) {
+      const dotDetail = this.dotDetailsArray[i];
+      let baseScale = 2;
+      if (dotDetail.type === 2) baseScale = 3;
+
+      this.dotSpritesArray[i].scale.set(
+        baseScale - dotScale,
+        baseScale - dotScale,
+        1
+      );
+    }
+  }
+  renderGlobe() {}
 
   private shadeBlend(p, c0, c1) {
     const n = p < 0 ? p * -1 : p;
