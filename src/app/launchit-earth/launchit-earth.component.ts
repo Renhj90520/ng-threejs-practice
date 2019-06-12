@@ -9,7 +9,7 @@ import { TimelineMax, Expo } from 'gsap';
   styleUrls: ['./launchit-earth.component.css']
 })
 export class LaunchitEarthComponent implements OnInit {
-  scene;
+  scene: THREE.Scene;
   camera;
   renderer;
 
@@ -1126,7 +1126,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       color: this.colorBase,
       transparent: true,
-      opacity: 0,
+      opacity: 1,
       fog: false,
       side: THREE.DoubleSide,
       depthWrite: false,
@@ -1542,10 +1542,10 @@ export class LaunchitEarthComponent implements OnInit {
     if (this.ringsCreated) {
       this.renderRings();
     }
-    // if (this.universeCreated) {
-    //   this.universeBgMat.color = this.colorBase;
-    //   this.universeBgMat.needsUpdate = true;
-    // }
+    if (this.universeCreated) {
+      this.universeBgMat.color = this.colorBase;
+      this.universeBgMat.needsUpdate = true;
+    }
     requestAnimationFrame(this.update.bind(this));
   }
   renderRings() {
@@ -1647,6 +1647,20 @@ export class LaunchitEarthComponent implements OnInit {
       )
         .toString(16)
         .slice(1)}`;
+    }
+  }
+
+  resetAnimations() {
+    if (this.scene.getObjectByName('arcsRocket')) {
+      const attributes: any = this.arcRocketBufferGeometry.attributes;
+      for (let i = 0; i < this.arcRocketDetailsArray.length; i++) {
+        attributes.alpha.array[i] = 0;
+      }
+
+      attributes.alpha.needsUpdate = true;
+      this.arcRocketAnimation.pause(0);
+      this.arcRocketObject.visible = false;
+      this.earthObject.remove(this.arcRocketObject);
     }
   }
 }
