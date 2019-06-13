@@ -9,7 +9,7 @@ import { TimelineMax, Expo } from 'gsap';
   styleUrls: ['./launchit-earth.component.css']
 })
 export class LaunchitEarthComponent implements OnInit {
-  scene: THREE.Scene;
+  scene;
   camera;
   renderer;
 
@@ -192,6 +192,7 @@ export class LaunchitEarthComponent implements OnInit {
   rainFadeDistance: number;
   targetTiltX = 0;
   targetTiltY = 0;
+  currentAnimationType: any;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -210,6 +211,7 @@ export class LaunchitEarthComponent implements OnInit {
     this.addRain();
     this.addMinimapBg();
     this.addStars();
+    this.setArcAnimation('all');
     this.update();
   }
   addStars() {
@@ -870,7 +872,7 @@ export class LaunchitEarthComponent implements OnInit {
   }
   addArcsSnake() {
     this.arcsSnakeObject = new THREE.Group();
-    this.arcsSnakeObject.name = 'arcSnake';
+    this.arcsSnakeObject.name = 'arcsSnake';
 
     for (let i = 0; i < dataMap.length - 1; i++) {
       const p1 = this.latLongToVector3(
@@ -1650,6 +1652,41 @@ export class LaunchitEarthComponent implements OnInit {
     }
   }
 
+  setArcAnimation(type) {
+    if (!this.arcRocketCreated) {
+      this.addArcsRocket();
+    }
+    if (!this.arcSnakeCreated) {
+      this.addArcsSnake();
+    }
+    if (!this.arcAllCreated) {
+      this.addArcsAll();
+    }
+
+    if (this.currentAnimationType === type) {
+      type = 'off';
+    }
+
+    this.currentAnimationType = type;
+    this.resetAnimations();
+
+    switch (type) {
+      case 'rocket':
+        this.earthObject.add(this.arcRocketObject);
+        this.arcRocketObject.visible = true;
+        this.arcRocketAnimation.play(0);
+        break;
+      case 'snake':
+        this.earthObject.add(this.arcsSnakeObject);
+        this.arcsSnakeObject.visible = true;
+        this.arcSnakeAnimation.play(0);
+      case 'all':
+        this.arcAllAnimation.play(0);
+        this.earthObject.add(this.arcAllObject);
+        this.arcAllObject.visible = true;
+    }
+  }
+
   resetAnimations() {
     if (this.scene.getObjectByName('arcsRocket')) {
       const attributes: any = this.arcRocketBufferGeometry.attributes;
@@ -1661,6 +1698,24 @@ export class LaunchitEarthComponent implements OnInit {
       this.arcRocketAnimation.pause(0);
       this.arcRocketObject.visible = false;
       this.earthObject.remove(this.arcRocketObject);
+    }
+
+    if (this.scene.getObjectByName('arcsSnake')) {
+      const attributes: any = this.arcSnakeBufferGeometry.attributes;
+      for (let i = 0; i < this.arcSnakeDetailsArray.length; i++) {
+        attributes.alpha.array[i] = 0;
+      }
+      attributes.alpha.needsUpdate = true;
+
+      this.arcSnakeAnimation.pause(0);
+      this.arcsSnakeObject.visible = false;
+      this.earthObject.remove(this.arcsSnakeObject);
+    }
+
+    if (this.scene.getObjectByName('arcsAll')) {
+      this.arcAllAnimation.pause(0);
+      this.arcAllObject.visible = false;
+      this.earthObject.remove(this.arcAllObject);
     }
   }
 }
