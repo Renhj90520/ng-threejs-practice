@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import OrbitControls from '../controls/OrbitControls';
 import { dataMap } from './data-map';
-import { TimelineMax, Expo } from 'gsap';
+import { TimelineMax, Expo, Linear, Power4 } from 'gsap';
 @Component({
   selector: 'app-launchit-earth',
   templateUrl: './launchit-earth.component.html',
@@ -193,6 +193,8 @@ export class LaunchitEarthComponent implements OnInit {
   targetTiltX = 0;
   targetTiltY = 0;
   currentAnimationType: any;
+  explosionAnimation: any;
+  ringExplosionMesh: THREE.Mesh;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -203,15 +205,18 @@ export class LaunchitEarthComponent implements OnInit {
     this.addGlobe();
     this.addDots();
     this.addArcsSnake();
-    // this.addArcsRocket();
-    // this.addArcsAll();
+    this.addArcsRocket();
+    this.addArcsAll();
     this.addRings();
     this.addSpikes();
     this.addRingPulse();
     this.addRain();
     this.addMinimapBg();
     this.addStars();
-    this.setArcAnimation('all');
+    this.setArcAnimation('snake');
+    this.el.nativeElement.addEventListener('click', () => {
+      this.generateExplosion();
+    });
     this.update();
   }
   addStars() {
@@ -497,15 +502,15 @@ export class LaunchitEarthComponent implements OnInit {
       depthWrite: false
     });
 
-    const ringExplosionMesh = new THREE.Mesh(
+    this.ringExplosionMesh = new THREE.Mesh(
       ringExplosionBufferGeometry,
       ringExplosionMaterial
     );
 
-    ringExplosionMesh.rotation.x = 90 * this.toRAD;
-    ringExplosionMesh.name = 'ringExplosionMesh';
-    ringExplosionMesh.visible = false;
-    this.rotationObject.add(ringExplosionMesh);
+    this.ringExplosionMesh.rotation.x = 90 * this.toRAD;
+    this.ringExplosionMesh.name = 'ringExplosionMesh';
+    this.ringExplosionMesh.visible = false;
+    this.rotationObject.add(this.ringExplosionMesh);
 
     const ringPointGeometry = new THREE.Geometry();
     for (let i = 0; i < this.ringPointTotal; i++) {
@@ -728,7 +733,6 @@ export class LaunchitEarthComponent implements OnInit {
       this.arcAllMaterial
     );
     this.arcAllObject.add(this.arcAllMesh);
-    this.arcAllObject.add(this.arcAllMesh);
     this.arcAllObject.visible = false;
 
     this.arcAllAnimation = new TimelineMax({ paused: true });
@@ -846,7 +850,7 @@ export class LaunchitEarthComponent implements OnInit {
       0.25,
       { alpha: 0 },
       0.025,
-      0
+      2
     );
     this.arcRocketAnimation.staggerFromTo(
       this.arcRocketDetailsArray,
@@ -865,7 +869,7 @@ export class LaunchitEarthComponent implements OnInit {
       const attributes: any = this.arcRocketBufferGeometry.attributes;
       for (let i = 0; i < this.arcRocketDetailsArray.length; i++) {
         const pd = this.arcRocketDetailsArray[i];
-        attributes.alpha[i] = pd.value;
+        attributes.alpha.array[i] = pd.alpha;
       }
       attributes.alpha.needsUpdate = true;
     }
@@ -963,7 +967,6 @@ export class LaunchitEarthComponent implements OnInit {
       delay: 2,
       repeat: -1,
       onUpdate() {
-        debugger;
         that.renderArcsSnake();
       }
     });
@@ -1023,7 +1026,7 @@ export class LaunchitEarthComponent implements OnInit {
       const attributes: any = this.arcSnakeBufferGeometry.attributes;
       for (let i = 0; i < this.arcSnakeDetailsArray.length; i++) {
         const pd = this.arcSnakeDetailsArray[i];
-        attributes.alpha.array[1] = pd.alpha;
+        attributes.alpha.array[i] = pd.alpha;
       }
       attributes.alpha.needsUpdate = true;
     }
@@ -1680,10 +1683,12 @@ export class LaunchitEarthComponent implements OnInit {
         this.earthObject.add(this.arcsSnakeObject);
         this.arcsSnakeObject.visible = true;
         this.arcSnakeAnimation.play(0);
+        break;
       case 'all':
         this.arcAllAnimation.play(0);
         this.earthObject.add(this.arcAllObject);
         this.arcAllObject.visible = true;
+        break;
     }
   }
 
@@ -1717,5 +1722,53 @@ export class LaunchitEarthComponent implements OnInit {
       this.arcAllObject.visible = false;
       this.earthObject.remove(this.arcAllObject);
     }
+  }
+
+  generateExplosion() {
+    this.explosionAnimation = new TimelineMax({ pause: true });
+    this.explosionAnimation.fromTo(
+      this.ringExplosionMesh.scale,
+      1,
+      {
+        x: 1,
+        y: 1
+      },
+      { x: 3, y: 3, ease: Power4.easeOut }
+    );
+
+    this.explosionAnimation.fromTo(
+      this.ringExplosionMesh.material,
+      0.25,
+      {
+        opacity: 0
+      },
+      {
+        opacity: 1,
+        ease: Linear.easeNone,
+        onStart: () => {
+          this.ringExplosionMesh.visible = true;
+        }
+      },
+      0
+    );
+
+    this.explosionAnimation.fromTo(
+      this.ringExplosionMesh.material,
+      0.75,
+      {
+        opacity: 1
+      },
+      {
+        opacity: 0,
+        immediateRender: false,
+        ease: Linear.easeNone,
+        onComplete: () => {
+          this.ringExplosionMesh.visible = false;
+        }
+      },
+      0.25
+    );
+    this.explosionAnimation.timeScale(1);
+    this.explosionAnimation.play(0);
   }
 }

@@ -4416,8 +4416,8 @@ function generateGlitch() {
   glitcherAnimation.play(0);
 
   generateExplosion();
+  
 }
-
 // GENERATE RANDOM NUMBER
 function generateRandomNumber(min, max) {
   var random = Math.floor(Math.random() * (max - min + 1)) + min;
