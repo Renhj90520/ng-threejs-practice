@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import OrbitControls from '../controls/OrbitControls';
 import { dataMap } from './data-map';
-import { TimelineMax, Expo, Linear, Power4 } from 'gsap';
+import { TimelineMax, Expo, Linear, Power4, TweenMax, Circ } from 'gsap';
 @Component({
   selector: 'app-launchit-earth',
   templateUrl: './launchit-earth.component.html',
@@ -195,6 +195,8 @@ export class LaunchitEarthComponent implements OnInit {
   currentAnimationType: any;
   explosionAnimation: any;
   ringExplosionMesh: THREE.Mesh;
+  globeShieldMaterial: THREE.MeshPhongMaterial;
+  globeGlowMaterial: THREE.MeshBasicMaterial;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -214,10 +216,45 @@ export class LaunchitEarthComponent implements OnInit {
     this.addMinimapBg();
     this.addStars();
     this.setArcAnimation('snake');
+    this.showGlobe();
     this.el.nativeElement.addEventListener('click', () => {
       this.generateExplosion();
     });
     this.update();
+  }
+  showGlobe() {
+    TweenMax.fromTo(
+      this.universeBgMat,
+      4,
+      { opacity: 0 },
+      { opacity: 1, delay: 1, ease: Linear.easeNone }
+    );
+
+    TweenMax.fromTo(
+      this.globeShieldMaterial,
+      3,
+      { opacity: 0 },
+      { opacity: 0.65, delay: 1, ease: Linear.easeNone }
+    );
+
+    TweenMax.fromTo(
+      this.globeGlowMaterial,
+      3,
+      { opacity: 0 },
+      { opacity: 1, delay: 1, ease: Linear.easeNone }
+    );
+    TweenMax.fromTo(
+      this.starsZoomObject.position,
+      6,
+      { z: 0 },
+      {
+        z: 325,
+        ease: Circ.easeInOut,
+        onComplete: () => {
+          this.starsZoomObject.visible = false;
+        }
+      }
+    );
   }
   addStars() {
     this.starsObject = new THREE.Group();
@@ -1193,7 +1230,7 @@ export class LaunchitEarthComponent implements OnInit {
 
     this.earthObject.add(globeOuterMesh);
 
-    const globeShieldMaterial = new THREE.MeshPhongMaterial({
+    this.globeShieldMaterial = new THREE.MeshPhongMaterial({
       color: this.colorBase75,
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -1205,7 +1242,7 @@ export class LaunchitEarthComponent implements OnInit {
     });
     const globeShieldMesh = new THREE.Mesh(
       globeBufferGeometry,
-      globeShieldMaterial
+      this.globeShieldMaterial
     );
     globeShieldMesh.name = 'globeShieldMesh';
     this.scene.add(globeShieldMesh);
@@ -1321,7 +1358,7 @@ export class LaunchitEarthComponent implements OnInit {
       1
     );
 
-    const globeGlowMaterial = new THREE.MeshBasicMaterial({
+    this.globeGlowMaterial = new THREE.MeshBasicMaterial({
       map: globeGlowTexture,
       color: this.colorBase,
       transparent: true,
@@ -1333,7 +1370,7 @@ export class LaunchitEarthComponent implements OnInit {
 
     const globeGlowMesh = new THREE.Mesh(
       globeGlowBufferGeometry,
-      globeGlowMaterial
+      this.globeGlowMaterial
     );
     globeGlowMesh.name = 'globeGlowMesh';
     this.scene.add(globeGlowMesh);

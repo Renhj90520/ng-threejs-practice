@@ -4416,7 +4416,6 @@ function generateGlitch() {
   glitcherAnimation.play(0);
 
   generateExplosion();
-  
 }
 // GENERATE RANDOM NUMBER
 function generateRandomNumber(min, max) {
