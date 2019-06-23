@@ -7,10 +7,12 @@ import { ProceduralCityComponent } from './procedural-city/procedural-city.compo
 import { EndlessTerrainComponent } from './endless-terrain/endless-terrain.component';
 import { WindmillObjMtlComponent } from './windmill-obj-mtl/windmill-obj-mtl.component';
 import { LaunchitEarthComponent } from './launchit-earth/launchit-earth.component';
+import { AppRoutingModule } from './app-routing.module';
+import { GalleryComponent } from './gallery/gallery.component';
 
 @NgModule({
-  declarations: [AppComponent, WebglGalaxyComponent, ProceduralCityComponent, EndlessTerrainComponent, WindmillObjMtlComponent, LaunchitEarthComponent],
-  imports: [BrowserModule],
+  declarations: [AppComponent, WebglGalaxyComponent, ProceduralCityComponent, EndlessTerrainComponent, WindmillObjMtlComponent, LaunchitEarthComponent, GalleryComponent],
+  imports: [BrowserModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent]
 })

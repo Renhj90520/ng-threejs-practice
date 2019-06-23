@@ -1,5 +1,12 @@
 :host {
   display: block;
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+.three-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }

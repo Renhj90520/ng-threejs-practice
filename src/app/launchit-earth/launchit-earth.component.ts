@@ -1,14 +1,23 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import * as THREE from 'three';
 import OrbitControls from '../controls/OrbitControls';
 import { dataMap } from './data-map';
-import { TimelineMax, Expo, Linear, Power4, TweenMax, Circ } from 'gsap';
+import {
+  TimelineMax,
+  Expo,
+  Linear,
+  Power4,
+  TweenMax,
+  Circ,
+  RoughEase
+} from 'gsap';
 @Component({
   selector: 'app-launchit-earth',
   templateUrl: './launchit-earth.component.html',
   styleUrls: ['./launchit-earth.component.css']
 })
 export class LaunchitEarthComponent implements OnInit {
+  @ViewChild('three') threeEl;
   scene;
   camera;
   renderer;
@@ -50,7 +59,7 @@ export class LaunchitEarthComponent implements OnInit {
   colorHighlight = new THREE.Color(this.colorSecondary);
   universeCreated = false;
   universeBgMat: THREE.MeshBasicMaterial;
-  controls: OrbitControls;
+  // controls: OrbitControls;
   globeRadius = 65;
   globeCloudVerticesArray = [];
   globeCloudBufferGeometry: THREE.BufferGeometry;
@@ -186,7 +195,6 @@ export class LaunchitEarthComponent implements OnInit {
   starsZoomMaxDistance = 200;
   starsZoomVerticesArray = [];
   starsCreated = false;
-  globeMaxZoom = 90;
   rainGeometry: THREE.BufferGeometry;
   rainVelocityFactor = 0.0016;
   rainFadeDistance: number;
@@ -197,6 +205,28 @@ export class LaunchitEarthComponent implements OnInit {
   ringExplosionMesh: THREE.Mesh;
   globeShieldMaterial: THREE.MeshPhongMaterial;
   globeGlowMaterial: THREE.MeshBasicMaterial;
+
+  targetCameraZ = 250;
+  mouse = new THREE.Vector2();
+  mouseX = 0;
+  mouseY = 0;
+  clientMouseX = 0;
+  clientMouseY = 0;
+  globeMaxZoom = 90;
+  globeMinZoom = 300;
+  dragZone = 50;
+  dragSpeedSlowZone = this.globeMaxZoom + this.dragZone;
+  dragSpeed = 0.1;
+  rotationSpeed = { value: 0.001 };
+  targetRotationX = 0.45;
+  targetRotationY = 65 * this.toRAD;
+  isMouseMoved = false;
+  isMouseDown = false;
+  isGlobeRotated = false;
+  targetRotationXOnMouseDown = 0.45;
+  mouseYOnMouseDown = 0;
+  targetRotationYOnMouseDown = 90 * this.toRAD;
+  mouseXOnMouseDown = 0;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -217,10 +247,77 @@ export class LaunchitEarthComponent implements OnInit {
     this.addStars();
     this.setArcAnimation('snake');
     this.showGlobe();
-    this.el.nativeElement.addEventListener('click', () => {
+    this.threeEl.nativeElement.addEventListener('click', () => {
       this.generateExplosion();
     });
+    this.threeEl.nativeElement.addEventListener(
+      'mousemove',
+      this.onMouseMove.bind(this),
+      false
+    );
+    this.threeEl.nativeElement.addEventListener(
+      'mousewheel',
+      this.onMouseWheel.bind(this),
+      false
+    );
+    this.threeEl.nativeElement.addEventListener(
+      'mousedown',
+      this.onMouseDown.bind(this),
+      false
+    );
+    this.threeEl.nativeElement.addEventListener(
+      'mouseup',
+      this.onMouseUp.bind(this),
+      false
+    );
     this.update();
+  }
+  onMouseDown(evt) {
+    evt.preventDefault();
+    this.isMouseDown = true;
+
+    this.mouseXOnMouseDown = evt.clientX - window.innerWidth / 2;
+    this.mouseYOnMouseDown = evt.clientY - window.innerHeight / 2;
+
+    this.targetRotationXOnMouseDown = this.targetRotationX;
+    this.targetRotationYOnMouseDown = this.targetRotationY;
+
+    
+  }
+  onMouseUp(evt) {}
+  onMouseMove(evt) {
+    this.isMouseMoved = true;
+
+    this.clientMouseX = evt.clientX;
+    this.clientMouseY = evt.clientY;
+
+    this.mouse.x = (evt.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(evt.clientY / window.innerHeight) * 2 + 1;
+
+    if (this.isMouseDown) {
+      this.isGlobeRotated = true;
+
+      this.mouseX = evt.clientX - window.innerWidth / 2;
+      this.mouseY = evt.clientY - window.innerHeight / 2;
+
+      this.targetRotationX =
+        this.targetRotationXOnMouseDown +
+        (this.mouseY - this.mouseYOnMouseDown) * 0.0025;
+
+      this.targetRotationY =
+        this.targetRotationYOnMouseDown +
+        (this.mouseX - this.mouseXOnMouseDown) * 0.0025;
+    }
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    this.targetTiltY = ((evt.clientX - centerX) / centerX) * 0.005;
+    this.targetTiltX = ((evt.clientY - centerY) / centerY) * 0.01;
+  }
+  onMouseWheel(evt) {
+    evt.preventDefault();
+    this.targetCameraZ -= evt.wheelDeltaY * 0.05;
   }
   showGlobe() {
     TweenMax.fromTo(
@@ -1077,8 +1174,8 @@ export class LaunchitEarthComponent implements OnInit {
   }
 
   initTHREE() {
-    this.width = this.el.nativeElement.clientWidth;
-    this.height = this.el.nativeElement.clientHeight;
+    this.width = this.threeEl.nativeElement.clientWidth;
+    this.height = this.threeEl.nativeElement.clientHeight;
 
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.Fog(0x000000, 0, 400);
@@ -1100,12 +1197,12 @@ export class LaunchitEarthComponent implements OnInit {
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(0x000000, 1);
 
-    this.el.nativeElement.appendChild(this.renderer.domElement);
+    this.threeEl.nativeElement.appendChild(this.renderer.domElement);
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-    const cameraHelper = new THREE.CameraHelper(this.camera);
-    this.scene.add(cameraHelper);
+    // const cameraHelper = new THREE.CameraHelper(this.camera);
+    // this.scene.add(cameraHelper);
   }
 
   addGroup() {
@@ -1564,8 +1661,33 @@ export class LaunchitEarthComponent implements OnInit {
   }
   update() {
     this.renderer.render(this.scene, this.camera);
-    this.controls.update();
+    // this.controls.update();
 
+    if (this.targetCameraZ < this.globeMaxZoom) {
+      this.targetCameraZ = this.globeMaxZoom;
+    }
+    if (this.targetCameraZ > this.globeMinZoom) {
+      this.targetCameraZ = this.globeMinZoom;
+    }
+
+    this.camera.position.z +=
+      (this.targetCameraZ - this.camera.position.z) * 0.01;
+
+    if (this.targetCameraZ < this.dragSpeedSlowZone) {
+      this.dragSpeed = 0.025;
+    }
+
+    if (this.targetRotationX > 75 * this.toRAD) {
+      this.targetRotationX = 75 * this.toRAD;
+    }
+    if (this.targetRotationX < -75 * this.toRAD) {
+      this.targetRotationX = -75 * this.toRAD;
+    }
+    this.rotationObject.rotation.x +=
+      (this.targetRotationX - this.rotationObject.rotation.x) * this.dragSpeed;
+    this.rotationObject.rotation.y +=
+      (this.targetRotationY - this.rotationObject.rotation.y) * this.dragSpeed;
+    this.targetRotationY += this.rotationSpeed.value;
     if (this.globeCreated) {
       this.renderGlobe();
     }
@@ -1762,6 +1884,21 @@ export class LaunchitEarthComponent implements OnInit {
   }
 
   generateExplosion() {
+    const roughEase: any = RoughEase.ease;
+    TweenMax.fromTo(
+      this.threeEl.nativeElement,
+      0.25,
+      {
+        x: this.generateRandomNumber(-10, 10),
+        y: this.generateRandomNumber(-10, 10)
+      },
+      {
+        x: 0,
+        y: 0,
+        ease: roughEase.config({ strenth: 2, points: 20 })
+      }
+    );
+
     this.explosionAnimation = new TimelineMax({ pause: true });
     this.explosionAnimation.fromTo(
       this.ringExplosionMesh.scale,
