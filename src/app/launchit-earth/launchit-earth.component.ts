@@ -227,7 +227,18 @@ export class LaunchitEarthComponent implements OnInit {
   mouseYOnMouseDown = 0;
   targetRotationYOnMouseDown = 90 * this.toRAD;
   mouseXOnMouseDown = 0;
-  constructor(private el: ElementRef) {}
+  initMouseX: any;
+
+  globeRaycaster = new THREE.Raycaster();
+  intersects;
+  intersection = null;
+  isParticleHit = false;
+  isMediaHit = false;
+  cameraDirection = 'left';
+
+  constructor(private el: ElementRef) {
+    this.globeRaycaster.params.Points.threshold = 0.4;
+  }
 
   ngOnInit() {
     this.initTHREE();
@@ -282,9 +293,34 @@ export class LaunchitEarthComponent implements OnInit {
     this.targetRotationXOnMouseDown = this.targetRotationX;
     this.targetRotationYOnMouseDown = this.targetRotationY;
 
-    
+    this.checkClick();
+    this.initMouseX = evt.clientX;
   }
-  onMouseUp(evt) {}
+  checkClick() {
+    this.globeRaycaster.setFromCamera(this.mouse, this.camera);
+
+    this.intersects = this.globeRaycaster.intersectObjects(
+      this.dotSpritesArray,
+      true
+    );
+    this.intersection = this.intersects.length > 0 ? this.intersects[0] : null;
+
+    console.log(this.intersection);
+  }
+  onMouseUp(evt) {
+    evt.preventDefault();
+    this.isMouseDown = false;
+    if (Math.abs(this.initMouseX - evt.clientX) < 25) return;
+
+    this.setCameraDirection(this.initMouseX, evt.clientX);
+  }
+  setCameraDirection(start, end) {
+    if (start > end) {
+      this.cameraDirection = 'right';
+    } else {
+      this.cameraDirection = 'left';
+    }
+  }
   onMouseMove(evt) {
     this.isMouseMoved = true;
 
@@ -1634,7 +1670,7 @@ export class LaunchitEarthComponent implements OnInit {
     });
 
     const dotSpikesExtraBufferGeometry = new THREE.BufferGeometry();
-    dotSpikesBufferGeometry.addAttribute(
+    dotSpikesExtraBufferGeometry.addAttribute(
       'position',
       new THREE.BufferAttribute(spikesCloudPositions, 3)
     );
@@ -1688,6 +1724,13 @@ export class LaunchitEarthComponent implements OnInit {
     this.rotationObject.rotation.y +=
       (this.targetRotationY - this.rotationObject.rotation.y) * this.dragSpeed;
     this.targetRotationY += this.rotationSpeed.value;
+    // if (!this.isMouseDown) {
+    //   if (this.cameraDirection === 'left') {
+    //     this.targetRotationY += this.rotationSpeed.value;
+    //   } else if (this.cameraDirection === 'right') {
+    //     this.targetRotationY -= this.rotationSpeed.value;
+    //   }
+    // }
     if (this.globeCreated) {
       this.renderGlobe();
     }
