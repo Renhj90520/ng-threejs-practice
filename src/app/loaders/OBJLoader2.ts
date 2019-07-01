@@ -129,7 +129,7 @@ export class OBJLoader2 {
     }
   }
 
-  load(url, onLoad, onProgress, onError, onMeshAlter, useAsync) {
+  load(url, onLoad, onProgress?, onError?, onMeshAlter?, useAsync?) {
     const resource = new ResourceDescriptor(url, 'OBJ');
     this.loadObj(resource, onLoad, onProgress, onError, onMeshAlter, useAsync);
   }
@@ -169,6 +169,42 @@ export class OBJLoader2 {
         });
       }
     };
+    this.setPath(resource.path);
+    this.setResourcePath(resource.resourcePath);
+
+    if (
+      !Validator.isValid(resource.url) ||
+      Validator.isValid(resource.content)
+    ) {
+      fileLoaderOnLoad(
+        Validator.isValid(resource.content) ? resource.content : null
+      );
+    } else {
+      if (!Validator.isValid(onProgress)) {
+        let numericalValueRef = 0;
+        let numericalValue = 0;
+        onProgress = evt => {
+          if (evt.lengthComputable) {
+            numericalValue = evt.loaded / evt.total;
+            if (numericalValue > numericalValueRef) {
+              numericalValueRef = numericalValue;
+              this.onProgress(
+                'progressLoaded',
+                `Download of ${resource.url}: ${(numericalValue * 100).toFixed(
+                  2
+                )}%`,
+                numericalValue
+              );
+            }
+          }
+        };
+      }
+
+      const fileLoader = new THREE.FileLoader(this.manager);
+      fileLoader.setPath(this.path || this.resourcePath);
+      fileLoader.setResponseType('arraybuffer');
+      fileLoader.load(resource.name, fileLoaderOnLoad, onProgress, onError);
+    }
   }
   parse(content) {
     if (!Validator.isValid(content)) {
@@ -178,9 +214,39 @@ export class OBJLoader2 {
 
     this.meshBuilder.init();
     const parser = new Parser();
+    parser.setMaterialPerSmoothingGroup(this.materialPerSmoothingGroup);
+    parser.setUseOAsMesh(this.useOAsMesh);
+    parser.setUseIndices(this.useIndices);
+    parser.setDisregardNormals(this.disregardNormals);
+    parser.setMaterials(this.meshBuilder.getMaterials());
 
-    //TODO
-    // parser.setMaterial;
+    const onMeshLoaded = payload => {
+      const meshes = this.meshBuilder.processPayload(payload);
+      let mesh;
+      for (const i in meshes) {
+        mesh = meshes[i];
+        this.loaderRootNode.add(mesh);
+      }
+    };
+
+    parser.setCallbackMeshBuilder(onMeshLoaded);
+    const onProgressScoped = (text, numericalValue) => {
+      this.onProgress('prodressParse', text, numericalValue);
+    };
+
+    parser.setCallbackProgress(onProgressScoped);
+
+    if (content instanceof ArrayBuffer || content instanceof Uint8Array) {
+      parser.parse(content);
+    } else if (typeof content === 'string' || content instanceof String) {
+      parser.parseText(content);
+    } else {
+      this.throwError(
+        'Provided content was neither of type String nor Uint8Array! Aborting...'
+      );
+    }
+
+    return this.loaderRootNode;
   }
 
   run(prepData, workerSupportExternal) {
@@ -218,6 +284,27 @@ export class OBJLoader2 {
       null,
       prepData.crossOrigin,
       prepData.materialOptions
+    );
+  }
+
+  loadMtl(
+    url,
+    content,
+    onLoad,
+    onProgress?,
+    onError?,
+    crossOrigin?,
+    materialOptions?
+  ) {
+    const resource = new ResourceDescriptor(url, 'MTL');
+    resource.setContent(content);
+    this._loadMtl(
+      resource,
+      onLoad,
+      onProgress,
+      onError,
+      crossOrigin,
+      materialOptions
     );
   }
   _loadMtl(
@@ -374,6 +461,33 @@ export class OBJLoader2 {
 
       return workerCode;
     };
+    this.workerSupport.validate(buildCode, 'OBJLoader2.Parser');
+    this.workerSupport.setCallbacks(scopedOnMeshLoaded, scopedOnLoad);
+    if (this.terminateWorkerOnLoad) {
+      this.workerSupport.setTerminateRequested(true);
+    }
+
+    const materialNames = {};
+    const materials = this.meshBuilder.getMaterials();
+    for (const materialName in materials) {
+      materialNames[materialName] = materialName;
+    }
+    this.workerSupport.run({
+      params: {
+        useAsync: true,
+        materialPerSmoothingGroup: this.materialPerSmoothingGroup,
+        useOAsMesh: this.useOAsMesh,
+        useIndices: this.useIndices,
+        disregardNormals: this.disregardNormals
+      },
+      materials: {
+        materials: materialNames
+      },
+      data: {
+        input: content,
+        options: null
+      }
+    });
   }
 }
 export class Parser {
@@ -475,6 +589,245 @@ export class Parser {
     this.callbackProgress = callbackProgress;
   }
 
+  configure() {
+    this.pushSmoothingGroup(1);
+  }
+  parse(arrayBuffer) {
+    this.configure();
+    const arrayBufferView = new Uint8Array(arrayBuffer);
+
+    this.contentRef = arrayBufferView;
+    const length = arrayBufferView.byteLength;
+    this.globalCounts.totalBytes = length;
+    const buffer = new Array(128);
+    let code,
+      word = '',
+      bufferPointer = 0,
+      slashesCount = 0;
+    for (let i = 0; i < length; i++) {
+      code = arrayBufferView[i];
+      switch (code) {
+        // Space
+        case 32:
+          if (word.length > 0) buffer[bufferPointer++] = word;
+          word = '';
+          break;
+        // slash
+        case 47:
+          if (word.length > 0) buffer[bufferPointer++] = word;
+          slashesCount++;
+          word = '';
+          break;
+
+        // LF
+        case 10:
+          if (word.length > 0) buffer[bufferPointer++] = word;
+          word = '';
+          this.globalCounts.lineByte = this.globalCounts.currentByte;
+          this.globalCounts.currentByte = i;
+          this.processLine(buffer, bufferPointer, slashesCount);
+          bufferPointer = 0;
+          slashesCount = 0;
+          break;
+
+        // CR
+        case 13:
+          break;
+
+        default:
+          word += String.fromCharCode(code);
+          break;
+      }
+    }
+  }
+
+  parseText(text) {
+    this.configure();
+    this.legacyMode = true;
+    this.contentRef = text;
+    const length = text.length;
+    this.globalCounts.totalBytes = length;
+    const buffer = new Array(128);
+    let char,
+      word = '',
+      bufferPointer = 0,
+      slashesCount = 0;
+    for (let i = 0; i < length; i++) {
+      char = text[i];
+      switch (char) {
+        case ' ':
+          if (word.length > 0) buffer[bufferPointer++] = word;
+          word = '';
+          break;
+        case '/':
+          if (word.length > 0) buffer[bufferPointer++] = word;
+          slashesCount++;
+          word = '';
+          break;
+
+        case '\n':
+          if (word.length > 0) buffer[bufferPointer++] = word;
+          word = '';
+          this.globalCounts.lineByte = this.globalCounts.currentByte;
+          this.globalCounts.currentByte = i;
+          this.processLine(buffer, bufferPointer, slashesCount);
+          bufferPointer = 0;
+          slashesCount = 0;
+          break;
+        case '\r':
+          break;
+        default:
+          word += char;
+      }
+    }
+  }
+  processLine(buffer, bufferPointer, slashesCount) {
+    if (bufferPointer < 1) return;
+    const reconstructString = (content, legacyMode, start, stop) => {
+      let line = '';
+      if (stop > start) {
+        if (legacyMode) {
+          for (let i = start; i < stop; i++) {
+            line += content[i];
+          }
+        } else {
+          for (let i = start; i < stop; i++) {
+            line += String.fromCharCode(content[i]);
+          }
+        }
+        line = line.trim();
+      }
+      return line;
+    };
+
+    let bufferLength, length, lineDesignation;
+    lineDesignation = buffer[0];
+    switch (lineDesignation) {
+      case 'v':
+        this.vertices.push(parseFloat(buffer[1]));
+        this.vertices.push(parseFloat(buffer[2]));
+        this.vertices.push(parseFloat(buffer[3]));
+        if (bufferPointer > 4) {
+          this.colors.push(parseFloat(buffer[4]));
+          this.colors.push(parseFloat(buffer[5]));
+          this.colors.push(parseFloat(buffer[6]));
+        }
+        break;
+      case 'vt':
+        this.uvs.push(parseFloat(buffer[1]));
+        this.uvs.push(parseFloat(buffer[2]));
+        break;
+      case 'vn':
+        this.normals.push(parseFloat(buffer[1]));
+        this.normals.push(parseFloat(buffer[2]));
+        this.normals.push(parseFloat(buffer[3]));
+        break;
+
+      case 'f':
+        bufferLength = bufferPointer - 1;
+        // "f vertex ..."
+        if (slashesCount === 0) {
+          this.checkFaceType(0);
+          for (let i = 2, length = bufferLength; i < length; i++) {
+            this.buildFace(buffer[1]);
+            this.buildFace(buffer[i]);
+            this.buildFace(buffer[i + 1]);
+          }
+        } else if (bufferLength === slashesCount * 2) {
+          // "f vertex/uv ..."
+          this.checkFaceType(1);
+          for (let i = 3, length = bufferLength - 2; i < length; i += 2) {
+            this.buildFace(buffer[1], buffer[2]);
+            this.buildFace(buffer[i], buffer[i + 1]);
+            this.buildFace(buffer[i + 2], buffer[i + 3]);
+          }
+        } else if (bufferLength * 2 === slashesCount * 3) {
+          // "f vertex/uv/normal ..."
+          this.checkFaceType(2);
+          for (let i = 4, length = bufferLength - 3; i < length; i += 3) {
+            this.buildFace(buffer[1], buffer[2], buffer[3]);
+            this.buildFace(buffer[i + 1], buffer[i + 2], buffer[i + 3]);
+            this.buildFace(buffer[i + 4], buffer[i + 5], buffer[i + 6]);
+          }
+        } else {
+          // "f vertex/normal ..."
+          this.checkFaceType(3);
+          for (let i = 3, length = bufferLength - 2; i < length; i += 2) {
+            this.buildFace(buffer[1], undefined, buffer[2]);
+            this.buildFace(buffer[i], undefined, buffer[i + 1]);
+            this.buildFace(buffer[i + 2], undefined, buffer[i + 3]);
+          }
+        }
+        break;
+      case 'l':
+      case 'p':
+        bufferLength = bufferPointer - 1;
+        if (bufferLength === slashesCount * 2) {
+          this.checkFaceType(4);
+          for (let i = 1, length = bufferLength + 1; i < length; i += 2) {
+            this.buildFace(buffer[i], buffer[i + 1]);
+          }
+        } else {
+          this.checkFaceType(lineDesignation === 'l' ? 5 : 6);
+          for (let i = 1, length = bufferLength + 1; i < length; i++) {
+            this.buildFace(buffer[i]);
+          }
+        }
+        break;
+
+      case 's':
+        this.pushSmoothingGroup(buffer[1]);
+        break;
+
+      case 'g':
+        // 'g' leads to creation of mesh if valid data (faces declaration was done before), otherwise only groupName gets set
+        this.processCompletedMesh();
+        this.rawMesh.groupName = reconstructString(
+          this.contentRef,
+          this.legacyMode,
+          this.globalCounts.lineByte + 2,
+          this.globalCounts.currentByte
+        );
+
+        break;
+      case 'o':
+        // 'o' is meta-information and usually does not result in creation of new meshes, but can be enforced with "useOAsMesh"
+        if (this.useOAsMesh) {
+          this.processCompletedMesh();
+        }
+        this.rawMesh.objectName = reconstructString(
+          this.contentRef,
+          this.legacyMode,
+          this.globalCounts.lineByte + 2,
+          this.globalCounts.currentByte
+        );
+        break;
+      case 'mtllib':
+        this.rawMesh.mtllibName = reconstructString(
+          this.contentRef,
+          this.legacyMode,
+          this.globalCounts.lineByte + 7,
+          this.globalCounts.currentByte
+        );
+        break;
+
+      case 'usemtl':
+        const mtlName = reconstructString(
+          this.contentRef,
+          this.legacyMode,
+          this.globalCounts.lineByte + 7,
+          this.globalCounts.currentByte
+        );
+        if (mtlName !== '' && this.rawMesh.activeMtlName != mtlName) {
+          this.rawMesh.activeMtlName = mtlName;
+          this.rawMesh.counts.mtlCount++;
+          this.checkSubGroup();
+        }
+        break;
+      default:
+        break;
+    }
+  }
   pushSmoothingGroup(smoothingGroup) {
     let smoothingGroupInt = parseInt(smoothingGroup);
     if (isNaN(smoothingGroupInt)) {
@@ -810,7 +1163,7 @@ export class Parser {
     }
   }
 
-  buildFace(faceIndexV, faceIndexU, faceIndexN) {
+  buildFace(faceIndexV, faceIndexU?, faceIndexN?) {
     if (this.disregardNormals) faceIndexN = undefined;
 
     if (this.useIndices) {

@@ -248,16 +248,222 @@ export class WorkerSupport {
   setForceWorkerDataCopy(forceWorkderDataCopy) {
     this.loaderWorker.setForceCopy(forceWorkderDataCopy);
   }
-
-  validate(functionCodeBuilder, parserName, libLocations, libPath, runnerImpl) {
+  setCallbacks(meshBuilder, onLoad) {
+    this.loaderWorker.setCallbacks(meshBuilder, onload);
+  }
+  setTerminateRequested(terminateRequested) {
+    this.loaderWorker.setTerminateRequest(terminateRequested);
+  }
+  validate(
+    functionCodeBuilder,
+    parserName,
+    libLocations?,
+    libPath?,
+    runnerImpl?
+  ) {
     if (Validator.isValid(this.loaderWorker.worker)) return;
 
     if (!Validator.isValid(runnerImpl)) {
       runnerImpl = WorkerRunnerRefImpl;
     }
+    // else if (typeof window !== undefined) {
+    //   runnerImpl = WorkerRunnerRefImpl;
+    // } else {
+    //   // runnerImpl = NodeWorkerRunnerRefImpl;
+    // }
+
+    let userWorkerCode = functionCodeBuilder(CodeSerializer);
+
+    userWorkerCode += 'var Parser = ' + parserName + ';\n\n';
+    userWorkerCode += CodeSerializer.serializeClass(
+      runnerImpl.runnerName,
+      runnerImpl
+    );
+    userWorkerCode += 'new ' + runnerImpl.runnerName + '();\n\n';
+
+    if (Validator.isValid(libLocations) && libLocations.length > 0) {
+      let libsContent = '';
+
+      const loadAllLibraries = (path, locations) => {
+        if (locations.length === 0) {
+          this.loaderWorker.initWorker(
+            libsContent + userWorkerCode,
+            runnerImpl.runnerName
+          );
+        } else {
+          const loadedLib = contentAsString => {
+            libsContent += contentAsString;
+            loadAllLibraries(path, locations);
+          };
+
+          const fileLoader = new THREE.FileLoader();
+          fileLoader.setPath(path);
+          fileLoader.setResponseType('text');
+          fileLoader.load(locations[0], loadedLib);
+          locations.shift();
+        }
+      };
+
+      loadAllLibraries(libPath, libLocations);
+    } else {
+      this.loaderWorker.initWorker(userWorkerCode, runnerImpl.runnerName);
+    }
+  }
+  run(payload) {
+    this.loaderWorker.run(payload);
   }
 }
+class CodeSerializer {
+  static serializeObject(fullName, object) {
+    let objectString = fullName + ' = {\n\n';
+    let part;
 
+    for (const name in object) {
+      part = object[name];
+      if (typeof part === 'string' || part instanceof String) {
+        part = part.replace('\n', '\\n');
+        part = part.replace('\r', '\\r');
+        objectString += '\t' + name + ': "' + part + '",\n';
+      } else if (part instanceof Array) {
+        objectString += '\t' + name + ': [' + part + '],\n';
+      } else if (typeof part === 'object') {
+        objectString += '\t' + name + ': {},\n';
+      } else {
+        objectString += '\t' + name + ': ' + part + ',\n';
+      }
+    }
+    objectString += '}\n\n';
+
+    return objectString;
+  }
+  static serializeClass(
+    fullName,
+    object,
+    constructorName?,
+    basePrototypeName?,
+    ignoreFunctions?,
+    includeFunctions?,
+    overrideFunctions?
+  ) {
+    let valueString, objectPart, constructorString, funcOverride;
+    let prototypeFunctions = [];
+    let objectProperties = [];
+    let objectFunctions = [];
+
+    const isExtended =
+      basePrototypeName !== null && basePrototypeName !== undefined;
+
+    if (!Array.isArray(ignoreFunctions)) ignoreFunctions = [];
+    if (!Array.isArray(includeFunctions)) includeFunctions = [];
+    if (!Array.isArray(overrideFunctions)) overrideFunctions = [];
+
+    for (const name in object.prototype) {
+      objectPart = object.prototype[name];
+      valueString = objectPart.toString();
+      if (name === 'constructor') {
+        constructorString = fullName + ' = ' + valueString + ';\n\n';
+      } else if (typeof objectPart === 'function') {
+        if (
+          (ignoreFunctions.indexOf(name) < 0 && includeFunctions === null) ||
+          includeFunctions.indexOf(name) >= 0
+        ) {
+          funcOverride = overrideFunctions[name];
+          if (
+            funcOverride &&
+            funcOverride.fullName === fullName + '.prototype.' + name
+          ) {
+            valueString = funcOverride.code;
+          }
+
+          if (isExtended) {
+            prototypeFunctions.push(
+              fullName + '.prototype.' + name + ' = ' + valueString + ';\n\n'
+            );
+          } else {
+            prototypeFunctions.push('\t' + name + ': ' + valueString + ',\n\n');
+          }
+        }
+      }
+    }
+
+    for (const name in object) {
+      objectPart = object[name];
+      if (typeof objectPart === 'function') {
+        if (
+          ignoreFunctions.indexOf(name) < 0 &&
+          (includeFunctions === null || includeFunctions.indexOf(name) >= 0)
+        ) {
+          funcOverride = overrideFunctions[name];
+          if (funcOverride && funcOverride.fullName === fullName + '.' + name) {
+            valueString = funcOverride.code;
+          } else {
+            valueString = objectPart.toString();
+          }
+          objectFunctions.push(
+            fullName + '.' + name + ' = ' + valueString + ';\n\n'
+          );
+        }
+      } else {
+        if (typeof objectPart === 'string' || objectPart instanceof String) {
+          valueString = '"' + objectPart.toString() + '"';
+        } else if (typeof objectPart === 'object') {
+          // TODO: Short-cut for now. Recursion required?
+          valueString = '{}';
+        } else {
+          valueString = objectPart;
+        }
+        objectProperties.push(
+          fullName + '.' + name + ' = ' + valueString + ';\n'
+        );
+      }
+    }
+
+    if (
+      (constructorString === undefined || constructorString === null) &&
+      typeof object.prototype.constructor === 'function'
+    ) {
+      constructorString =
+        fullName +
+        ' = ' +
+        object.prototype.constructor.toString().replace(constructorName, '');
+    }
+
+    let objectString = constructorString + '\n\n';
+    if (isExtended) {
+      objectString +=
+        fullName +
+        '.prototype = Object.create( ' +
+        basePrototypeName +
+        '.prototype );\n';
+    }
+
+    objectString += fullName + '.prototype.constructor = ' + fullName + ';\n';
+    objectString + '\n\n';
+
+    for (let i = 0; i < objectProperties.length; i++) {
+      objectString += objectProperties[i];
+    }
+    objectString += '\n\n';
+    for (let i = 0; i < objectFunctions.length; i++) {
+      objectString += objectFunctions[i];
+    }
+    objectString += '\n\n';
+
+    if (isExtended) {
+      for (let i = 0; i < prototypeFunctions.length; i++) {
+        objectString += prototypeFunctions[i];
+      }
+    } else {
+      objectString += fullName + '.prototype = {\n\n';
+      for (let i = 0; i < prototypeFunctions.length; i++) {
+        objectString += prototypeFunctions[i];
+      }
+      objectString += '\n\n';
+    }
+
+    return objectString;
+  }
+}
 class WorkerRunnerRefImpl {
   runnerName = 'THREE.LoaderSupport.WorkerRunnerRefImpl';
   scopedRunner = evt => {
@@ -350,6 +556,28 @@ export class LoaderWorker {
 
     this.postMessage();
   }
+  run(payload) {
+    if (Validator.isValid(this.queuedMessage)) {
+      console.warn('Already processing message. Rejecting new run instruction');
+      return;
+    } else {
+      this.queuedMessage = payload;
+      this.started = true;
+    }
+
+    if (!Validator.isValid(this.callbacks.meshBuilder)) {
+      throw 'Unable to run as no "MeshBuilder" callback is set.';
+    }
+    if (!Validator.isValid(this.callbacks.onLoad)) {
+      throw 'Unable to run as no "onLoad" callback is set.';
+    }
+
+    if (payload.cmd !== 'run') {
+      payload.cmd = 'run';
+    }
+
+    this.postMessage();
+  }
 
   private receiveWorkerMessage(e) {
     const payload = e.data;
@@ -381,6 +609,27 @@ export class LoaderWorker {
             payload.cmd
         );
         break;
+    }
+  }
+  setCallbacks(meshBuilder, onload) {
+    this.callbacks.meshBuilder = Validator.verifyInput(
+      meshBuilder,
+      this.callbacks.meshBuilder
+    );
+    this.callbacks.onLoad = Validator.verifyInput(
+      onload,
+      this.callbacks.onLoad
+    );
+  }
+  setTerminateRequest(terminateRequested) {
+    this.terminateRequested = terminateRequested === true;
+    if (
+      this.terminateRequested &&
+      Validator.isValid(this.worker) &&
+      !Validator.isValid(this.queuedMessage) &&
+      this.started
+    ) {
+      this.terminate();
     }
   }
   private terminate() {

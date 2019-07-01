@@ -81,8 +81,53 @@ export class WindmillObjMtlComponent implements OnInit {
 
   addWindmill() {
     const objLoader = new OBJLoader2();
-    // TODO
-    // objLoader._loadMtl();
+    objLoader.loadMtl('/assets/windmill-fixed.mtl', null, materials => {
+      objLoader.setMaterials(materials);
+      objLoader.load('/windmill.obj', evt => {
+        const root = evt.detail.loaderRootNode;
+        this.scene.add(root);
+
+        const box = new THREE.Box3().setFromObject(root);
+        const boxSize = box.getSize(new THREE.Vector3()).length();
+        const boxCenter = box.getCenter(new THREE.Vector3());
+
+        this.frameArea(boxSize * 1.2, boxSize, boxCenter, this.camera);
+
+        this.controls.maxDistance = boxSize * 10;
+        this.controls.target.copy(boxCenter);
+        this.controls.update();
+      });
+    });
+  }
+  frameArea(
+    sizeToFitOnScreen: number,
+    boxSize: number,
+    boxCenter: THREE.Vector3,
+    camera: any
+  ) {
+    const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
+    const halfFovY = THREE.Math.degToRad(camera.fov * 0.5);
+
+    const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
+
+    // compute a unit vector that points in the direction the camera is now in the
+    // xz plane from the center of this box
+    const direction = new THREE.Vector3()
+      .subVectors(camera.position, boxCenter)
+      .multiply(new THREE.Vector3(1, 0, 1))
+      .normalize();
+
+    // move the camera to a position distance units way from the center
+    // in whatever direction the camera was from the center already
+    camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
+
+    // pick some near and far values for the frustum that will contain the box
+    camera.near = boxSize / 100;
+    camera.far = boxSize * 100;
+
+    camera.updateProjectionMatrix();
+
+    camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
   }
   update() {
     requestAnimationFrame(this.update.bind(this));
