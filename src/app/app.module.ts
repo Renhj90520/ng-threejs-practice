@@ -9,9 +9,19 @@ import { WindmillObjMtlComponent } from './windmill-obj-mtl/windmill-obj-mtl.com
 import { LaunchitEarthComponent } from './launchit-earth/launchit-earth.component';
 import { AppRoutingModule } from './app-routing.module';
 import { GalleryComponent } from './gallery/gallery.component';
+import { MatterJsComponent } from './matter-js/matter-js.component';
 
 @NgModule({
-  declarations: [AppComponent, WebglGalaxyComponent, ProceduralCityComponent, EndlessTerrainComponent, WindmillObjMtlComponent, LaunchitEarthComponent, GalleryComponent],
+  declarations: [
+    AppComponent,
+    WebglGalaxyComponent,
+    ProceduralCityComponent,
+    EndlessTerrainComponent,
+    WindmillObjMtlComponent,
+    LaunchitEarthComponent,
+    GalleryComponent,
+    MatterJsComponent
+  ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent]
