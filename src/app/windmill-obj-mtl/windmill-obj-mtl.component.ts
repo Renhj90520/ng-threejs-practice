@@ -83,14 +83,13 @@ export class WindmillObjMtlComponent implements OnInit {
     const objLoader = new OBJLoader2();
     objLoader.loadMtl('/assets/windmill-fixed.mtl', null, materials => {
       objLoader.setMaterials(materials);
-      objLoader.load('/windmill.obj', evt => {
+      objLoader.load('/assets/windmill.obj', evt => {
         const root = evt.detail.loaderRootNode;
         this.scene.add(root);
 
         const box = new THREE.Box3().setFromObject(root);
         const boxSize = box.getSize(new THREE.Vector3()).length();
         const boxCenter = box.getCenter(new THREE.Vector3());
-
         this.frameArea(boxSize * 1.2, boxSize, boxCenter, this.camera);
 
         this.controls.maxDistance = boxSize * 10;

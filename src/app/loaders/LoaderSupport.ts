@@ -140,9 +140,32 @@ export class MeshBuilder {
 
     const meshes = [];
     let mesh;
+    let callbackOnMeshAlter = this.callbacks.onMeshAlter;
+    let callbackOnMeshAlterResult;
     let useOrgMesh = true;
     const geometryType = Validator.verifyInput(payload.geometryType, 0);
 
+    if (Validator.isValid(callbackOnMeshAlter)) {
+      callbackOnMeshAlterResult = callbackOnMeshAlter({
+        detail: {
+          meshName,
+          bufferGeometry,
+          material,
+          geometryType
+        }
+      });
+
+      if (Validator.isValid(callbackOnMeshAlterResult)) {
+        if (callbackOnMeshAlterResult.isDisregardMesh()) {
+          useOrgMesh = false;
+        } else if (callbackOnMeshAlterResult.providesAlteredMeshes()) {
+          for (const i in callbackOnMeshAlterResult.meshes) {
+            meshes.push(callbackOnMeshAlterResult.meshes[i]);
+          }
+          useOrgMesh = false;
+        }
+      }
+    }
     if (useOrgMesh) {
       if (payload.computeBoundingSphere) {
         bufferGeometry.computeBoundingSphere();
@@ -157,6 +180,41 @@ export class MeshBuilder {
       }
       mesh.name = meshName;
       meshes.push(mesh);
+    }
+
+    let progressMessage;
+    if (Validator.isValid(meshes) && meshes.length > 0) {
+      const meshNames = [];
+      for (const i in meshes) {
+        mesh = meshes[i];
+        meshNames[i] = mesh.name;
+      }
+      progressMessage =
+        'Adding mesh(es) (' +
+        meshNames.length +
+        ': ' +
+        meshNames +
+        ') from input mesh: ' +
+        meshName;
+      progressMessage +=
+        ' (' + (payload.progress.numericalValue * 100).toFixed(2) + '%)';
+    } else {
+      progressMessage = 'Not adding mesh: ' + meshName;
+      progressMessage +=
+        ' (' + (payload.progress.numericalValue * 100).toFixed(2) + '%)';
+    }
+
+    const callbackOnProgress = this.callbacks.onProgress;
+    if (Validator.isValid(callbackOnProgress)) {
+      var event = new CustomEvent('MeshBuilderEvent', {
+        detail: {
+          type: 'progress',
+          modelName: payload.params.meshName,
+          text: progressMessage,
+          numericalValue: payload.progress.numericalValue
+        }
+      });
+      callbackOnProgress(event);
     }
 
     return meshes;
@@ -209,8 +267,8 @@ export class MeshBuilder {
     if (Validator.isValid(materials) && Object.keys(materials).length > 0) {
       for (const materialName in materials) {
         material = materials[materialName];
+        this.materials[materialName] = material;
       }
-      this.materials[materialName] = material;
     }
   }
 

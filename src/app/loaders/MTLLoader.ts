@@ -69,6 +69,7 @@ export default class MTLLoader {
 
       if (key === 'newmtl') {
         info = { name: value };
+        materialsInfo[value] = info;
       } else {
         if (key === 'ka' || key === 'kd' || key === 'ks' || key === 'ke') {
           const ss = value.split(delimiter_pattern, 3);
@@ -281,7 +282,7 @@ class MaterialCreator {
           break;
         case 'tr':
           n = parseFloat(value);
-          if (this.options.invertTrProperty) n = 1 - n;
+          if (this.options && this.options.invertTrProperty) n = 1 - n;
 
           if (n > 0) {
             params.opacity = 1 - n;

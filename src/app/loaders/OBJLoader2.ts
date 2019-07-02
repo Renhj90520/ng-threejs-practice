@@ -201,7 +201,7 @@ export class OBJLoader2 {
       }
 
       const fileLoader = new THREE.FileLoader(this.manager);
-      fileLoader.setPath(this.path || this.resourcePath);
+      // fileLoader.setPath(this.path || this.resourcePath);
       fileLoader.setResponseType('arraybuffer');
       fileLoader.load(resource.name, fileLoaderOnLoad, onProgress, onError);
     }
@@ -639,6 +639,10 @@ export class Parser {
           break;
       }
     }
+    this.finalizeParsing();
+  }
+  finalizeParsing() {
+    this.processCompletedMesh();
   }
 
   parseText(text) {
@@ -700,7 +704,7 @@ export class Parser {
       return line;
     };
 
-    let bufferLength, length, lineDesignation;
+    let bufferLength, lineDesignation;
     lineDesignation = buffer[0];
     switch (lineDesignation) {
       case 'v':
@@ -746,8 +750,8 @@ export class Parser {
           this.checkFaceType(2);
           for (let i = 4, length = bufferLength - 3; i < length; i += 3) {
             this.buildFace(buffer[1], buffer[2], buffer[3]);
-            this.buildFace(buffer[i + 1], buffer[i + 2], buffer[i + 3]);
-            this.buildFace(buffer[i + 4], buffer[i + 5], buffer[i + 6]);
+            this.buildFace(buffer[i], buffer[i + 1], buffer[i + 2]);
+            this.buildFace(buffer[i + 3], buffer[i + 4], buffer[i + 5]);
           }
         } else {
           // "f vertex/normal ..."
@@ -941,10 +945,10 @@ export class Parser {
     let materialGroup;
     let materialGroups = [];
 
-    let vertextFAOffset = 0;
+    let vertexFAOffset = 0;
     let indexUAOffset = 0;
     let colorFAOffset = 0;
-    let noramlFAOffset = 0;
+    let normalFAOffset = 0;
     let uvFAOffset = 0;
     let materialGroupOffset = 0;
     let materialGroupLength = 0;
@@ -952,7 +956,7 @@ export class Parser {
     let materialOrg, material, materialName, materialNameOrg;
 
     for (const oodIndex in meshOutputGroups) {
-      if (!meshOutputGroup.hasOwnProperty(oodIndex)) continue;
+      if (!meshOutputGroups.hasOwnProperty(oodIndex)) continue;
 
       meshOutputGroup = meshOutputGroups[oodIndex];
       materialNameOrg = meshOutputGroup.materialName;
@@ -1030,8 +1034,8 @@ export class Parser {
         materialNames.push(materialName);
       }
 
-      vertexFA.set(meshOutputGroup.vertices, vertextFAOffset);
-      vertextFAOffset += meshOutputGroup.vertices.length;
+      vertexFA.set(meshOutputGroup.vertices, vertexFAOffset);
+      vertexFAOffset += meshOutputGroup.vertices.length;
 
       if (indexUA) {
         indexUA.set(meshOutputGroup.indices, indexUAOffset);
@@ -1044,8 +1048,8 @@ export class Parser {
       }
 
       if (normalFA) {
-        normalFA.set(meshOutputGroup.normals, noramlFAOffset);
-        noramlFAOffset += meshOutputGroup.normals.length;
+        normalFA.set(meshOutputGroup.normals, normalFAOffset);
+        normalFAOffset += meshOutputGroup.normals.length;
       }
 
       if (uvFA) {
@@ -1083,7 +1087,7 @@ export class Parser {
       [vertexFA.buffer],
       Validator.isValid(indexUA) ? [indexUA.buffer] : null,
       Validator.isValid(colorFA) ? [colorFA.buffer] : null,
-      Validator.isValid(normalFA) ? [colorFA.buffer] : null,
+      Validator.isValid(normalFA) ? [normalFA.buffer] : null,
       Validator.isValid(uvFA) ? [uvFA.buffer] : null
     );
   }
@@ -1113,7 +1117,7 @@ export class Parser {
         absoluteIndexCount += meshOutputGroup.indices.length;
         absoluteColorCount += meshOutputGroup.colors.length;
         absoluteUvCount += meshOutputGroup.uvs.length;
-        absoluteNormalCount += meshOutputGroup.normal.length;
+        absoluteNormalCount += meshOutputGroup.normals.length;
       }
     }
 
