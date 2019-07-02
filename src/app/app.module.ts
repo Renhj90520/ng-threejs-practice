@@ -10,6 +10,7 @@ import { LaunchitEarthComponent } from './launchit-earth/launchit-earth.componen
 import { AppRoutingModule } from './app-routing.module';
 import { GalleryComponent } from './gallery/gallery.component';
 import { MatterJsComponent } from './matter-js/matter-js.component';
+import { LabeledGridComponent } from './labeled-grid/labeled-grid.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { MatterJsComponent } from './matter-js/matter-js.component';
     WindmillObjMtlComponent,
     LaunchitEarthComponent,
     GalleryComponent,
-    MatterJsComponent
+    MatterJsComponent,
+    LabeledGridComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
