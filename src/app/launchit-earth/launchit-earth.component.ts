@@ -1,6 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import * as THREE from 'three';
-import OrbitControls from '../controls/OrbitControls';
 import { dataMap } from './data-map';
 import {
   TimelineMax,

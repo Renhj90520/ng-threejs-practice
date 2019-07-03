@@ -1,7 +1,8 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
-import OrbitControls from '../controls/OrbitControls';
-import { OBJLoader2 } from '../loaders/OBJLoader2';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OBJLoader } from 'three/examples/jsm/loaders/Objloader';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 @Component({
   selector: 'app-windmill-obj-mtl',
   templateUrl: './windmill-obj-mtl.component.html',
@@ -80,11 +81,12 @@ export class WindmillObjMtlComponent implements OnInit {
   }
 
   addWindmill() {
-    const objLoader = new OBJLoader2();
-    objLoader.loadMtl('/assets/windmill-fixed.mtl', null, materials => {
+    const objLoader = new OBJLoader();
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('/assets/windmill-fixed.mtl', materials => {
       objLoader.setMaterials(materials);
       objLoader.load('/assets/windmill.obj', evt => {
-        const root = evt.detail.loaderRootNode;
+        const root = evt;
         this.scene.add(root);
 
         const box = new THREE.Box3().setFromObject(root);

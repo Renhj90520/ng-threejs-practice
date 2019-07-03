@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import { data } from './data';
 import * as Matter from 'matter-js';
-import OrbitControls from '../controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 @Component({
   selector: 'app-matter-js',
   templateUrl: './matter-js.component.html',

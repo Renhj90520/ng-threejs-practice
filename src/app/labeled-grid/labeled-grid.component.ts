@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import LabeledGrid from './labeled-grid';
-import TrackballControls from '../controls/TrackballControls';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 @Component({
   selector: 'app-labeled-grid',
   templateUrl: './labeled-grid.component.html',

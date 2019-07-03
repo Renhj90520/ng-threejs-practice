@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
 import Galaxy from './Galaxy';
-import TrackballControls from '../controls/TrackballControls';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 @Component({
   selector: 'app-webgl-galaxy',
   templateUrl: './webgl-galaxy.component.html',

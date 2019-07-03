@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
-import OrbitControls from '../controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import SimplexNoise from '../simplexNoise';
 import * as _ from 'lodash';
 import {
