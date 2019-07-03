@@ -116,8 +116,16 @@ export class WebglGalaxyComponent implements OnInit {
       blending: THREE.AdditiveBlending
     });
 
-    const stars = new THREE.Geometry();
-    stars.vertices = new Galaxy().createStars();
+    const stars = new THREE.BufferGeometry();
+    const points = new Galaxy().createStars();
+    const pointsArray = new Float32Array(points.length * 3);
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      pointsArray[i * 3] = p.x;
+      pointsArray[i * 3 + 1] = p.y;
+      pointsArray[i * 3 + 2] = p.z;
+    }
+    stars.addAttribute('position', new THREE.Float32Attribute(pointsArray, 3));
     const galaxy = new THREE.Points(stars, this.galaxMaterial);
     this.scene.add(galaxy);
   }

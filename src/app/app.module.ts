@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { GalleryComponent } from './gallery/gallery.component';
 import { MatterJsComponent } from './matter-js/matter-js.component';
 import { LabeledGridComponent } from './labeled-grid/labeled-grid.component';
+import { GltfLoaderComponent } from './gltf-loader/gltf-loader.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { LabeledGridComponent } from './labeled-grid/labeled-grid.component';
     LaunchitEarthComponent,
     GalleryComponent,
     MatterJsComponent,
-    LabeledGridComponent
+    LabeledGridComponent,
+    GltfLoaderComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
