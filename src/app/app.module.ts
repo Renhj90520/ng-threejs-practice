@@ -12,6 +12,7 @@ import { GalleryComponent } from './gallery/gallery.component';
 import { MatterJsComponent } from './matter-js/matter-js.component';
 import { LabeledGridComponent } from './labeled-grid/labeled-grid.component';
 import { GltfLoaderComponent } from './gltf-loader/gltf-loader.component';
+import { VrSonicComponent } from './vr-sonic/vr-sonic.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { GltfLoaderComponent } from './gltf-loader/gltf-loader.component';
     GalleryComponent,
     MatterJsComponent,
     LabeledGridComponent,
-    GltfLoaderComponent
+    GltfLoaderComponent,
+    VrSonicComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
