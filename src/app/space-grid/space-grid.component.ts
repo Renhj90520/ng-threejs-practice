@@ -17,7 +17,7 @@ export class SpaceGridComponent implements OnInit {
   lines = [];
   vLines = [];
   amountAdds = 100;
-  controls: OrbitControls;
+  // controls: OrbitControls;
   particleSystem: any;
 
   constructor(private el: ElementRef) {}
@@ -28,7 +28,7 @@ export class SpaceGridComponent implements OnInit {
     this.addGrids();
 
     this.addParticles();
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.update();
   }
   addParticles() {
@@ -188,7 +188,6 @@ export class SpaceGridComponent implements OnInit {
       1000
     );
     this.camera.position.y = 20;
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
     const axisHelper = new THREE.AxesHelper(2000);
     this.scene.add(axisHelper);
   }
@@ -196,10 +195,11 @@ export class SpaceGridComponent implements OnInit {
   nextLines = 0;
   update() {
     this.renderer.render(this.scene, this.camera);
-    this.controls.update();
+    // this.controls.update();
 
     this.camera.position.y -= 0.2;
-    this.camera.rotation.z += 0.0025;
+    console.log(this.camera.rotation);
+    this.camera.lookAt(new THREE.Vector3(0, this.camera.position.y - 20, 0));
 
     this.particleSystem.position.y -= 0.2;
     this.particleSystem.rotation.y += 0.001;

@@ -30,7 +30,7 @@ export class VrSonicComponent implements OnInit {
   meshList = [];
   percentage = 0;
   clock: THREE.Clock;
-  fallAnim: NodeJS.Timer;
+  fallAnim;
   composer: any;
   constructor() {}
   ngOnInit() {
