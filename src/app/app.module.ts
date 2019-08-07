@@ -14,6 +14,7 @@ import { LabeledGridComponent } from './labeled-grid/labeled-grid.component';
 import { GltfLoaderComponent } from './gltf-loader/gltf-loader.component';
 import { VrSonicComponent } from './vr-sonic/vr-sonic.component';
 import { SpaceGridComponent } from './space-grid/space-grid.component';
+import { FlexwareComponent } from './flexware/flexware.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { SpaceGridComponent } from './space-grid/space-grid.component';
     LabeledGridComponent,
     GltfLoaderComponent,
     VrSonicComponent,
-    SpaceGridComponent
+    SpaceGridComponent,
+    FlexwareComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
