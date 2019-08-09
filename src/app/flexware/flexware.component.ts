@@ -48,7 +48,7 @@ export class FlexwareComponent implements OnInit {
     this.loadTVMonitor();
     this.loadTV();
     this.loadLamp();
-    // this.loadKid();
+    this.loadKid();
     this.addCircle();
     this.addParticles();
     this.addBookShelf();
@@ -131,6 +131,7 @@ export class FlexwareComponent implements OnInit {
       vertices[i * 3 + 1] = (Math.random() - 0.5) * Math.cos(i) * 200;
       vertices[i * 3 + 2] = (Math.random() - 0.5) * Math.sin(i) * 200;
     }
+    particles.addAttribute('position', new THREE.Float32Attribute(vertices, 3));
 
     const particleSys = new THREE.Points(particles, particleMaterial);
     this.scene.add(particleSys);
@@ -146,22 +147,41 @@ export class FlexwareComponent implements OnInit {
   loadKid() {
     const loader = new LegacyJSONLoader();
     loader.load('/assets/little_kid.json', (geometry: any) => {
+      console.log(geometry);
       const kidMaterial = new THREE.MeshLambertMaterial({
         color: 0xffffff,
         flatShading: true,
         morphTargets: true
       });
 
-      this.kid = new THREE.SkinnedMesh(
-        new THREE.BufferGeometry().fromGeometry(geometry),
-        kidMaterial
+      const kidGeo = new THREE.BufferGeometry().fromGeometry(geometry);
+      kidGeo.addAttribute(
+        'skinIndex',
+        new THREE.Uint16BufferAttribute(geometry.skinIndex, 4)
       );
+      kidGeo.addAttribute(
+        'skinWeight',
+        new THREE.Float32BufferAttribute(geometry.skinWeight, 4)
+      );
+      console.log(kidGeo);
+      this.kid = new THREE.SkinnedMesh(kidGeo, kidMaterial);
       this.kid.scale.set(20, 20, 20);
       this.kid.receiveShadow = true;
       this.kid.castShadow = true;
       this.kid.position.y = -20;
-      this.scene.add(this.kid);
+      const bones = [];
+      geometry.bones.forEach(b => {
+        const bone = new THREE.Bone();
+        bone.position.set(b.pos[0], b.pos[1], b.pos[2]);
+        bones.push(bone);
+      });
 
+      const skeleton = new THREE.Skeleton(bones);
+      const rootBone = skeleton.bones[0];
+      this.kid.add(rootBone);
+      this.kid.bind(skeleton);
+      this.scene.add(this.kid);
+      console.log(this.kid);
       this.animation = new THREE.AnimationMixer(this.kid);
       this.animation.duration = 500;
     });
@@ -278,7 +298,6 @@ export class FlexwareComponent implements OnInit {
     if (this.animation) {
       const keyframe =
         Math.floor(this.time / this.interpolation) + this.animOffset;
-
       this.animation.update(delta / this.interpolation);
 
       this.time = Date.now();
