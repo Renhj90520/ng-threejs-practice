@@ -39,6 +39,7 @@ export class FlexwareComponent implements OnInit {
   circle: THREE.Mesh;
   bookShelf: THREE.Object3D;
   bookShelfFloor: THREE.Mesh;
+  Presets = ['default', 'eye_closed', 'laugh', 'mouth_open'];
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
@@ -299,14 +300,58 @@ export class FlexwareComponent implements OnInit {
       const keyframe =
         Math.floor(this.time / this.interpolation) + this.animOffset;
       this.animation.update(delta / this.interpolation);
-
       this.time = Date.now();
       this.prevTime = this.time;
     }
+    if (this.kid) this.loopAllMorphs();
     this.renderer.render(this.scene, this.camera);
 
     this.circle.rotation.y += 0.003;
     this.controls.update();
     requestAnimationFrame(this.update.bind(this));
+  }
+
+  resetAllMorphs() {
+    for (let i = 0; i < this.kid.morphTargetInfluences.length; i++) {
+      this.kid.morphTargetInfluences[i] = 0;
+    }
+  }
+
+  curr = 0;
+  counter = 0;
+  speed = 0.01;
+  setSpecificMorph(type, intensity) {
+    this.resetAllMorphs();
+    switch (type) {
+      case 'default':
+        this.kid.morphTargetInfluences[0] = intensity * this.speed;
+        break;
+      case 'eye_closed':
+        this.kid.morphTargetInfluences[1] = intensity * this.speed;
+        break;
+      case 'laugh':
+        this.kid.morphTargetInfluences[2] = intensity * this.speed;
+        break;
+      case 'mouth_open':
+        this.kid.morphTargetInfluences[3] = intensity * this.speed;
+        break;
+    }
+  }
+  direction = 1;
+  loopAllMorphs() {
+    if (this.counter % 50 === 0) {
+      this.direction *= -1;
+    }
+
+    if (this.counter <= 0) {
+      this.direction *= -1;
+      if (this.curr < this.Presets.length) {
+        this.curr++;
+      } else {
+        this.curr = 0;
+      }
+    }
+
+    this.setSpecificMorph(this.Presets[this.curr], this.counter);
   }
 }
