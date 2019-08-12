@@ -296,13 +296,6 @@ export class FlexwareComponent implements OnInit {
     this.theta += 0.1;
     const delta = 0.75 * this.clock.getDelta();
 
-    if (this.animation) {
-      const keyframe =
-        Math.floor(this.time / this.interpolation) + this.animOffset;
-      this.animation.update(delta / this.interpolation);
-      this.time = Date.now();
-      this.prevTime = this.time;
-    }
     if (this.kid) this.loopAllMorphs();
     this.renderer.render(this.scene, this.camera);
 
@@ -353,5 +346,6 @@ export class FlexwareComponent implements OnInit {
     }
 
     this.setSpecificMorph(this.Presets[this.curr], this.counter);
+    this.counter += 4 * this.direction;
   }
 }
