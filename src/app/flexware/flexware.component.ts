@@ -249,6 +249,8 @@ export class FlexwareComponent implements OnInit {
     const tv = new THREE.SpotLight(0x1a5970, 2);
     tv.position.set(15, 15, 68).multiplyScalar(1);
     this.scene.add(tv);
+    const tvHelper = new THREE.SpotLightHelper(tv);
+    this.scene.add(tvHelper);
 
     const fakeLight = new THREE.SpotLight(0x1a5970, 15, 200, Math.PI / 2);
     fakeLight.position.set(15, 150, 268);
@@ -257,7 +259,11 @@ export class FlexwareComponent implements OnInit {
     fakeLight.shadow.mapSize.height = 1024 * 2;
     fakeLight.target.position.set(-20, 20, -50);
     fakeLight.target.updateMatrixWorld();
+    this.scene.add(fakeLight.target);
     this.scene.add(fakeLight);
+
+    const fakeHelper = new THREE.SpotLightHelper(fakeLight);
+    this.scene.add(fakeHelper);
 
     const d = 350;
     const fakeLight1: any = new THREE.SpotLight(0xf0c043, 2);
@@ -271,6 +277,7 @@ export class FlexwareComponent implements OnInit {
     lampLight.position.set(-55, 50, -50);
     lampLight.target.position.set(-55, 0, -50);
     lampLight.target.updateMatrixWorld();
+    this.scene.add(lampLight.target);
     this.scene.add(lampLight);
   }
   initTHREE() {
@@ -294,7 +301,6 @@ export class FlexwareComponent implements OnInit {
 
   update() {
     this.theta += 0.1;
-    const delta = 0.75 * this.clock.getDelta();
 
     if (this.kid) this.loopAllMorphs();
     this.renderer.render(this.scene, this.camera);
