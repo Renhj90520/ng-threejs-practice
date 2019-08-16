@@ -5,6 +5,7 @@ import { GalleryComponent } from './gallery/gallery.component';
 import { VrSonicComponent } from './vr-sonic/vr-sonic.component';
 import { SpaceGridComponent } from './space-grid/space-grid.component';
 import { FlexwareComponent } from './flexware/flexware.component';
+import { GrassComponent } from './grass/grass.component';
 
 const routes: Routes = [
   {
@@ -14,7 +15,8 @@ const routes: Routes = [
   { path: 'launchit', component: LaunchitEarthComponent },
   { path: 'vrsonic', component: VrSonicComponent },
   { path: 'spacegrid', component: SpaceGridComponent },
-  { path: 'flexware', component: FlexwareComponent }
+  { path: 'flexware', component: FlexwareComponent },
+  { path: 'grass', component: GrassComponent }
 ];
 @NgModule({
   declarations: [],
