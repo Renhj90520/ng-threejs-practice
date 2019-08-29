@@ -16,6 +16,7 @@ import { VrSonicComponent } from './vr-sonic/vr-sonic.component';
 import { SpaceGridComponent } from './space-grid/space-grid.component';
 import { FlexwareComponent } from './flexware/flexware.component';
 import { GrassComponent } from './grass/grass.component';
+import { CascadeComponent } from './cascade/cascade.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { GrassComponent } from './grass/grass.component';
     VrSonicComponent,
     SpaceGridComponent,
     FlexwareComponent,
-    GrassComponent
+    GrassComponent,
+    CascadeComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
