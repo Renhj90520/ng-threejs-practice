@@ -17,6 +17,7 @@ import { SpaceGridComponent } from './space-grid/space-grid.component';
 import { FlexwareComponent } from './flexware/flexware.component';
 import { GrassComponent } from './grass/grass.component';
 import { CascadeComponent } from './cascade/cascade.component';
+import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { CascadeComponent } from './cascade/cascade.component';
     SpaceGridComponent,
     FlexwareComponent,
     GrassComponent,
-    CascadeComponent
+    CascadeComponent,
+    CascadeGraphComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
