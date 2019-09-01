@@ -7,6 +7,7 @@ import { SpaceGridComponent } from './space-grid/space-grid.component';
 import { FlexwareComponent } from './flexware/flexware.component';
 import { GrassComponent } from './grass/grass.component';
 import { CascadeComponent } from './cascade/cascade.component';
+import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 
 const routes: Routes = [
   {
@@ -18,7 +19,8 @@ const routes: Routes = [
   { path: 'spacegrid', component: SpaceGridComponent },
   { path: 'flexware', component: FlexwareComponent },
   { path: 'grass', component: GrassComponent },
-  { path: 'cascade', component: CascadeComponent }
+  { path: 'cascade', component: CascadeComponent },
+  { path: 'cascadeg', component: CascadeGraphComponent }
 ];
 @NgModule({
   declarations: [],

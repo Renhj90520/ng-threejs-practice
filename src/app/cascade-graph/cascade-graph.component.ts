@@ -194,6 +194,7 @@ export class CascadeGraphComponent implements OnInit {
 
     const faceColors = [];
     const lines = {};
+    const planes = {};
 
     for (let i = 0; i < floorGeo.vertices.length; i++) {
       const vertice: any = floorGeo.vertices[i];
@@ -224,17 +225,39 @@ export class CascadeGraphComponent implements OnInit {
     // grid lines
     for (const line in lines) {
       const graphline = new THREE.Line(lines[line], lineMat);
+
       graphline.rotation.x = -Math.PI / 2;
       graphline.position.y = -this.graphDimensions.h / 2;
       graphline.rotation.z = Math.PI / 2;
 
+      const planeGeo = new THREE.PlaneBufferGeometry(
+        this.graphDimensions.d,
+        this.graphDimensions.h,
+        2048,
+        4
+      );
+      console.log(planeGeo.attributes.position);
+      const graphPlane: any = new THREE.Mesh(
+        planeGeo,
+        new THREE.MeshBasicMaterial({
+          color: 0xff0000,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.1
+        })
+      );
+      // graphPlane.rotation.x = -Math.PI / 2;
+      graphPlane.position.z = line;
+      // graphPlane.rotation.z = Math.PI / 2;
+
       this.scene.add(graphline);
+      this.scene.add(graphPlane);
     }
 
     const floor = new THREE.Mesh(floorGeo, wireframeMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -this.graphDimensions.h / 2;
-    floor.rotation.z = Math.PI / 2;
+    // floor.rotation.x = -Math.PI / 2;
+    // floor.position.y = -this.graphDimensions.h / 2;
+    // floor.rotation.z = Math.PI / 2;
     // this.scene.add(floor);
   }
   labelAxis(width, labels, direction) {
@@ -279,7 +302,8 @@ export class CascadeGraphComponent implements OnInit {
   createAGrid(opts) {
     const material = new THREE.LineBasicMaterial({
       color: opts.color,
-      opacity: 0.1
+      opacity: 0.2,
+      transparent: true
     });
 
     const gridObject = new THREE.Object3D();
