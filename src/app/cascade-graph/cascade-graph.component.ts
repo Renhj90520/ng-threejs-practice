@@ -194,7 +194,7 @@ export class CascadeGraphComponent implements OnInit {
 
     const faceColors = [];
     const lines = {};
-    const planes = {};
+    const planes: any = {};
 
     for (let i = 0; i < floorGeo.vertices.length; i++) {
       const vertice: any = floorGeo.vertices[i];
@@ -209,11 +209,18 @@ export class CascadeGraphComponent implements OnInit {
           lines[vertice.x] = new THREE.Geometry();
         }
 
+        if (!planes[vertice.x]) {
+          planes[vertice.x] = { vertices: [] };
+        }
+
         lines[vertice.x].vertices.push(
           new THREE.Vector3(vertice.x, vertice.y, realdata[i][2] * 100)
         );
+
+        planes[vertice.x].vertices.push({ x: vertice.y, y: vertice.z });
       }
     }
+    console.log(planes);
     // vertextColors
     for (let x = 0; x < floorGeo.faces.length; x++) {
       const face = floorGeo.faces[x];
@@ -222,37 +229,47 @@ export class CascadeGraphComponent implements OnInit {
       face.vertexColors[2] = new THREE.Color(faceColors[face.c]);
     }
 
+    const planeContainer = new THREE.Object3D();
     // grid lines
     for (const line in lines) {
-      const graphline = new THREE.Line(lines[line], lineMat);
+      const graphline: any = new THREE.Line(lines[line], lineMat);
 
       graphline.rotation.x = -Math.PI / 2;
       graphline.position.y = -this.graphDimensions.h / 2;
       graphline.rotation.z = Math.PI / 2;
 
-      const planeGeo = new THREE.PlaneBufferGeometry(
-        this.graphDimensions.d,
-        this.graphDimensions.h,
-        2048,
-        4
-      );
-      console.log(planeGeo.attributes.position);
-      const graphPlane: any = new THREE.Mesh(
+      // graphPlane.rotation.z = Math.PI / 2;
+      this.scene.add(graphline);
+      // this.scene.add(graphPlane);
+
+      const shapeVectors = [];
+      for (let i = 0; i < planes[line].vertices.length; i++) {
+        const vertice = planes[line].vertices[i];
+
+        shapeVectors.push(new THREE.Vector2(vertice.x, vertice.y));
+      }
+      for (let i = planes[line].vertices.length - 1; i >= 0; i--) {
+        const vertice = planes[line].vertices[i];
+
+        shapeVectors.push(new THREE.Vector2(vertice.x, 0));
+      }
+
+      const planeGeo = new THREE.ExtrudeGeometry(new THREE.Shape(shapeVectors));
+      const plane = new THREE.Mesh(
         planeGeo,
         new THREE.MeshBasicMaterial({
           color: 0xff0000,
-          side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.1
         })
       );
-      // graphPlane.rotation.x = -Math.PI / 2;
-      graphPlane.position.z = line;
-      // graphPlane.rotation.z = Math.PI / 2;
 
-      this.scene.add(graphline);
-      this.scene.add(graphPlane);
+      this.scene.add(plane);
     }
+
+    planeContainer.position.y = -this.graphDimensions.h / 2;
+    planeContainer.rotation.y = Math.PI;
+    this.scene.add(planeContainer);
 
     const floor = new THREE.Mesh(floorGeo, wireframeMaterial);
     // floor.rotation.x = -Math.PI / 2;
