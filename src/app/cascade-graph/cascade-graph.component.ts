@@ -20,7 +20,7 @@ export class CascadeGraphComponent implements OnInit {
     h: 800
   };
 
-  data = {
+  axes = {
     labels: {
       y: ['2%', '4%', '6%', '8%'],
       x: [
@@ -37,17 +37,17 @@ export class CascadeGraphComponent implements OnInit {
         "'05"
       ],
       z: [
-        '1-month',
-        '3-month',
-        '6-month',
-        '1-year',
-        '2-year',
-        '3-year',
-        '5-year',
-        '7-year',
-        '10-year',
-        '20-year',
-        '30-year'
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00',
+        '2019-09-09 12:00:00'
       ]
     }
   };
@@ -57,38 +57,29 @@ export class CascadeGraphComponent implements OnInit {
   a: number;
   b: number;
   c: number;
-  colors = [
-    '#eef4f8',
-    '#ddecf4',
-    '#cce5f0',
-    '#bcddec',
-    '#aed5e7',
-    '#a0cde2',
-    '#94c5dc',
-    '#89bcd6',
-    '#7eb4d0',
-    '#74abc9',
-    '#6aa2c2',
-    '#619abb',
-    '#5892b4',
-    '#4f8aad',
-    '#4781a6',
-    '#3f799f',
-    '#3a7195',
-    '#35688c',
-    '#326082',
-    '#2f5877',
-    '#2c506c',
-    '#243d52'
-  ];
+  extrusionSettings = {
+    size: 0,
+    height: 0,
+    curveSegments: 0,
+    depth: 0.16,
+    bevelThickness: 0,
+    bevelSize: 0,
+    bevelEnabled: false,
+    material: 0,
+    extrudeMaterial: 1
+  };
+  planes = [];
+
+  raycaster = new THREE.Raycaster();
+  currHoverMesh: any;
+  currSelectedMesh: any;
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
     this.initTHREE();
     this.addAxes();
     this.addAxisLabels();
-
-    this.addWareframe();
+    this.addGraph();
     this.update();
   }
 
@@ -103,16 +94,15 @@ export class CascadeGraphComponent implements OnInit {
       30000
     );
 
-    this.camera.position.set(0, 0, 3100);
+    this.camera.position.set(0, 0, 2400);
     this.camera.lookAt(this.scene.position);
-
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    console.log(window.devicePixelRatio);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.containerW, this.containerH);
     this.renderer.setClearColor(0x000000, 0);
     this.el.nativeElement.appendChild(this.renderer.domElement);
 
-    const axesHelper = new THREE.AxesHelper(10000);
-    this.scene.add(axesHelper);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
   addAxes() {
@@ -121,9 +111,9 @@ export class CascadeGraphComponent implements OnInit {
     this.width = this.graphDimensions.d / 2;
     this.height = this.graphDimensions.h / 2;
 
-    this.a = this.data.labels.y.length;
-    this.b = this.data.labels.x.length;
-    this.c = this.data.labels.z.length;
+    this.a = this.axes.labels.y.length;
+    this.b = this.axes.labels.x.length;
+    this.c = this.axes.labels.z.length;
 
     const newGridXY = this.createAGrid({
       height: this.width,
@@ -160,30 +150,37 @@ export class CascadeGraphComponent implements OnInit {
     this.scene.add(boundingGrid);
   }
   addAxisLabels() {
-    const labelsW = this.labelAxis(this.width, this.data.labels.x, 'x');
-    labelsW.position.x = this.width + 40;
+    const labelsW = this.labelAxis(this.width, this.axes.labels.x, 'x');
+    labelsW.position.x = this.width;
     labelsW.position.y = -this.height - 40;
     labelsW.position.z = this.depth;
     this.scene.add(labelsW);
+    const nameW = this.makeTextSprite('f[Hz]');
+    nameW.position.y = -this.height - 40;
+    nameW.position.z = this.depth + 60;
+    this.scene.add(nameW);
 
-    const labelsH = this.labelAxis(this.height, this.data.labels.y, 'y');
-    labelsH.position.x = -this.width;
+    const labelsH = this.labelAxis(this.height, this.axes.labels.y, 'y');
+    labelsH.position.x = -this.width - 60;
     labelsH.position.y = -this.height + (2 * this.height) / this.a - 20;
     labelsH.position.z = this.depth;
+    this.scene.add(labelsH);
+    const nameH = this.makeTextSprite('Z');
+    nameH.position.x = -this.width - 100;
+    nameH.position.z = this.depth;
+    this.scene.add(nameH);
 
-    const labelsD = this.labelAxis(this.depth, this.data.labels.z, 'z');
-    labelsD.position.x = this.width + 80;
+    const labelsD = this.labelAxis(this.depth, this.axes.labels.z, 'z');
+    labelsD.position.x = this.width + 140;
     labelsD.position.y = -this.height - 40;
     labelsD.position.z = this.depth - 40;
     this.scene.add(labelsD);
-    this.scene.add(labelsH);
+    const nameD = this.makeTextSprite('t[Day]');
+    nameD.position.x = this.width + 360;
+    nameD.position.y = -this.height - 40;
+    this.scene.add(nameD);
   }
-  addWareframe() {
-    const wireframeMaterial = new THREE.MeshBasicMaterial({
-      side: THREE.DoubleSide,
-      vertexColors: THREE.VertexColors
-    });
-
+  addGraph() {
     const lineMat = new THREE.LineBasicMaterial({ color: 0xffffff });
     const floorGeo = new THREE.PlaneGeometry(
       this.graphDimensions.w,
@@ -192,14 +189,11 @@ export class CascadeGraphComponent implements OnInit {
       2405
     );
 
-    const faceColors = [];
     const lines = {};
     const planes: any = {};
 
     for (let i = 0; i < floorGeo.vertices.length; i++) {
       const vertice: any = floorGeo.vertices[i];
-
-      faceColors.push(this.colors[Math.round(realdata[i][2] * 4)]);
 
       if (realdata[i][2] == null) {
         vertice.z = 'null';
@@ -220,13 +214,8 @@ export class CascadeGraphComponent implements OnInit {
         planes[vertice.x].vertices.push({ x: vertice.y, y: vertice.z });
       }
     }
-    console.log(planes);
-    // vertextColors
-    for (let x = 0; x < floorGeo.faces.length; x++) {
-      const face = floorGeo.faces[x];
-      face.vertexColors[0] = new THREE.Color(faceColors[face.a]);
-      face.vertexColors[1] = new THREE.Color(faceColors[face.b]);
-      face.vertexColors[2] = new THREE.Color(faceColors[face.c]);
+    for (const plane in planes) {
+      planes[plane].vertices.sort((prev, next) => prev.x - next.x);
     }
 
     const planeContainer = new THREE.Object3D();
@@ -238,9 +227,7 @@ export class CascadeGraphComponent implements OnInit {
       graphline.position.y = -this.graphDimensions.h / 2;
       graphline.rotation.z = Math.PI / 2;
 
-      // graphPlane.rotation.z = Math.PI / 2;
       this.scene.add(graphline);
-      // this.scene.add(graphPlane);
 
       const shapeVectors = [];
       for (let i = 0; i < planes[line].vertices.length; i++) {
@@ -253,29 +240,26 @@ export class CascadeGraphComponent implements OnInit {
 
         shapeVectors.push(new THREE.Vector2(vertice.x, 0));
       }
+      const shape = new THREE.Shape(shapeVectors);
 
-      const planeGeo = new THREE.ExtrudeGeometry(new THREE.Shape(shapeVectors));
-      const plane = new THREE.Mesh(
+      const planeGeo = new THREE.ExtrudeGeometry(shape, this.extrusionSettings);
+      const plane: any = new THREE.Mesh(
         planeGeo,
         new THREE.MeshBasicMaterial({
           color: 0xff0000,
           transparent: true,
-          opacity: 0.1
+          opacity: 0
         })
       );
 
-      this.scene.add(plane);
+      plane.position.z = line;
+      planeContainer.add(plane);
+      this.planes.push(plane);
     }
 
     planeContainer.position.y = -this.graphDimensions.h / 2;
     planeContainer.rotation.y = Math.PI;
     this.scene.add(planeContainer);
-
-    const floor = new THREE.Mesh(floorGeo, wireframeMaterial);
-    // floor.rotation.x = -Math.PI / 2;
-    // floor.position.y = -this.graphDimensions.h / 2;
-    // floor.rotation.z = Math.PI / 2;
-    // this.scene.add(floor);
   }
   labelAxis(width, labels, direction) {
     const separator = (2 * width) / labels.length;
@@ -298,22 +282,25 @@ export class CascadeGraphComponent implements OnInit {
   }
   makeTextSprite(text) {
     const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 51.2;
     const ctx = canvas.getContext('2d');
-    ctx.font = '100px sans-serif';
-
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.fillText(text, 0, 100);
+    ctx.fillText(text, canvas.width / 2, 20);
 
     const texture = new THREE.Texture(canvas);
     texture.minFilter = THREE.LinearFilter;
     texture.needsUpdate = true;
 
     const spriteMaterial = new THREE.SpriteMaterial({
-      map: texture
+      map: texture,
+      transparent: true
     });
 
     const sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(100, 50, 1.0);
+    sprite.scale.set(400, 80, 1.0);
     return sprite;
   }
   createAGrid(opts) {
@@ -349,6 +336,56 @@ export class CascadeGraphComponent implements OnInit {
     requestAnimationFrame(this.update.bind(this));
   }
 
+  @HostListener('mousemove', ['$event'])
+  mousemove(evt) {
+    const intersect: any = this.getIntersect(evt);
+
+    if (intersect) {
+      if (this.currHoverMesh && this.currHoverMesh !== intersect) {
+        if (this.currSelectedMesh !== this.currHoverMesh) {
+          this.currHoverMesh.material.opacity = 0;
+        }
+      }
+      this.currHoverMesh = intersect;
+      intersect.material.opacity = 0.3;
+    } else {
+      if (this.currHoverMesh && this.currHoverMesh !== this.currSelectedMesh) {
+        this.currHoverMesh.material.opacity = 0;
+      }
+      this.currHoverMesh = null;
+    }
+  }
+  private getIntersect(evt) {
+    let vector = new THREE.Vector2(
+      (evt.offsetX / this.el.nativeElement.clientWidth) * 2 - 1,
+      (-evt.offsetY / this.el.nativeElement.clientHeight) * 2 + 1
+    );
+    this.raycaster.setFromCamera(vector, this.camera);
+    const intersects = this.raycaster.intersectObjects(this.planes);
+    if (intersects.length > 0) {
+      return intersects[0].object;
+    } else {
+      return null;
+    }
+  }
+
+  @HostListener('mousedown', ['$event'])
+  mousedown(evt) {
+    const interset: any = this.getIntersect(evt);
+    if (interset) {
+      if (this.currSelectedMesh && this.currSelectedMesh !== interset) {
+        this.currSelectedMesh.material.opacity = 0;
+      }
+
+      this.currSelectedMesh = interset;
+      interset.material.opacity = 0.3;
+    } else {
+      if (this.currSelectedMesh) {
+        this.currSelectedMesh.material.opacity = 0;
+      }
+      this.currSelectedMesh = null;
+    }
+  }
   @HostListener('window:resize')
   resize() {
     this.containerW = this.el.nativeElement.clientWidth;
