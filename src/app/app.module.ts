@@ -18,6 +18,7 @@ import { FlexwareComponent } from './flexware/flexware.component';
 import { GrassComponent } from './grass/grass.component';
 import { CascadeComponent } from './cascade/cascade.component';
 import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
+import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
     FlexwareComponent,
     GrassComponent,
     CascadeComponent,
-    CascadeGraphComponent
+    CascadeGraphComponent,
+    GravityArrowsComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
