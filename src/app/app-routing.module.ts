@@ -9,6 +9,7 @@ import { GrassComponent } from './grass/grass.component';
 import { CascadeComponent } from './cascade/cascade.component';
 import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.component';
+import { CityExplorationComponent } from './city-exploration/city-exploration.component';
 
 const routes: Routes = [
   {
@@ -22,7 +23,8 @@ const routes: Routes = [
   { path: 'grass', component: GrassComponent },
   { path: 'cascade', component: CascadeComponent },
   { path: 'cascadeg', component: CascadeGraphComponent },
-  { path: 'gravityarrows', component: GravityArrowsComponent }
+  { path: 'gravityarrows', component: GravityArrowsComponent },
+  { path: 'cityexploration', component: CityExplorationComponent }
 ];
 @NgModule({
   declarations: [],

@@ -19,6 +19,7 @@ import { GrassComponent } from './grass/grass.component';
 import { CascadeComponent } from './cascade/cascade.component';
 import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.component';
+import { CityExplorationComponent } from './city-exploration/city-exploration.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.componen
     GrassComponent,
     CascadeComponent,
     CascadeGraphComponent,
-    GravityArrowsComponent
+    GravityArrowsComponent,
+    CityExplorationComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
