@@ -20,6 +20,7 @@ import { CascadeComponent } from './cascade/cascade.component';
 import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.component';
 import { CityExplorationComponent } from './city-exploration/city-exploration.component';
+import { MetaballsComponent } from './metaballs/metaballs.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { CityExplorationComponent } from './city-exploration/city-exploration.co
     CascadeComponent,
     CascadeGraphComponent,
     GravityArrowsComponent,
-    CityExplorationComponent
+    CityExplorationComponent,
+    MetaballsComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
