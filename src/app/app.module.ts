@@ -21,6 +21,7 @@ import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.component';
 import { CityExplorationComponent } from './city-exploration/city-exploration.component';
 import { MetaballsComponent } from './metaballs/metaballs.component';
+import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { MetaballsComponent } from './metaballs/metaballs.component';
     CascadeGraphComponent,
     GravityArrowsComponent,
     CityExplorationComponent,
-    MetaballsComponent
+    MetaballsComponent,
+    PointsInGridComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],

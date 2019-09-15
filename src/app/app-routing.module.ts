@@ -11,6 +11,7 @@ import { CascadeGraphComponent } from './cascade-graph/cascade-graph.component';
 import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.component';
 import { CityExplorationComponent } from './city-exploration/city-exploration.component';
 import { MetaballsComponent } from './metaballs/metaballs.component';
+import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
 
 const routes: Routes = [
   {
@@ -26,7 +27,8 @@ const routes: Routes = [
   { path: 'cascadeg', component: CascadeGraphComponent },
   { path: 'gravityarrows', component: GravityArrowsComponent },
   { path: 'cityexploration', component: CityExplorationComponent },
-  { path: 'metaballs', component: MetaballsComponent }
+  { path: 'metaballs', component: MetaballsComponent },
+  { path: 'pointsgrid', component: PointsInGridComponent }
 ];
 @NgModule({
   declarations: [],
