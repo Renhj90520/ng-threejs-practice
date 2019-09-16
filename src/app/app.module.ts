@@ -22,6 +22,7 @@ import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.componen
 import { CityExplorationComponent } from './city-exploration/city-exploration.component';
 import { MetaballsComponent } from './metaballs/metaballs.component';
 import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
+import { ScalesComponent } from './scales/scales.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { PointsInGridComponent } from './points-in-grid/points-in-grid.component
     GravityArrowsComponent,
     CityExplorationComponent,
     MetaballsComponent,
-    PointsInGridComponent
+    PointsInGridComponent,
+    ScalesComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],

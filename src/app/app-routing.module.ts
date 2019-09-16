@@ -12,6 +12,7 @@ import { GravityArrowsComponent } from './gravity-arrows/gravity-arrows.componen
 import { CityExplorationComponent } from './city-exploration/city-exploration.component';
 import { MetaballsComponent } from './metaballs/metaballs.component';
 import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
+import { ScalesComponent } from './scales/scales.component';
 
 const routes: Routes = [
   {
@@ -28,7 +29,8 @@ const routes: Routes = [
   { path: 'gravityarrows', component: GravityArrowsComponent },
   { path: 'cityexploration', component: CityExplorationComponent },
   { path: 'metaballs', component: MetaballsComponent },
-  { path: 'pointsgrid', component: PointsInGridComponent }
+  { path: 'pointsgrid', component: PointsInGridComponent },
+  { path: 'scales', component: ScalesComponent }
 ];
 @NgModule({
   declarations: [],
