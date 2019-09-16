@@ -1,11 +1,11 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import * as THREE from 'three';
 @Component({
-  selector: 'app-scales',
-  templateUrl: './scales.component.html',
-  styleUrls: ['./scales.component.css']
+  selector: 'app-smin-circle',
+  templateUrl: './smin-circle.component.html',
+  styleUrls: ['./smin-circle.component.css']
 })
-export class ScalesComponent implements OnInit {
+export class SminCircleComponent implements OnInit {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
@@ -20,34 +20,35 @@ export class ScalesComponent implements OnInit {
   fragmentShader = `
     precision highp float;
     uniform vec2 u_resolution;
-    uniform float u_time;
+    uniform vec2 u_mouse;
     
     vec2 getScreenSpace() {
       vec2 uv = (gl_FragCoord.xy - .5 * u_resolution.xy) / min(u_resolution.y,u_resolution.x);
       return uv;
     }
 
-    // Helper vector. If you're doing anything that involves regular triangles or hexagons, the
-    // 30-60-90 triangle will be involved in some way, which has sides of 1, sqrt(3) = 1.7320508 and 2.
-    const vec2 s=vec2(1,1.7320508);
-
-    float hex(in vec2 p) {
-      p = abs(p);
-      return max(dot(p,s*.5),p.x);
-    }
-
-    vec4 getHex(vec2 p) {
-      vec4 hc = floor(vec4(p, p - vec2(.5, 1.)) / s.xyxy) + .5;
-      vec4 h = vec4(p - hc.xy*s, p - (hc.zw + .5) * s);
-      return dot(h.xy, h.xy) < dot(h.zw, h.zw) ? vec4(h.xy, hc.xy) : vec4(h.zw, hc.zw + vec2(.5, 1.));
+    float smin(float a, float b, float k) {
+      float res = exp(-k * a) + exp(-k * b);
+      return -log(res) / k;
     }
 
     void main() {
-      vec2 uv=getScreenSpace() * 15. * (min(u_resolution.y, u_resolution.x) / max(u_resolution.y, u_resolution.x));
+      vec2 uv=getScreenSpace();
 
-      vec4 hexuv = getHex(uv);
-      // vec3 color=vec3(1.-hex(hexuv.xy));
-      vec3 color=vec3(1. - hex(hexuv.xy + vec2(sin(length(uv) + u_time * 5.), cos(length(uv) + u_time *5.)) * .2));
+      float lw = .001;
+      // axes
+      vec3 color=vec3(step(uv.x, lw) * step(-lw, uv.x) + step(uv.y, lw) * step(-lw, uv.y));
+
+      vec2 grad1_pos = u_mouse;
+      vec2 grad2_pos = vec2(-.2);
+
+      float gradient1 = length(uv - grad1_pos);
+      float gradient2 = length(uv - grad2_pos);
+
+      // float gradient_sum = min(gradient1, gradient2);
+      float gradient_sum = smin(gradient1, gradient2, 50.);
+
+      color = mix(color, vec3(1.), smoothstep(.201, .2, gradient_sum));
       gl_FragColor=vec4(color,1.);
     }
   `;
@@ -68,7 +69,7 @@ export class ScalesComponent implements OnInit {
         type: 'v2',
         value: new THREE.Vector2(this.width, this.height)
       },
-      u_time: { type: 'f', value: this.startTime }
+      u_mouse: { type: 'v2', value: new THREE.Vector2(0, 0) }
     };
     const planeGeo = new THREE.PlaneGeometry(this.width, this.height);
     this.planeMat = new THREE.ShaderMaterial({
@@ -105,7 +106,26 @@ export class ScalesComponent implements OnInit {
   update(delta) {
     this.renderer.render(this.scene, this.camera);
 
-    this.planeMat.uniforms.u_time.value = this.startTime + delta * 0.0002;
     requestAnimationFrame(this.update.bind(this));
+  }
+
+  @HostListener('mousemove', ['$event'])
+  mousemove(evt) {
+    const ratio = window.innerHeight / window.innerWidth;
+    let x, y;
+    if (window.innerHeight > window.innerWidth) {
+      x = (evt.pageX - window.innerWidth / 2) / window.innerWidth;
+      y =
+        ((evt.pageY - window.innerHeight / 2) / window.innerHeight) *
+        -1 *
+        ratio;
+    } else {
+      x = (evt.pageX - window.innerWidth / 2) / window.innerWidth / ratio;
+      y = ((evt.pageY - window.innerHeight / 2) / window.innerHeight) * -1;
+    }
+
+    // const x = (evt.clientX / window.innerWidth) * 2 - 1;
+    // const y = -(evt.clientY / window.innerHeight) * 2 + 1;
+    this.planeMat.uniforms.u_mouse.value = new THREE.Vector2(x, y);
   }
 }

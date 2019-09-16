@@ -13,6 +13,7 @@ import { CityExplorationComponent } from './city-exploration/city-exploration.co
 import { MetaballsComponent } from './metaballs/metaballs.component';
 import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
 import { ScalesComponent } from './scales/scales.component';
+import { SminCircleComponent } from './smin-circle/smin-circle.component';
 
 const routes: Routes = [
   {
@@ -30,7 +31,8 @@ const routes: Routes = [
   { path: 'cityexploration', component: CityExplorationComponent },
   { path: 'metaballs', component: MetaballsComponent },
   { path: 'pointsgrid', component: PointsInGridComponent },
-  { path: 'scales', component: ScalesComponent }
+  { path: 'scales', component: ScalesComponent },
+  { path: 'smincircle', component: SminCircleComponent }
 ];
 @NgModule({
   declarations: [],

@@ -23,6 +23,7 @@ import { CityExplorationComponent } from './city-exploration/city-exploration.co
 import { MetaballsComponent } from './metaballs/metaballs.component';
 import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
 import { ScalesComponent } from './scales/scales.component';
+import { SminCircleComponent } from './smin-circle/smin-circle.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { ScalesComponent } from './scales/scales.component';
     CityExplorationComponent,
     MetaballsComponent,
     PointsInGridComponent,
-    ScalesComponent
+    ScalesComponent,
+    SminCircleComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
