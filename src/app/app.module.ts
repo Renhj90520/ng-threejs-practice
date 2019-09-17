@@ -25,6 +25,7 @@ import { PointsInGridComponent } from './points-in-grid/points-in-grid.component
 import { ScalesComponent } from './scales/scales.component';
 import { SminCircleComponent } from './smin-circle/smin-circle.component';
 import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
+import { ModuloCheckerboardComponent } from './modulo-checkerboard/modulo-checkerboard.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
     PointsInGridComponent,
     ScalesComponent,
     SminCircleComponent,
-    GlobeCloudComponent
+    GlobeCloudComponent,
+    ModuloCheckerboardComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
