@@ -24,6 +24,7 @@ import { MetaballsComponent } from './metaballs/metaballs.component';
 import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
 import { ScalesComponent } from './scales/scales.component';
 import { SminCircleComponent } from './smin-circle/smin-circle.component';
+import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { SminCircleComponent } from './smin-circle/smin-circle.component';
     MetaballsComponent,
     PointsInGridComponent,
     ScalesComponent,
-    SminCircleComponent
+    SminCircleComponent,
+    GlobeCloudComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
