@@ -27,6 +27,7 @@ import { SminCircleComponent } from './smin-circle/smin-circle.component';
 import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
 import { ModuloCheckerboardComponent } from './modulo-checkerboard/modulo-checkerboard.component';
 import { RegularPolygonComponent } from './regular-polygon/regular-polygon.component';
+import { FireworksComponent } from './fireworks/fireworks.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { RegularPolygonComponent } from './regular-polygon/regular-polygon.compo
     SminCircleComponent,
     GlobeCloudComponent,
     ModuloCheckerboardComponent,
-    RegularPolygonComponent
+    RegularPolygonComponent,
+    FireworksComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
