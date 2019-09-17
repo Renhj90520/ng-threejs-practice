@@ -26,6 +26,7 @@ import { ScalesComponent } from './scales/scales.component';
 import { SminCircleComponent } from './smin-circle/smin-circle.component';
 import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
 import { ModuloCheckerboardComponent } from './modulo-checkerboard/modulo-checkerboard.component';
+import { RegularPolygonComponent } from './regular-polygon/regular-polygon.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { ModuloCheckerboardComponent } from './modulo-checkerboard/modulo-checke
     ScalesComponent,
     SminCircleComponent,
     GlobeCloudComponent,
-    ModuloCheckerboardComponent
+    ModuloCheckerboardComponent,
+    RegularPolygonComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
