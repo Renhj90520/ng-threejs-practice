@@ -28,6 +28,7 @@ import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
 import { ModuloCheckerboardComponent } from './modulo-checkerboard/modulo-checkerboard.component';
 import { RegularPolygonComponent } from './regular-polygon/regular-polygon.component';
 import { FireworksComponent } from './fireworks/fireworks.component';
+import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { FireworksComponent } from './fireworks/fireworks.component';
     GlobeCloudComponent,
     ModuloCheckerboardComponent,
     RegularPolygonComponent,
-    FireworksComponent
+    FireworksComponent,
+    RushingRapidComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
