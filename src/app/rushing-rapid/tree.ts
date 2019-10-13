@@ -2,15 +2,15 @@ import * as THREE from 'three';
 import { Colors } from './colors';
 import { customizeShadow } from './utils';
 export default class TREE extends THREE.Object3D {
-  x: any;
-  z: any;
-  constructor(x, z) {
+  scene;
+  constructor(x, z, scene) {
     super();
-    this.x = x;
-    this.z = z;
 
+    this.scene = scene;
     this.createTrunk();
     this.createLeaves();
+    this.position.set(x, 0, z);
+    scene.add(this);
   }
   createLeaves() {
     const geometry = new THREE.BoxGeometry(0.25, 0.4, 0.25);
@@ -18,7 +18,7 @@ export default class TREE extends THREE.Object3D {
     const leaves = new THREE.Mesh(geometry, material);
     leaves.position.y = 0.2 + 0.15 + 0.4 / 2;
     leaves.castShadow = true;
-    customizeShadow(leaves, 0.25);
+    customizeShadow(this.scene, leaves, 0.25);
 
     this.add(leaves);
   }

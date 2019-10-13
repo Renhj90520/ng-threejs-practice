@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-export function customizeShadow(mesh, opacity) {
+export function customizeShadow(scene, mesh, opacity) {
   const material = new THREE.ShadowMaterial({ opacity });
   const shadow = new THREE.Mesh(mesh.geometry, material);
-  shadow.position.y = mesh.position.y;
+  const { x, y, z } = mesh.position;
+  shadow.position.set(x, y, z);
   shadow.receiveShadow = true;
-  this.add(shadow);
+  scene.add(shadow);
 }
