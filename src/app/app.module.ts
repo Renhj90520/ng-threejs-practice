@@ -29,6 +29,7 @@ import { ModuloCheckerboardComponent } from './modulo-checkerboard/modulo-checke
 import { RegularPolygonComponent } from './regular-polygon/regular-polygon.component';
 import { FireworksComponent } from './fireworks/fireworks.component';
 import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
+import { PrintingComponent } from './printing/printing.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
     ModuloCheckerboardComponent,
     RegularPolygonComponent,
     FireworksComponent,
-    RushingRapidComponent
+    RushingRapidComponent,
+    PrintingComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
