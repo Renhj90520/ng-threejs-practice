@@ -18,6 +18,7 @@ import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
 import { FireworksComponent } from './fireworks/fireworks.component';
 import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 import { PrintingComponent } from './printing/printing.component';
+import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 
 const routes: Routes = [
   {
@@ -39,7 +40,8 @@ const routes: Routes = [
   { path: 'smincircle', component: SminCircleComponent },
   { path: 'fireworks', component: FireworksComponent },
   { path: 'rushingrapid', component: RushingRapidComponent },
-  { path: 'printing', component: PrintingComponent }
+  { path: 'printing', component: PrintingComponent },
+  { path: 'sphereslice', component: SphereSliceComponent }
 ];
 @NgModule({
   declarations: [],

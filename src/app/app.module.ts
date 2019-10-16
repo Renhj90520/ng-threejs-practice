@@ -30,6 +30,7 @@ import { RegularPolygonComponent } from './regular-polygon/regular-polygon.compo
 import { FireworksComponent } from './fireworks/fireworks.component';
 import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 import { PrintingComponent } from './printing/printing.component';
+import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { PrintingComponent } from './printing/printing.component';
     RegularPolygonComponent,
     FireworksComponent,
     RushingRapidComponent,
-    PrintingComponent
+    PrintingComponent,
+    SphereSliceComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
