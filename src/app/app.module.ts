@@ -32,6 +32,7 @@ import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 import { PrintingComponent } from './printing/printing.component';
 import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
+import { SphereShaderComponent } from './sphere-shader/sphere-shader.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { PeriodicTableComponent } from './periodic-table/periodic-table.componen
     RushingRapidComponent,
     PrintingComponent,
     SphereSliceComponent,
-    PeriodicTableComponent
+    PeriodicTableComponent,
+    SphereShaderComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
