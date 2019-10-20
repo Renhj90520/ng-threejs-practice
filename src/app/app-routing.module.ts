@@ -19,6 +19,7 @@ import { FireworksComponent } from './fireworks/fireworks.component';
 import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 import { PrintingComponent } from './printing/printing.component';
 import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
+import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
 
 const routes: Routes = [
   {
@@ -41,7 +42,8 @@ const routes: Routes = [
   { path: 'fireworks', component: FireworksComponent },
   { path: 'rushingrapid', component: RushingRapidComponent },
   { path: 'printing', component: PrintingComponent },
-  { path: 'sphereslice', component: SphereSliceComponent }
+  { path: 'sphereslice', component: SphereSliceComponent },
+  { path: 'periodictable', component: PeriodicTableComponent }
 ];
 @NgModule({
   declarations: [],

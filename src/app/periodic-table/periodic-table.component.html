@@ -1,0 +1,15 @@
+<div class="canvas" #canvas></div>
+<div class="buttons">
+  <button [ngClass]="{ active: type === 'table' }" (click)="active('table')">
+    Table
+  </button>
+  <button [ngClass]="{ active: type === 'sphere' }" (click)="active('sphere')">
+    Sphere
+  </button>
+  <button [ngClass]="{ active: type === 'helix' }" (click)="active('helix')">
+    Helix
+  </button>
+  <button [ngClass]="{ active: type === 'grid' }" (click)="active('grid')">
+    Grid
+  </button>
+</div>

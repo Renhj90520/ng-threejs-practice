@@ -31,6 +31,7 @@ import { FireworksComponent } from './fireworks/fireworks.component';
 import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 import { PrintingComponent } from './printing/printing.component';
 import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
+import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
     FireworksComponent,
     RushingRapidComponent,
     PrintingComponent,
-    SphereSliceComponent
+    SphereSliceComponent,
+    PeriodicTableComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
