@@ -326,7 +326,7 @@ export class ProceduralCityComponent implements OnInit {
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(this.width, this.height);
-    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.el.nativeElement.appendChild(this.renderer.domElement);
 

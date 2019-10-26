@@ -33,6 +33,7 @@ import { PrintingComponent } from './printing/printing.component';
 import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
 import { SphereShaderComponent } from './sphere-shader/sphere-shader.component';
+import { CrystalSphereComponent } from './crystal-sphere/crystal-sphere.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import { SphereShaderComponent } from './sphere-shader/sphere-shader.component';
     PrintingComponent,
     SphereSliceComponent,
     PeriodicTableComponent,
-    SphereShaderComponent
+    SphereShaderComponent,
+    CrystalSphereComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],

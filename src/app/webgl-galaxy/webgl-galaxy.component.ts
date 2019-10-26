@@ -125,7 +125,10 @@ export class WebglGalaxyComponent implements OnInit {
       pointsArray[i * 3 + 1] = p.y;
       pointsArray[i * 3 + 2] = p.z;
     }
-    stars.addAttribute('position', new THREE.Float32Attribute(pointsArray, 3));
+    stars.addAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(pointsArray, 3)
+    );
     const galaxy = new THREE.Points(stars, this.galaxMaterial);
     this.scene.add(galaxy);
   }

@@ -132,7 +132,10 @@ export class FlexwareComponent implements OnInit {
       vertices[i * 3 + 1] = (Math.random() - 0.5) * Math.cos(i) * 200;
       vertices[i * 3 + 2] = (Math.random() - 0.5) * Math.sin(i) * 200;
     }
-    particles.addAttribute('position', new THREE.Float32Attribute(vertices, 3));
+    particles.addAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(vertices, 3)
+    );
 
     const particleSys = new THREE.Points(particles, particleMaterial);
     this.scene.add(particleSys);

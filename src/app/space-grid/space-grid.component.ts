@@ -48,7 +48,7 @@ export class SpaceGridComponent implements OnInit {
 
     particles.addAttribute(
       'position',
-      new THREE.Float32Attribute(pointsArray, 3)
+      new THREE.Float32BufferAttribute(pointsArray, 3)
     );
 
     const particleMaterial = new THREE.PointsMaterial({
