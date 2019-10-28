@@ -34,6 +34,7 @@ import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
 import { SphereShaderComponent } from './sphere-shader/sphere-shader.component';
 import { CrystalSphereComponent } from './crystal-sphere/crystal-sphere.component';
+import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { CrystalSphereComponent } from './crystal-sphere/crystal-sphere.componen
     SphereSliceComponent,
     PeriodicTableComponent,
     SphereShaderComponent,
-    CrystalSphereComponent
+    CrystalSphereComponent,
+    ChasingBezierComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
