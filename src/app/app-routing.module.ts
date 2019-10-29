@@ -21,6 +21,7 @@ import { PrintingComponent } from './printing/printing.component';
 import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
 import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
+import { BubblesComponent } from './bubbles/bubbles.component';
 
 const routes: Routes = [
   {
@@ -45,7 +46,8 @@ const routes: Routes = [
   { path: 'printing', component: PrintingComponent },
   { path: 'sphereslice', component: SphereSliceComponent },
   { path: 'periodictable', component: PeriodicTableComponent },
-  { path: 'chasingbezier', component: ChasingBezierComponent }
+  { path: 'chasingbezier', component: ChasingBezierComponent },
+  { path: 'bubbles', component: BubblesComponent }
 ];
 @NgModule({
   declarations: [],
