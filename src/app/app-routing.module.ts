@@ -22,6 +22,7 @@ import { SphereSliceComponent } from './sphere-slice/sphere-slice.component';
 import { PeriodicTableComponent } from './periodic-table/periodic-table.component';
 import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
+import { ConfettiComponent } from './confetti/confetti.component';
 
 const routes: Routes = [
   {
@@ -47,7 +48,8 @@ const routes: Routes = [
   { path: 'sphereslice', component: SphereSliceComponent },
   { path: 'periodictable', component: PeriodicTableComponent },
   { path: 'chasingbezier', component: ChasingBezierComponent },
-  { path: 'bubbles', component: BubblesComponent }
+  { path: 'bubbles', component: BubblesComponent },
+  { path: 'confetti', component: ConfettiComponent }
 ];
 @NgModule({
   declarations: [],

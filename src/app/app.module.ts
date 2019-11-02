@@ -36,6 +36,7 @@ import { SphereShaderComponent } from './sphere-shader/sphere-shader.component';
 import { CrystalSphereComponent } from './crystal-sphere/crystal-sphere.component';
 import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
+import { ConfettiComponent } from './confetti/confetti.component';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { BubblesComponent } from './bubbles/bubbles.component';
     SphereShaderComponent,
     CrystalSphereComponent,
     ChasingBezierComponent,
-    BubblesComponent
+    BubblesComponent,
+    ConfettiComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
