@@ -23,6 +23,7 @@ import { PeriodicTableComponent } from './periodic-table/periodic-table.componen
 import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
 import { ConfettiComponent } from './confetti/confetti.component';
+import { AnimatedTextComponent } from './animated-text/animated-text.component';
 
 const routes: Routes = [
   {
@@ -49,7 +50,8 @@ const routes: Routes = [
   { path: 'periodictable', component: PeriodicTableComponent },
   { path: 'chasingbezier', component: ChasingBezierComponent },
   { path: 'bubbles', component: BubblesComponent },
-  { path: 'confetti', component: ConfettiComponent }
+  { path: 'confetti', component: ConfettiComponent },
+  { path: 'animatedtext', component: AnimatedTextComponent }
 ];
 @NgModule({
   declarations: [],
