@@ -38,6 +38,7 @@ import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.componen
 import { BubblesComponent } from './bubbles/bubbles.component';
 import { ConfettiComponent } from './confetti/confetti.component';
 import { AnimatedTextComponent } from './animated-text/animated-text.component';
+import { IconsThreedComponent } from './icons-threed/icons-threed.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { AnimatedTextComponent } from './animated-text/animated-text.component';
     ChasingBezierComponent,
     BubblesComponent,
     ConfettiComponent,
-    AnimatedTextComponent
+    AnimatedTextComponent,
+    IconsThreedComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
