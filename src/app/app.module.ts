@@ -40,6 +40,7 @@ import { ConfettiComponent } from './confetti/confetti.component';
 import { AnimatedTextComponent } from './animated-text/animated-text.component';
 import { IconsThreedComponent } from './icons-threed/icons-threed.component';
 import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
+import { RenderTargetComponent } from './render-target/render-target.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
     ConfettiComponent,
     AnimatedTextComponent,
     IconsThreedComponent,
-    HoverExplodeComponent
+    HoverExplodeComponent,
+    RenderTargetComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],

@@ -26,6 +26,7 @@ import { ConfettiComponent } from "./confetti/confetti.component";
 import { AnimatedTextComponent } from "./animated-text/animated-text.component";
 import { IconsThreedComponent } from "./icons-threed/icons-threed.component";
 import { HoverExplodeComponent } from "./hover-explode/hover-explode.component";
+import { RenderTargetComponent } from "./render-target/render-target.component";
 
 const routes: Routes = [
   {
@@ -55,7 +56,8 @@ const routes: Routes = [
   { path: "confetti", component: ConfettiComponent },
   { path: "animatedtext", component: AnimatedTextComponent },
   { path: "icons", component: IconsThreedComponent },
-  { path: "explode", component: HoverExplodeComponent }
+  { path: "explode", component: HoverExplodeComponent },
+  { path: "rendertarget", component: RenderTargetComponent }
 ];
 @NgModule({
   declarations: [],
