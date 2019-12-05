@@ -41,6 +41,7 @@ import { AnimatedTextComponent } from './animated-text/animated-text.component';
 import { IconsThreedComponent } from './icons-threed/icons-threed.component';
 import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
 import { RenderTargetComponent } from './render-target/render-target.component';
+import { BreatheComponent } from './breathe/breathe.component';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,8 @@ import { RenderTargetComponent } from './render-target/render-target.component';
     AnimatedTextComponent,
     IconsThreedComponent,
     HoverExplodeComponent,
-    RenderTargetComponent
+    RenderTargetComponent,
+    BreatheComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
