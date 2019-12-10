@@ -37,6 +37,7 @@ import { CrystalSphereComponent } from './crystal-sphere/crystal-sphere.componen
 import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
 import { ConfettiComponent } from './confetti/confetti.component';
+import { CarPresenterComponent } from './car-presenter/car-presenter.component';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { ConfettiComponent } from './confetti/confetti.component';
     CrystalSphereComponent,
     ChasingBezierComponent,
     BubblesComponent,
-    ConfettiComponent
+    ConfettiComponent,
+    CarPresenterComponent
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
