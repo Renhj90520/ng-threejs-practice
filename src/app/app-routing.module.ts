@@ -14,7 +14,6 @@ import { MetaballsComponent } from './metaballs/metaballs.component';
 import { PointsInGridComponent } from './points-in-grid/points-in-grid.component';
 import { ScalesComponent } from './scales/scales.component';
 import { SminCircleComponent } from './smin-circle/smin-circle.component';
-import { GlobeCloudComponent } from './globe-cloud/globe-cloud.component';
 import { FireworksComponent } from './fireworks/fireworks.component';
 import { RushingRapidComponent } from './rushing-rapid/rushing-rapid.component';
 import { PrintingComponent } from './printing/printing.component';
@@ -61,7 +60,6 @@ const routes: Routes = [
   { path: 'explode', component: HoverExplodeComponent },
   { path: 'rendertarget', component: RenderTargetComponent },
   { path: 'breathe', component: BreatheComponent },
-  { path: 'globecloud', component: GlobeCloudComponent },
   { path: 'carpresenter', component: CarPresenterComponent }
 ];
 @NgModule({
