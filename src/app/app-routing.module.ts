@@ -24,6 +24,11 @@ import { ChasingBezierComponent } from "./chasing-bezier/chasing-bezier.componen
 import { BubblesComponent } from "./bubbles/bubbles.component";
 import { ConfettiComponent } from "./confetti/confetti.component";
 import { CarPresenterComponent } from "./car-presenter/car-presenter.component";
+import { AnimatedTextComponent } from "./animated-text/animated-text.component";
+import { IconsThreedComponent } from "./icons-threed/icons-threed.component";
+import { HoverExplodeComponent } from "./hover-explode/hover-explode.component";
+import { RenderTargetComponent } from "./render-target/render-target.component";
+import { BreatheComponent } from "./breathe/breathe.component";
 
 const routes: Routes = [
   {
@@ -51,7 +56,34 @@ const routes: Routes = [
   { path: "chasingbezier", component: ChasingBezierComponent },
   { path: "bubbles", component: BubblesComponent },
   { path: "confetti", component: ConfettiComponent },
-  { path: "carpresenter", component: CarPresenterComponent }
+  { path: "carpresenter", component: CarPresenterComponent },
+  { path: "launchit", component: LaunchitEarthComponent },
+  { path: "vrsonic", component: VrSonicComponent },
+  { path: "spacegrid", component: SpaceGridComponent },
+  { path: "flexware", component: FlexwareComponent },
+  { path: "grass", component: GrassComponent },
+  { path: "cascade", component: CascadeComponent },
+  { path: "cascadeg", component: CascadeGraphComponent },
+  { path: "gravityarrows", component: GravityArrowsComponent },
+  { path: "cityexploration", component: CityExplorationComponent },
+  { path: "metaballs", component: MetaballsComponent },
+  { path: "pointsgrid", component: PointsInGridComponent },
+  { path: "scales", component: ScalesComponent },
+  { path: "smincircle", component: SminCircleComponent },
+  { path: "fireworks", component: FireworksComponent },
+  { path: "rushingrapid", component: RushingRapidComponent },
+  { path: "printing", component: PrintingComponent },
+  { path: "sphereslice", component: SphereSliceComponent },
+  { path: "periodictable", component: PeriodicTableComponent },
+  { path: "chasingbezier", component: ChasingBezierComponent },
+  { path: "bubbles", component: BubblesComponent },
+  { path: "confetti", component: ConfettiComponent },
+  { path: "animatedtext", component: AnimatedTextComponent },
+  { path: "icons", component: IconsThreedComponent },
+  { path: "explode", component: HoverExplodeComponent },
+  { path: "rendertarget", component: RenderTargetComponent },
+  { path: "breathe", component: BreatheComponent },
+  { path: "globecloud", component: GlobeCloudComponent }
 ];
 @NgModule({
   declarations: [],
