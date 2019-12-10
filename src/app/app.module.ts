@@ -37,12 +37,12 @@ import { CrystalSphereComponent } from './crystal-sphere/crystal-sphere.componen
 import { ChasingBezierComponent } from './chasing-bezier/chasing-bezier.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
 import { ConfettiComponent } from './confetti/confetti.component';
-import { CarPresenterComponent } from './car-presenter/car-presenter.component';
 import { AnimatedTextComponent } from './animated-text/animated-text.component';
 import { IconsThreedComponent } from './icons-threed/icons-threed.component';
 import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
 import { RenderTargetComponent } from './render-target/render-target.component';
 import { BreatheComponent } from './breathe/breathe.component';
+import { CarPresenterComponent } from './car-presenter/car-presenter.component';
 
 @NgModule({
   declarations: [
