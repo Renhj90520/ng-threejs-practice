@@ -42,7 +42,7 @@
           r(
             function() {
               return new o({
-                scene: new a(),
+                scene: new Stage(),
                 width: window.innerWidth,
                 height: window.innerHeight,
                 enableCompositing: !1
@@ -68,7 +68,7 @@
         }
         var r = e('28'),
           o = e('10'),
-          a = e('48');
+          Stage = e('48');
         window.isPhonegap
           ? document.addEventListener('deviceready', i, !1)
           : i();
@@ -12916,20 +12916,21 @@
     ],
     8: [
       function(e, t, n) {
-        function i(e) {
-          var t = window.innerWidth,
-            n = window.innerHeight;
-          this.scene.setAspectRatio(t / n), this.renderer.setSize(t, n);
+        function resize(e) {
+          var width = window.innerWidth,
+            height = window.innerHeight;
+          this.scene.setAspectRatio(width / height),
+            this.renderer.setSize(width, height);
         }
-        function r(e) {
+        function keyup(e) {
           68 === e.keyCode &&
             (this.toggleGUIMode(), this.scene.toggleHelpers());
         }
-        var o = e('24'),
-          a = e('9'),
+        var Status = e('24'),
+          Config = e('9'),
           Loader = e('21'),
-          l = e('61'),
-          c = e('16'),
+          LensFlarePlugin = e('61'),
+          Audios = e('16'),
           h = function(e) {
             (this.scene = e.scene),
               (this.renderer = new THREE.WebGLRenderer({
@@ -12942,35 +12943,35 @@
                 window.devicePixelRatio > 1 ? 1.5 : 1
               ),
               (this.clock = new THREE.Clock()),
-              (this.lensFlarePlugin = new l(this.renderer)),
+              (this.lensFlarePlugin = new LensFlarePlugin(this.renderer)),
               $(window)
-                .resize(i.bind(this))
-                .on('keyup', r.bind(this));
+                .resize(resize.bind(this))
+                .on('keyup', keyup.bind(this));
           };
         (h.prototype = {
           start: function(e) {
-            var t = e.width(),
-              n = e.height();
-            this.renderer.setSize(t, n),
+            var width = e.width(),
+              height = e.height();
+            this.renderer.setSize(width, height),
               e.append(this.renderer.domElement),
-              this.scene.setAspectRatio(t / n),
+              this.scene.setAspectRatio(width / height),
               (window.pointer = new THREE.Vector2()),
               $('body').on(
                 'mousemove',
                 _.bind(function(e) {
-                  (window.pointer.x = 2 * (e.clientX / t) - 1),
-                    (window.pointer.y = 1 - 2 * (e.clientY / n));
+                  (window.pointer.x = 2 * (e.clientX / width) - 1),
+                    (window.pointer.y = 1 - 2 * (e.clientY / height));
                 }, this)
               ),
-              this.scene.setRendererSize(t, n),
+              this.scene.setRendererSize(width, height),
               this.scene.initHelpers(),
               this.scene.toggleHelpers(),
               this.toggleGUIMode(),
-              a.FPS && this.initStats(),
+              Config.FPS && this.initStats(),
               this.update();
           },
           initStats: function() {
-            var e = new o();
+            var e = new Status();
             (e.domElement.style.position = 'absolute'),
               (e.domElement.style.left = '0px'),
               (e.domElement.style.top = '0px'),
@@ -13001,7 +13002,7 @@
                 (e.elapsed = this.clock.getElapsedTime()),
                 this.paused ||
                   (requestAnimationFrame(this.update.bind(this)),
-                  a.FPS && this.stats.begin(),
+                  Config.FPS && this.stats.begin(),
                   TWEEN.update(t),
                   Loader.updateTimers(e),
                   this.scene.update(e),
@@ -13012,7 +13013,7 @@
                     this.renderer.domElement.width,
                     this.renderer.domElement.height
                   ),
-                  a.FPS && this.stats.end());
+                  Config.FPS && this.stats.end());
             };
           })(),
           pause: function() {
@@ -13023,12 +13024,13 @@
           },
           onLeaveTab: function() {
             this.pause(),
-              c.isMute() || (c.toggleMute(), (this.audioShouldResume = !0));
+              Audios.isMute() ||
+                (Audios.toggleMute(), (this.audioShouldResume = !0));
           },
           onFocusTab: function() {
             this.resume(),
               this.audioShouldResume &&
-                (c.toggleMute(), (this.audioShouldResume = !1));
+                (Audios.toggleMute(), (this.audioShouldResume = !1));
           },
           toggleGUIMode: function() {
             this.stats && $(this.stats.domElement).toggle();
@@ -13073,9 +13075,9 @@
     10: [
       function(e, t, n) {
         var i = e('8'),
-          r = e('16');
+          Audios = e('16');
         e('12');
-        var o = e('65'),
+        var MainPage = e('65'),
           a = function(e) {
             i.call(this, e),
               (this.tweens = {
@@ -13091,7 +13093,7 @@
               this.initMainView(),
               window.isMobile ||
                 _.defer(function() {
-                  r.playMusic();
+                  Audios.playMusic();
                 });
           },
           handleSceneEvents: function() {
@@ -13131,13 +13133,15 @@
                   var t = e.mode;
                   this.setMode(e.mode),
                     this.isHome ||
-                      ('day' === t ? r.setDayMode() : r.setNightMode());
+                      ('day' === t
+                        ? Audios.setDayMode()
+                        : Audios.setNightMode());
                 }.bind(this)
               );
           },
           initMainView: function() {
             (this.context = {}),
-              (this.view = new o({
+              (this.view = new MainPage({
                 container: $('body'),
                 context: this.context
               })),
@@ -13146,19 +13150,19 @@
                 function() {
                   this.scene.toggleLights(),
                     'day' === this.scene.mode
-                      ? r.setDayMode()
-                      : r.setNightMode();
+                      ? Audios.setDayMode()
+                      : Audios.setNightMode();
                 },
                 this
               ),
               this.view.on(
                 'toggleSound',
                 function() {
-                  r.toggleMute(),
+                  Audios.toggleMute(),
                     !window.isMobile ||
-                      r.isMute() ||
-                      r.musicStarted ||
-                      r.playMusic();
+                      Audios.isMute() ||
+                      Audios.musicStarted ||
+                      Audios.playMusic();
                 },
                 this
               ),
@@ -13709,17 +13713,17 @@
         function i(e, t, n) {
           var i = new jQuery.Deferred();
           return (
-            h.addEventListener(
+            EventDispatcher.addEventListener(
               'fileload',
               function() {
                 (f[e] = {
-                  instance: h.createInstance(e),
+                  instance: EventDispatcher.createInstance(e),
                   defaultVolume: n
                 }),
                   i.resolve();
               }.bind(this)
             ),
-            h.registerSound(t, e),
+            EventDispatcher.registerSound(t, e),
             i.promise()
           );
         }
@@ -13766,8 +13770,8 @@
           return f[e];
         }
         var Loader = e('21'),
-          h = e('23');
-        h.alternateExtensions = ['mp3'];
+          EventDispatcher = e('23');
+        EventDispatcher.alternateExtensions = ['mp3'];
         var u = !1,
           f = {},
           d = {
@@ -13820,7 +13824,7 @@
               s(e, t);
             },
             toggleMute: function() {
-              (this.mute = !this.mute), h.setMute(this.mute);
+              (this.mute = !this.mute), EventDispatcher.setMute(this.mute);
             }
           };
         t.exports = m;
@@ -13832,69 +13836,71 @@
     ],
     16: [
       function(e, t, n) {
-        var i = e('15'),
+        var AudioManager = e('15'),
           Loader = e('21'),
-          o = {
+          Audios = {
             musicStarted: !1,
             toggleMute: function() {
-              i.toggleMute();
+              AudioManager.toggleMute();
             },
             isMute: function() {
-              return i.mute;
+              return AudioManager.mute;
             },
             preloadAll: function() {
-              return i.load();
+              return AudioManager.load();
             },
             playMusic: function() {
               (this.musicStarted = !0),
-                i.loop('exterior'),
-                i.loop('interior'),
-                i.fadeIn('exterior', 4e3),
-                i.setVolume('interior', 0);
+                AudioManager.loop('exterior'),
+                AudioManager.loop('interior'),
+                AudioManager.fadeIn('exterior', 4e3),
+                AudioManager.setVolume('interior', 0);
             },
             enterCar: function() {
-              i.fadeIn('interior', 500), i.fadeOut('exterior', 500);
+              AudioManager.fadeIn('interior', 500),
+                AudioManager.fadeOut('exterior', 500);
             },
             exitCar: function() {
-              i.fadeIn('exterior', 500), i.fadeOut('interior', 500);
+              AudioManager.fadeIn('exterior', 500),
+                AudioManager.fadeOut('interior', 500);
             },
             startCar: function() {
-              i.fadeOut('exterior', 1e3),
-                i.play('engine'),
+              AudioManager.fadeOut('exterior', 1e3),
+                AudioManager.play('engine'),
                 Loader.delay(1500, function() {
-                  i.setVolume('top', 0.6), i.loop('top');
+                  AudioManager.setVolume('top', 0.6), AudioManager.loop('top');
                 });
             },
             stopCar: function() {
-              i.fadeOut('top', 2e3),
-                i.fadeIn('exterior', 4e3),
+              AudioManager.fadeOut('top', 2e3),
+                AudioManager.fadeIn('exterior', 4e3),
                 Loader.delay(2e3, function() {
-                  i.stop('top');
+                  AudioManager.stop('top');
                 });
             },
             openDoor: function() {
-              i.play('opendoor'),
+              AudioManager.play('opendoor'),
                 Loader.delay(3200, function() {
-                  i.play('closedoor');
+                  AudioManager.play('closedoor');
                 });
             },
             setDayMode: function() {
-              i.play('day');
+              AudioManager.play('day');
             },
             setNightMode: function() {
-              i.play('night');
+              AudioManager.play('night');
             },
             takePicture: function() {
-              i.play('save');
+              AudioManager.play('save');
             },
             spotLight: function() {
-              i.play('spot');
+              AudioManager.play('spot');
             },
             moveCamera: function() {
-              i.play('woosh');
+              AudioManager.play('woosh');
             }
           };
-        t.exports = o;
+        t.exports = Audios;
       },
       {
         15: 15,
@@ -14407,7 +14413,7 @@
           Loader = {
             _timers: {}
           },
-          u = e('9').models,
+          Config = e('9').models,
           f = {},
           d = {},
           p = {},
@@ -14440,9 +14446,9 @@
             );
           }),
           (Loader.loadMesh = function(e) {
-            if (!_.has(u, e)) throw 'Unknown mesh id: ' + e;
+            if (!_.has(Config, e)) throw 'Unknown mesh id: ' + e;
             if (_.has(f, e)) return new $.Deferred().resolve(f[e]).promise();
-            var t = u[e];
+            var t = Config[e];
             return $.ajax({
               url: 'models/' + t,
               dataType: 'text'
@@ -14454,7 +14460,7 @@
             return $.when.apply($, _.map(e, Loader.loadMesh));
           }),
           (Loader.loadAllMeshes = function() {
-            return Loader.loadMeshes(_.keys(u));
+            return Loader.loadMeshes(_.keys(Config));
           }),
           (Loader.parseMeshData = function(e) {
             if (!_.has(f, e)) throw 'No JSON found for id: ' + e;
@@ -14525,19 +14531,19 @@
           }),
           (Loader.loadMeshTextures = function(e) {
             var t = _.find(e, function(e) {
-              return !_.has(u, e);
+              return !_.has(Config, e);
             });
             if (t) throw 'Unknown mesh id: ' + t;
             var n = _.uniq(
               _.map(e, function(e) {
-                return u[e].texture;
+                return Config[e].texture;
               })
             );
             return Loader.loadTextures(n);
           }),
           (Loader.getMeshTexture = function(e) {
-            if (!_.has(u, e)) throw 'Unknown mesh id: ' + e;
-            return Loader.getTexture(u[e].texture);
+            if (!_.has(Config, e)) throw 'Unknown mesh id: ' + e;
+            return Loader.getTexture(Config[e].texture);
           }),
           (Loader.getRandomInt = function(e, t) {
             return Math.floor(Math.random() * (t - e)) + e;
@@ -14776,9 +14782,9 @@
       function(e, t, n) {
         (window.createjs = window.createjs || {}),
           (function() {
-            var e = (createjs.SoundJS = createjs.SoundJS || {});
-            (e.version = 'NEXT'),
-              (e.buildDate = 'Tue, 19 May 2015 17:26:59 GMT');
+            var soundJs = (createjs.SoundJS = createjs.SoundJS || {});
+            (soundJs.version = 'NEXT'),
+              (soundJs.buildDate = 'Tue, 19 May 2015 17:26:59 GMT');
           })(),
           (this.createjs = this.createjs || {}),
           (createjs.extend = function(e, t) {
@@ -14847,21 +14853,23 @@
           (this.createjs = this.createjs || {}),
           (function() {
             'use strict';
-            function e() {
+            function EventListeners() {
               (this._listeners = null), (this._captureListeners = null);
             }
-            var t = e.prototype;
-            (e.initialize = function(e) {
-              (e.addEventListener = t.addEventListener),
-                (e.on = t.on),
-                (e.removeEventListener = e.off = t.removeEventListener),
-                (e.removeAllEventListeners = t.removeAllEventListeners),
-                (e.hasEventListener = t.hasEventListener),
-                (e.dispatchEvent = t.dispatchEvent),
-                (e._dispatchEvent = t._dispatchEvent),
-                (e.willTrigger = t.willTrigger);
+            var EventDispatcher = EventListeners.prototype;
+            (EventListeners.initialize = function(e) {
+              (e.addEventListener = EventDispatcher.addEventListener),
+                (e.on = EventDispatcher.on),
+                (e.removeEventListener = e.off =
+                  EventDispatcher.removeEventListener),
+                (e.removeAllEventListeners =
+                  EventDispatcher.removeAllEventListeners),
+                (e.hasEventListener = EventDispatcher.hasEventListener),
+                (e.dispatchEvent = EventDispatcher.dispatchEvent),
+                (e._dispatchEvent = EventDispatcher._dispatchEvent),
+                (e.willTrigger = EventDispatcher.willTrigger);
             }),
-              (t.addEventListener = function(e, t, n) {
+              (EventDispatcher.addEventListener = function(e, t, n) {
                 var i;
                 i = n
                   ? (this._captureListeners = this._captureListeners || {})
@@ -14874,7 +14882,7 @@
                   t
                 );
               }),
-              (t.on = function(e, t, n, i, r, o) {
+              (EventDispatcher.on = function(e, t, n, i, r, o) {
                 return (
                   t.handleEvent && ((n = n || t), (t = t.handleEvent)),
                   (n = n || this),
@@ -14887,7 +14895,7 @@
                   )
                 );
               }),
-              (t.removeEventListener = function(e, t, n) {
+              (EventDispatcher.removeEventListener = function(e, t, n) {
                 var i = n ? this._captureListeners : this._listeners;
                 if (i) {
                   var r = i[e];
@@ -14899,14 +14907,14 @@
                       }
                 }
               }),
-              (t.off = t.removeEventListener),
-              (t.removeAllEventListeners = function(e) {
+              (EventDispatcher.off = EventDispatcher.removeEventListener),
+              (EventDispatcher.removeAllEventListeners = function(e) {
                 e
                   ? (this._listeners && delete this._listeners[e],
                     this._captureListeners && delete this._captureListeners[e])
                   : (this._listeners = this._captureListeners = null);
               }),
-              (t.dispatchEvent = function(e) {
+              (EventDispatcher.dispatchEvent = function(e) {
                 if ('string' == typeof e) {
                   var t = this._listeners;
                   if (!t || !t[e]) return !1;
@@ -14927,22 +14935,22 @@
                 } else this._dispatchEvent(e, 2);
                 return e.defaultPrevented;
               }),
-              (t.hasEventListener = function(e) {
+              (EventDispatcher.hasEventListener = function(e) {
                 var t = this._listeners,
                   n = this._captureListeners;
                 return !!((t && t[e]) || (n && n[e]));
               }),
-              (t.willTrigger = function(e) {
+              (EventDispatcher.willTrigger = function(e) {
                 for (var t = this; t; ) {
                   if (t.hasEventListener(e)) return !0;
                   t = t.parent;
                 }
                 return !1;
               }),
-              (t.toString = function() {
+              (EventDispatcher.toString = function() {
                 return '[EventDispatcher]';
               }),
-              (t._dispatchEvent = function(e, t) {
+              (EventDispatcher._dispatchEvent = function(e, t) {
                 var n,
                   i = 1 == t ? this._captureListeners : this._listeners;
                 if (e && i) {
@@ -14967,7 +14975,7 @@
                   }
                 }
               }),
-              (createjs.EventDispatcher = e);
+              (createjs.EventDispatcher = EventListeners);
           })(),
           (this.createjs = this.createjs || {}),
           (function() {
@@ -15233,7 +15241,7 @@
                 (this._tagSrcAttribute = null),
                 (this._tag = null);
             }
-            var t = createjs.extend(e, createjs.EventDispatcher),
+            var AbstractLoader = createjs.extend(e, createjs.EventDispatcher),
               n = e;
             (n.POST = 'POST'),
               (n.GET = 'GET'),
@@ -15250,19 +15258,19 @@
               (n.SVG = 'svg'),
               (n.TEXT = 'text'),
               (n.XML = 'xml'),
-              (t.getItem = function() {
+              (AbstractLoader.getItem = function() {
                 return this._item;
               }),
-              (t.getResult = function(e) {
+              (AbstractLoader.getResult = function(e) {
                 return e ? this._rawResult : this._result;
               }),
-              (t.getTag = function() {
+              (AbstractLoader.getTag = function() {
                 return this._tag;
               }),
-              (t.setTag = function(e) {
+              (AbstractLoader.setTag = function(e) {
                 this._tag = e;
               }),
-              (t.load = function() {
+              (AbstractLoader.load = function() {
                 this._createRequest(),
                   this._request.on('complete', this, this),
                   this._request.on('progress', this, this),
@@ -15275,10 +15283,10 @@
                   this.dispatchEvent(e),
                   this._request.load();
               }),
-              (t.cancel = function() {
+              (AbstractLoader.cancel = function() {
                 (this.canceled = !0), this.destroy();
               }),
-              (t.destroy = function() {
+              (AbstractLoader.destroy = function() {
                 this._request &&
                   (this._request.removeAllEventListeners(),
                   this._request.destroy()),
@@ -15289,10 +15297,10 @@
                   (this._loadItems = null),
                   this.removeAllEventListeners();
               }),
-              (t.getLoadedItems = function() {
+              (AbstractLoader.getLoadedItems = function() {
                 return this._loadedItems;
               }),
-              (t._createRequest = function() {
+              (AbstractLoader._createRequest = function() {
                 this._request = this._preferXHR
                   ? new createjs.XHRRequest(this._item)
                   : new createjs.TagRequest(
@@ -15301,13 +15309,13 @@
                       this._tagSrcAttribute
                     );
               }),
-              (t._createTag = function() {
+              (AbstractLoader._createTag = function() {
                 return null;
               }),
-              (t._sendLoadStart = function() {
+              (AbstractLoader._sendLoadStart = function() {
                 this._isCanceled() || this.dispatchEvent('loadstart');
               }),
-              (t._sendProgress = function(e) {
+              (AbstractLoader._sendProgress = function(e) {
                 if (!this._isCanceled()) {
                   var t = null;
                   'number' == typeof e
@@ -15321,7 +15329,7 @@
                     this.hasEventListener('progress') && this.dispatchEvent(t);
                 }
               }),
-              (t._sendComplete = function() {
+              (AbstractLoader._sendComplete = function() {
                 if (!this._isCanceled()) {
                   this.loaded = !0;
                   var e = new createjs.Event('complete');
@@ -15330,18 +15338,18 @@
                     this.dispatchEvent(e);
                 }
               }),
-              (t._sendError = function(e) {
+              (AbstractLoader._sendError = function(e) {
                 !this._isCanceled() &&
                   this.hasEventListener('error') &&
                   (null == e &&
                     (e = new createjs.ErrorEvent('PRELOAD_ERROR_EMPTY')),
                   this.dispatchEvent(e));
               }),
-              (t._isCanceled = function() {
+              (AbstractLoader._isCanceled = function() {
                 return !(null != window.createjs && !this.canceled);
               }),
-              (t.resultFormatter = null),
-              (t.handleEvent = function(e) {
+              (AbstractLoader.resultFormatter = null),
+              (AbstractLoader.handleEvent = function(e) {
                 switch (e.type) {
                   case 'complete':
                     this._rawResult = e.target._response;
@@ -15368,10 +15376,10 @@
                     this._isCanceled() || this.dispatchEvent(e.type);
                 }
               }),
-              (t.buildPath = function(e, t) {
+              (AbstractLoader.buildPath = function(e, t) {
                 return createjs.RequestUtils.buildPath(e, t);
               }),
-              (t.toString = function() {
+              (AbstractLoader.toString = function() {
                 return '[PreloadJS AbstractLoader]';
               }),
               (createjs.AbstractLoader = createjs.promote(
@@ -15620,7 +15628,7 @@
                 )),
                 !this._createXHR(e);
             }
-            var t = createjs.extend(e, createjs.AbstractRequest);
+            var XHRHttpRequest = createjs.extend(e, createjs.AbstractRequest);
             (e.ACTIVEX_VERSIONS = [
               'Msxml2.XMLHTTP.6.0',
               'Msxml2.XMLHTTP.5.0',
@@ -15629,15 +15637,15 @@
               'MSXML2.XMLHTTP',
               'Microsoft.XMLHTTP'
             ]),
-              (t.getResult = function(e) {
+              (XHRHttpRequest.getResult = function(e) {
                 return e && this._rawResponse
                   ? this._rawResponse
                   : this._response;
               }),
-              (t.cancel = function() {
+              (XHRHttpRequest.cancel = function() {
                 (this.canceled = !0), this._clean(), this._request.abort();
               }),
-              (t.load = function() {
+              (XHRHttpRequest.load = function() {
                 if (null == this._request) return void this._handleError();
                 this._request.addEventListener(
                   'loadstart',
@@ -15695,43 +15703,43 @@
                   );
                 }
               }),
-              (t.setResponseType = function(e) {
+              (XHRHttpRequest.setResponseType = function(e) {
                 this._request.responseType = e;
               }),
-              (t.getAllResponseHeaders = function() {
+              (XHRHttpRequest.getAllResponseHeaders = function() {
                 return this._request.getAllResponseHeaders instanceof Function
                   ? this._request.getAllResponseHeaders()
                   : null;
               }),
-              (t.getResponseHeader = function(e) {
+              (XHRHttpRequest.getResponseHeader = function(e) {
                 return this._request.getResponseHeader instanceof Function
                   ? this._request.getResponseHeader(e)
                   : null;
               }),
-              (t._handleProgress = function(e) {
+              (XHRHttpRequest._handleProgress = function(e) {
                 if (e && !(e.loaded > 0 && 0 == e.total)) {
                   var t = new createjs.ProgressEvent(e.loaded, e.total);
                   this.dispatchEvent(t);
                 }
               }),
-              (t._handleLoadStart = function() {
+              (XHRHttpRequest._handleLoadStart = function() {
                 clearTimeout(this._loadTimeout),
                   this.dispatchEvent('loadstart');
               }),
-              (t._handleAbort = function(e) {
+              (XHRHttpRequest._handleAbort = function(e) {
                 this._clean(),
                   this.dispatchEvent(
                     new createjs.ErrorEvent('XHR_ABORTED', null, e)
                   );
               }),
-              (t._handleError = function(e) {
+              (XHRHttpRequest._handleError = function(e) {
                 this._clean(),
                   this.dispatchEvent(new createjs.ErrorEvent(e.message));
               }),
-              (t._handleReadyStateChange = function() {
+              (XHRHttpRequest._handleReadyStateChange = function() {
                 4 == this._request.readyState && this._handleLoad();
               }),
-              (t._handleLoad = function() {
+              (XHRHttpRequest._handleLoad = function() {
                 if (!this.loaded) {
                   this.loaded = !0;
                   var e = this._checkError();
@@ -15741,13 +15749,13 @@
                     this.dispatchEvent(new createjs.Event('complete'));
                 }
               }),
-              (t._handleTimeout = function(e) {
+              (XHRHttpRequest._handleTimeout = function(e) {
                 this._clean(),
                   this.dispatchEvent(
                     new createjs.ErrorEvent('PRELOAD_TIMEOUT', null, e)
                   );
               }),
-              (t._checkError = function() {
+              (XHRHttpRequest._checkError = function() {
                 var e = parseInt(this._request.status);
                 switch (e) {
                   case 404:
@@ -15756,7 +15764,7 @@
                 }
                 return null;
               }),
-              (t._getResponse = function() {
+              (XHRHttpRequest._getResponse = function() {
                 if (null != this._response) return this._response;
                 if (null != this._request.response)
                   return this._request.response;
@@ -15770,7 +15778,7 @@
                 } catch (e) {}
                 return null;
               }),
-              (t._createXHR = function(e) {
+              (XHRHttpRequest._createXHR = function(e) {
                 var t = createjs.RequestUtils.isCrossDomain(e),
                   n = {},
                   i = null;
@@ -15826,7 +15834,7 @@
                   !0
                 );
               }),
-              (t._clean = function() {
+              (XHRHttpRequest._clean = function() {
                 clearTimeout(this._loadTimeout),
                   this._request.removeEventListener(
                     'loadstart',
@@ -15857,7 +15865,7 @@
                     this._handleReadyStateChangeProxy
                   );
               }),
-              (t.toString = function() {
+              (XHRHttpRequest.toString = function() {
                 return '[PreloadJS XHRRequest]';
               }),
               (createjs.XHRRequest = createjs.promote(e, 'AbstractRequest'));
@@ -15908,7 +15916,7 @@
                   (this.startTime = null),
                   (this.duration = null);
               },
-              t = (e.prototype = {}),
+              PlayPropsConfig = (e.prototype = {}),
               n = e;
             (n.create = function(e) {
               if (e instanceof n || e instanceof Object) {
@@ -15917,11 +15925,11 @@
               }
               throw new Error('Type not recognized.');
             }),
-              (t.set = function(e) {
+              (PlayPropsConfig.set = function(e) {
                 for (var t in e) this[t] = e[t];
                 return this;
               }),
-              (t.toString = function() {
+              (PlayPropsConfig.toString = function() {
                 return '[PlayPropsConfig]';
               }),
               (createjs.PlayPropsConfig = n);
@@ -16428,42 +16436,42 @@
                 return null == n ? !1 : (n._remove(e), !0);
               }),
               (t.maxPerChannel = function() {
-                return i.maxDefault;
+                return SoundChannel.maxDefault;
               }),
               (t.get = function(e) {
                 return t.channels[e];
               });
-            var i = t.prototype;
-            (i.constructor = t),
-              (i.src = null),
-              (i.max = null),
-              (i.maxDefault = 100),
-              (i.length = 0),
-              (i.init = function(e, t) {
+            var SoundChannel = t.prototype;
+            (SoundChannel.constructor = t),
+              (SoundChannel.src = null),
+              (SoundChannel.max = null),
+              (SoundChannel.maxDefault = 100),
+              (SoundChannel.length = 0),
+              (SoundChannel.init = function(e, t) {
                 (this.src = e),
                   (this.max = t || this.maxDefault),
                   -1 == this.max && (this.max = this.maxDefault),
                   (this._instances = []);
               }),
-              (i._get = function(e) {
+              (SoundChannel._get = function(e) {
                 return this._instances[e];
               }),
-              (i._add = function(e, t) {
+              (SoundChannel._add = function(e, t) {
                 return this._getSlot(t, e)
                   ? (this._instances.push(e), this.length++, !0)
                   : !1;
               }),
-              (i._remove = function(e) {
+              (SoundChannel._remove = function(e) {
                 var t = createjs.indexOf(this._instances, e);
                 return -1 == t
                   ? !1
                   : (this._instances.splice(t, 1), this.length--, !0);
               }),
-              (i._removeAll = function() {
+              (SoundChannel._removeAll = function() {
                 for (var e = this.length - 1; e >= 0; e--)
                   this._instances[e].stop();
               }),
-              (i._getSlot = function(t) {
+              (SoundChannel._getSlot = function(t) {
                 var n, i;
                 if (t != e.INTERRUPT_NONE && ((i = this._get(0)), null == i))
                   return !0;
@@ -16486,7 +16494,7 @@
                 }
                 return null != i ? (i._interrupt(), this._remove(i), !0) : !1;
               }),
-              (i.toString = function() {
+              (SoundChannel.toString = function() {
                 return '[Sound SoundChannel]';
               });
           })(),
@@ -16546,8 +16554,11 @@
                     set: this.setPaused
                   });
               },
-              t = createjs.extend(e, createjs.EventDispatcher);
-            (t.play = function(e, t, n, i, r, o) {
+              AbstractSoundInstance = createjs.extend(
+                e,
+                createjs.EventDispatcher
+              );
+            (AbstractSoundInstance.play = function(e, t, n, i, r, o) {
               var a;
               return (
                 (a = createjs.PlayPropsConfig.create(
@@ -16570,7 +16581,7 @@
                     this)
               );
             }),
-              (t.stop = function() {
+              (AbstractSoundInstance.stop = function() {
                 return (
                   (this._position = 0),
                   (this._paused = !1),
@@ -16580,13 +16591,13 @@
                   this
                 );
               }),
-              (t.destroy = function() {
+              (AbstractSoundInstance.destroy = function() {
                 this._cleanUp(),
                   (this.src = null),
                   (this.playbackResource = null),
                   this.removeAllEventListeners();
               }),
-              (t.applyPlayProps = function(e) {
+              (AbstractSoundInstance.applyPlayProps = function(e) {
                 return (
                   null != e.offset && this.setPosition(e.offset),
                   null != e.loop && this.setLoop(e.loop),
@@ -16598,13 +16609,13 @@
                   this
                 );
               }),
-              (t.toString = function() {
+              (AbstractSoundInstance.toString = function() {
                 return '[AbstractSoundInstance]';
               }),
-              (t.getPaused = function() {
+              (AbstractSoundInstance.getPaused = function() {
                 return this._paused;
               }),
-              (t.setPaused = function(e) {
+              (AbstractSoundInstance.setPaused = function(e) {
                 return (e !== !0 && e !== !1) ||
                   this._paused == e ||
                   (1 == e && this.playState != createjs.Sound.PLAY_SUCCEEDED)
@@ -16614,35 +16625,35 @@
                     clearTimeout(this.delayTimeoutId),
                     this);
               }),
-              (t.setVolume = function(e) {
+              (AbstractSoundInstance.setVolume = function(e) {
                 return e == this._volume
                   ? this
                   : ((this._volume = Math.max(0, Math.min(1, e))),
                     this._muted || this._updateVolume(),
                     this);
               }),
-              (t.getVolume = function() {
+              (AbstractSoundInstance.getVolume = function() {
                 return this._volume;
               }),
-              (t.setMuted = function(e) {
+              (AbstractSoundInstance.setMuted = function(e) {
                 return e === !0 || e === !1
                   ? ((this._muted = e), this._updateVolume(), this)
                   : void 0;
               }),
-              (t.getMuted = function() {
+              (AbstractSoundInstance.getMuted = function() {
                 return this._muted;
               }),
-              (t.setPan = function(e) {
+              (AbstractSoundInstance.setPan = function(e) {
                 return e == this._pan
                   ? this
                   : ((this._pan = Math.max(-1, Math.min(1, e))),
                     this._updatePan(),
                     this);
               }),
-              (t.getPan = function() {
+              (AbstractSoundInstance.getPan = function() {
                 return this._pan;
               }),
-              (t.getPosition = function() {
+              (AbstractSoundInstance.getPosition = function() {
                 return (
                   this._paused ||
                     this.playState != createjs.Sound.PLAY_SUCCEEDED ||
@@ -16650,7 +16661,7 @@
                   this._position
                 );
               }),
-              (t.setPosition = function(e) {
+              (AbstractSoundInstance.setPosition = function(e) {
                 return (
                   (this._position = Math.max(0, e)),
                   this.playState == createjs.Sound.PLAY_SUCCEEDED &&
@@ -16658,62 +16669,62 @@
                   this
                 );
               }),
-              (t.getStartTime = function() {
+              (AbstractSoundInstance.getStartTime = function() {
                 return this._startTime;
               }),
-              (t.setStartTime = function(e) {
+              (AbstractSoundInstance.setStartTime = function(e) {
                 return e == this._startTime
                   ? this
                   : ((this._startTime = Math.max(0, e || 0)),
                     this._updateStartTime(),
                     this);
               }),
-              (t.getDuration = function() {
+              (AbstractSoundInstance.getDuration = function() {
                 return this._duration;
               }),
-              (t.setDuration = function(e) {
+              (AbstractSoundInstance.setDuration = function(e) {
                 return e == this._duration
                   ? this
                   : ((this._duration = Math.max(0, e || 0)),
                     this._updateDuration(),
                     this);
               }),
-              (t.setPlaybackResource = function(e) {
+              (AbstractSoundInstance.setPlaybackResource = function(e) {
                 return (
                   (this._playbackResource = e),
                   0 == this._duration && this._setDurationFromSource(),
                   this
                 );
               }),
-              (t.getPlaybackResource = function() {
+              (AbstractSoundInstance.getPlaybackResource = function() {
                 return this._playbackResource;
               }),
-              (t.getLoop = function() {
+              (AbstractSoundInstance.getLoop = function() {
                 return this._loop;
               }),
-              (t.setLoop = function(e) {
+              (AbstractSoundInstance.setLoop = function(e) {
                 null != this._playbackResource &&
                   (0 != this._loop && 0 == e
                     ? this._removeLooping(e)
                     : 0 == this._loop && 0 != e && this._addLooping(e)),
                   (this._loop = e);
               }),
-              (t._sendEvent = function(e) {
+              (AbstractSoundInstance._sendEvent = function(e) {
                 var t = new createjs.Event(e);
                 this.dispatchEvent(t);
               }),
-              (t._cleanUp = function() {
+              (AbstractSoundInstance._cleanUp = function() {
                 clearTimeout(this.delayTimeoutId),
                   this._handleCleanUp(),
                   (this._paused = !1),
                   createjs.Sound._playFinished(this);
               }),
-              (t._interrupt = function() {
+              (AbstractSoundInstance._interrupt = function() {
                 this._cleanUp(),
                   (this.playState = createjs.Sound.PLAY_INTERRUPTED),
                   this._sendEvent('interrupted');
               }),
-              (t._beginPlaying = function(e) {
+              (AbstractSoundInstance._beginPlaying = function(e) {
                 return (
                   this.setPosition(e.offset),
                   this.setLoop(e.loop),
@@ -16732,12 +16743,12 @@
                     : (this._playFailed(), !1)
                 );
               }),
-              (t._playFailed = function() {
+              (AbstractSoundInstance._playFailed = function() {
                 this._cleanUp(),
                   (this.playState = createjs.Sound.PLAY_FAILED),
                   this._sendEvent('failed');
               }),
-              (t._handleSoundComplete = function() {
+              (AbstractSoundInstance._handleSoundComplete = function() {
                 return (
                   (this._position = 0),
                   0 != this._loop
@@ -16749,21 +16760,21 @@
                       void this._sendEvent('complete'))
                 );
               }),
-              (t._handleSoundReady = function() {}),
-              (t._updateVolume = function() {}),
-              (t._updatePan = function() {}),
-              (t._updateStartTime = function() {}),
-              (t._updateDuration = function() {}),
-              (t._setDurationFromSource = function() {}),
-              (t._calculateCurrentPosition = function() {}),
-              (t._updatePosition = function() {}),
-              (t._removeLooping = function() {}),
-              (t._addLooping = function() {}),
-              (t._pause = function() {}),
-              (t._resume = function() {}),
-              (t._handleStop = function() {}),
-              (t._handleCleanUp = function() {}),
-              (t._handleLoop = function() {}),
+              (AbstractSoundInstance._handleSoundReady = function() {}),
+              (AbstractSoundInstance._updateVolume = function() {}),
+              (AbstractSoundInstance._updatePan = function() {}),
+              (AbstractSoundInstance._updateStartTime = function() {}),
+              (AbstractSoundInstance._updateDuration = function() {}),
+              (AbstractSoundInstance._setDurationFromSource = function() {}),
+              (AbstractSoundInstance._calculateCurrentPosition = function() {}),
+              (AbstractSoundInstance._updatePosition = function() {}),
+              (AbstractSoundInstance._removeLooping = function() {}),
+              (AbstractSoundInstance._addLooping = function() {}),
+              (AbstractSoundInstance._pause = function() {}),
+              (AbstractSoundInstance._resume = function() {}),
+              (AbstractSoundInstance._handleStop = function() {}),
+              (AbstractSoundInstance._handleCleanUp = function() {}),
+              (AbstractSoundInstance._handleLoop = function() {}),
               (createjs.AbstractSoundInstance = createjs.promote(
                 e,
                 'EventDispatcher'
@@ -16782,12 +16793,12 @@
                   this._loaderClass,
                   this._soundInstanceClass;
               },
-              t = e.prototype;
+              AbstractPlugin = e.prototype;
             (e._capabilities = null),
               (e.isSupported = function() {
                 return !0;
               }),
-              (t.register = function(e) {
+              (AbstractPlugin.register = function(e) {
                 var t = this._loaders[e.src];
                 return t && !t.canceled
                   ? this._loaders[e.src]
@@ -16801,19 +16812,19 @@
                     (this._loaders[e.src] = t),
                     t);
               }),
-              (t.preload = function(e) {
+              (AbstractPlugin.preload = function(e) {
                 e.on('error', createjs.proxy(this._handlePreloadError, this)),
                   e.load();
               }),
-              (t.isPreloadStarted = function(e) {
+              (AbstractPlugin.isPreloadStarted = function(e) {
                 return null != this._audioSources[e];
               }),
-              (t.isPreloadComplete = function(e) {
+              (AbstractPlugin.isPreloadComplete = function(e) {
                 return !(
                   null == this._audioSources[e] || 1 == this._audioSources[e]
                 );
               }),
-              (t.removeSound = function(e) {
+              (AbstractPlugin.removeSound = function(e) {
                 if (this._soundInstances[e]) {
                   for (var t = this._soundInstances[e].length; t--; ) {
                     var n = this._soundInstances[e][t];
@@ -16825,10 +16836,10 @@
                     delete this._loaders[e];
                 }
               }),
-              (t.removeAllSounds = function() {
+              (AbstractPlugin.removeAllSounds = function() {
                 for (var e in this._audioSources) this.removeSound(e);
               }),
-              (t.create = function(e, t, n) {
+              (AbstractPlugin.create = function(e, t, n) {
                 this.isPreloadStarted(e) || this.preload(this.register(e));
                 var i = new this._soundInstanceClass(
                   e,
@@ -16838,19 +16849,19 @@
                 );
                 return this._soundInstances[e].push(i), i;
               }),
-              (t.setVolume = function(e) {
+              (AbstractPlugin.setVolume = function(e) {
                 return (this._volume = e), this._updateVolume(), !0;
               }),
-              (t.getVolume = function() {
+              (AbstractPlugin.getVolume = function() {
                 return this._volume;
               }),
-              (t.setMute = function() {
+              (AbstractPlugin.setMute = function() {
                 return this._updateVolume(), !0;
               }),
-              (t.toString = function() {
+              (AbstractPlugin.toString = function() {
                 return '[AbstractPlugin]';
               }),
-              (t._handlePreloadComplete = function(e) {
+              (AbstractPlugin._handlePreloadComplete = function(e) {
                 var t = e.target.getItem().src;
                 this._audioSources[t] = e.result;
                 for (
@@ -16862,8 +16873,8 @@
                   r.setPlaybackResource(this._audioSources[t]);
                 }
               }),
-              (t._handlePreloadError = function() {}),
-              (t._updateVolume = function() {}),
+              (AbstractPlugin._handlePreloadError = function() {}),
+              (AbstractPlugin._updateVolume = function() {}),
               (createjs.AbstractPlugin = e);
           })(),
           (this.createjs = this.createjs || {}),
@@ -16876,23 +16887,23 @@
                 createjs.AbstractLoader.SOUND
               );
             }
-            var t = createjs.extend(e, createjs.AbstractLoader);
+            var WebAudioLoader = createjs.extend(e, createjs.AbstractLoader);
             (e.context = null),
-              (t.toString = function() {
+              (WebAudioLoader.toString = function() {
                 return '[WebAudioLoader]';
               }),
-              (t._createRequest = function() {
+              (WebAudioLoader._createRequest = function() {
                 (this._request = new createjs.XHRRequest(this._item, !1)),
                   this._request.setResponseType('arraybuffer');
               }),
-              (t._sendComplete = function() {
+              (WebAudioLoader._sendComplete = function() {
                 e.context.decodeAudioData(
                   this._rawResult,
                   createjs.proxy(this._handleAudioDecoded, this),
                   createjs.proxy(this._sendError, this)
                 );
               }),
-              (t._handleAudioDecoded = function(e) {
+              (WebAudioLoader._handleAudioDecoded = function(e) {
                 (this._result = e), this.AbstractLoader__sendComplete();
               }),
               (createjs.WebAudioLoader = createjs.promote(e, 'AbstractLoader'));
@@ -16915,40 +16926,43 @@
                   this
                 ));
             }
-            var t = createjs.extend(e, createjs.AbstractSoundInstance),
+            var WebAudioSoundInstance = createjs.extend(
+                e,
+                createjs.AbstractSoundInstance
+              ),
               n = e;
             (n.context = null),
               (n.destinationNode = null),
               (n._panningModel = 'equalpower'),
-              (t.destroy = function() {
+              (WebAudioSoundInstance.destroy = function() {
                 this.AbstractSoundInstance_destroy(),
                   this.panNode.disconnect(0),
                   (this.panNode = null),
                   this.gainNode.disconnect(0),
                   (this.gainNode = null);
               }),
-              (t.toString = function() {
+              (WebAudioSoundInstance.toString = function() {
                 return '[WebAudioSoundInstance]';
               }),
-              (t._updatePan = function() {
+              (WebAudioSoundInstance._updatePan = function() {
                 this.panNode.setPosition(this._pan, 0, -0.5);
               }),
-              (t._removeLooping = function() {
+              (WebAudioSoundInstance._removeLooping = function() {
                 this._sourceNodeNext = this._cleanUpAudioNode(
                   this._sourceNodeNext
                 );
               }),
-              (t._addLooping = function() {
+              (WebAudioSoundInstance._addLooping = function() {
                 this.playState == createjs.Sound.PLAY_SUCCEEDED &&
                   (this._sourceNodeNext = this._createAndPlayAudioNode(
                     this._playbackStartTime,
                     0
                   ));
               }),
-              (t._setDurationFromSource = function() {
+              (WebAudioSoundInstance._setDurationFromSource = function() {
                 this._duration = 1e3 * this.playbackResource.duration;
               }),
-              (t._handleCleanUp = function() {
+              (WebAudioSoundInstance._handleCleanUp = function() {
                 this.sourceNode &&
                   this.playState == createjs.Sound.PLAY_SUCCEEDED &&
                   ((this.sourceNode = this._cleanUpAudioNode(this.sourceNode)),
@@ -16960,10 +16974,10 @@
                   clearTimeout(this._soundCompleteTimeout),
                   (this._playbackStartTime = 0);
               }),
-              (t._cleanUpAudioNode = function(e) {
+              (WebAudioSoundInstance._cleanUpAudioNode = function(e) {
                 return e && (e.stop(0), e.disconnect(0), (e = null)), e;
               }),
-              (t._handleSoundReady = function() {
+              (WebAudioSoundInstance._handleSoundReady = function() {
                 this.gainNode.connect(n.destinationNode);
                 var e = 0.001 * this._duration,
                   t = 0.001 * this._position;
@@ -16983,7 +16997,7 @@
                       0
                     ));
               }),
-              (t._createAndPlayAudioNode = function(e, t) {
+              (WebAudioSoundInstance._createAndPlayAudioNode = function(e, t) {
                 var i = n.context.createBufferSource();
                 (i.buffer = this.playbackResource), i.connect(this.panNode);
                 var r = 0.001 * this._duration;
@@ -16993,7 +17007,7 @@
                   i
                 );
               }),
-              (t._pause = function() {
+              (WebAudioSoundInstance._pause = function() {
                 (this._position =
                   1e3 * (n.context.currentTime - this._playbackStartTime)),
                   (this.sourceNode = this._cleanUpAudioNode(this.sourceNode)),
@@ -17004,17 +17018,17 @@
                     this.gainNode.disconnect(0),
                   clearTimeout(this._soundCompleteTimeout);
               }),
-              (t._resume = function() {
+              (WebAudioSoundInstance._resume = function() {
                 this._handleSoundReady();
               }),
-              (t._updateVolume = function() {
+              (WebAudioSoundInstance._updateVolume = function() {
                 var e = this._muted ? 0 : this._volume;
                 e != this.gainNode.gain.value && (this.gainNode.gain.value = e);
               }),
-              (t._calculateCurrentPosition = function() {
+              (WebAudioSoundInstance._calculateCurrentPosition = function() {
                 return 1e3 * (n.context.currentTime - this._playbackStartTime);
               }),
-              (t._updatePosition = function() {
+              (WebAudioSoundInstance._updatePosition = function() {
                 (this.sourceNode = this._cleanUpAudioNode(this.sourceNode)),
                   (this._sourceNodeNext = this._cleanUpAudioNode(
                     this._sourceNodeNext
@@ -17022,7 +17036,7 @@
                   clearTimeout(this._soundCompleteTimeout),
                   this._paused || this._handleSoundReady();
               }),
-              (t._handleLoop = function() {
+              (WebAudioSoundInstance._handleLoop = function() {
                 this._cleanUpAudioNode(this.sourceNode),
                   (this.sourceNode = this._sourceNodeNext),
                   (this._playbackStartTime = this.sourceNode.startTime),
@@ -17035,7 +17049,7 @@
                     this._duration
                   ));
               }),
-              (t._updateDuration = function() {
+              (WebAudioSoundInstance._updateDuration = function() {
                 this.playState == createjs.Sound.PLAY_SUCCEEDED &&
                   (this._pause(), this._resume());
               }),
@@ -17061,7 +17075,7 @@
                 (this._soundInstanceClass = createjs.WebAudioSoundInstance),
                 this._addPropsToClasses();
             }
-            var t = createjs.extend(e, createjs.AbstractPlugin),
+            var WebAudioPlugin = createjs.extend(e, createjs.AbstractPlugin),
               n = e;
             (n._capabilities = null),
               (n._panningModel = 'equalpower'),
@@ -17155,17 +17169,17 @@
                     (n._panningModel = 0);
                 }
               }),
-              (t.toString = function() {
+              (WebAudioPlugin.toString = function() {
                 return '[WebAudioPlugin]';
               }),
-              (t._addPropsToClasses = function() {
+              (WebAudioPlugin._addPropsToClasses = function() {
                 var e = this._soundInstanceClass;
                 (e.context = this.context),
                   (e.destinationNode = this.gainNode),
                   (e._panningModel = this._panningModel),
                   (this._loaderClass.context = this.context);
               }),
-              (t._updateVolume = function() {
+              (WebAudioPlugin._updateVolume = function() {
                 var e = createjs.Sound._masterMute ? 0 : this._volume;
                 e != this.gainNode.gain.value && (this.gainNode.gain.value = e);
               }),
@@ -17212,9 +17226,9 @@
                 return null == t ? 0 : 1e3 * t.duration;
               }),
               (createjs.HTMLAudioTagPool = e);
-            var i = t.prototype;
-            (i.constructor = t),
-              (i.get = function() {
+            var TagPool = t.prototype;
+            (TagPool.constructor = t),
+              (TagPool.get = function() {
                 var e;
                 return (
                   (e =
@@ -17225,14 +17239,14 @@
                   e
                 );
               }),
-              (i.set = function(e) {
+              (TagPool.set = function(e) {
                 var t = createjs.indexOf(this._tags, e);
                 -1 == t && ((this._tags.src = null), this._tags.push(e));
               }),
-              (i.toString = function() {
+              (TagPool.toString = function() {
                 return '[TagPool]';
               }),
-              (i._createTag = function() {
+              (TagPool._createTag = function() {
                 var e = document.createElement('audio');
                 return (e.autoplay = !1), (e.preload = 'none'), e;
               });
@@ -17267,17 +17281,20 @@
                       this.src
                     ));
             }
-            var t = createjs.extend(e, createjs.AbstractSoundInstance);
-            (t.setMasterVolume = function() {
+            var HTMLAudioSoundInstance = createjs.extend(
+              e,
+              createjs.AbstractSoundInstance
+            );
+            (HTMLAudioSoundInstance.setMasterVolume = function() {
               this._updateVolume();
             }),
-              (t.setMasterMute = function() {
+              (HTMLAudioSoundInstance.setMasterMute = function() {
                 this._updateVolume();
               }),
-              (t.toString = function() {
+              (HTMLAudioSoundInstance.toString = function() {
                 return '[HTMLAudioSoundInstance]';
               }),
-              (t._removeLooping = function() {
+              (HTMLAudioSoundInstance._removeLooping = function() {
                 null != this._playbackResource &&
                   ((this._playbackResource.loop = !1),
                   this._playbackResource.removeEventListener(
@@ -17286,7 +17303,7 @@
                     !1
                   ));
               }),
-              (t._addLooping = function() {
+              (HTMLAudioSoundInstance._addLooping = function() {
                 null == this._playbackResource ||
                   this._audioSpriteStopTime ||
                   (this._playbackResource.addEventListener(
@@ -17296,7 +17313,7 @@
                   ),
                   (this._playbackResource.loop = !0));
               }),
-              (t._handleCleanUp = function() {
+              (HTMLAudioSoundInstance._handleCleanUp = function() {
                 var e = this._playbackResource;
                 if (null != e) {
                   e.pause(),
@@ -17333,7 +17350,7 @@
                     (this._playbackResource = null);
                 }
               }),
-              (t._beginPlaying = function(e) {
+              (HTMLAudioSoundInstance._beginPlaying = function(e) {
                 return (
                   (this._playbackResource = createjs.HTMLAudioTagPool.get(
                     this.src
@@ -17341,7 +17358,7 @@
                   this.AbstractSoundInstance__beginPlaying(e)
                 );
               }),
-              (t._handleSoundReady = function() {
+              (HTMLAudioSoundInstance._handleSoundReady = function() {
                 if (4 !== this._playbackResource.readyState) {
                   var e = this._playbackResource;
                   return (
@@ -17382,7 +17399,7 @@
                         (this._playbackResource.loop = !0))),
                   this._playbackResource.play();
               }),
-              (t._handleTagReady = function() {
+              (HTMLAudioSoundInstance._handleTagReady = function() {
                 this._playbackResource.removeEventListener(
                   createjs.HTMLAudioPlugin._AUDIO_READY,
                   this._readyHandler,
@@ -17395,13 +17412,13 @@
                   ),
                   this._handleSoundReady();
               }),
-              (t._pause = function() {
+              (HTMLAudioSoundInstance._pause = function() {
                 this._playbackResource.pause();
               }),
-              (t._resume = function() {
+              (HTMLAudioSoundInstance._resume = function() {
                 this._playbackResource.play();
               }),
-              (t._updateVolume = function() {
+              (HTMLAudioSoundInstance._updateVolume = function() {
                 if (null != this._playbackResource) {
                   var e =
                     this._muted || createjs.Sound._masterMute
@@ -17411,12 +17428,12 @@
                     (this._playbackResource.volume = e);
                 }
               }),
-              (t._calculateCurrentPosition = function() {
+              (HTMLAudioSoundInstance._calculateCurrentPosition = function() {
                 return (
                   1e3 * this._playbackResource.currentTime - this._startTime
                 );
               }),
-              (t._updatePosition = function() {
+              (HTMLAudioSoundInstance._updatePosition = function() {
                 this._playbackResource.removeEventListener(
                   createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                   this._loopHandler,
@@ -17434,7 +17451,7 @@
                   this._handleSetPositionSeek(null);
                 }
               }),
-              (t._handleSetPositionSeek = function() {
+              (HTMLAudioSoundInstance._handleSetPositionSeek = function() {
                 null != this._playbackResource &&
                   (this._playbackResource.removeEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
@@ -17447,7 +17464,7 @@
                     !1
                   ));
               }),
-              (t._handleAudioSpriteLoop = function() {
+              (HTMLAudioSoundInstance._handleAudioSpriteLoop = function() {
                 this._playbackResource.currentTime <=
                   this._audioSpriteStopTime ||
                   (this._playbackResource.pause(),
@@ -17460,7 +17477,7 @@
                       this._paused || this._playbackResource.play(),
                       this._sendEvent('loop')));
               }),
-              (t._handleLoop = function() {
+              (HTMLAudioSoundInstance._handleLoop = function() {
                 0 == this._loop &&
                   ((this._playbackResource.loop = !1),
                   this._playbackResource.removeEventListener(
@@ -17469,7 +17486,7 @@
                     !1
                   ));
               }),
-              (t._updateStartTime = function() {
+              (HTMLAudioSoundInstance._updateStartTime = function() {
                 (this._audioSpriteStopTime =
                   0.001 * (this._startTime + this._duration)),
                   this.playState == createjs.Sound.PLAY_SUCCEEDED &&
@@ -17484,7 +17501,7 @@
                       !1
                     ));
               }),
-              (t._updateDuration = function() {
+              (HTMLAudioSoundInstance._updateDuration = function() {
                 (this._audioSpriteStopTime =
                   0.001 * (this._startTime + this._duration)),
                   this.playState == createjs.Sound.PLAY_SUCCEEDED &&
@@ -17514,7 +17531,7 @@
                 (this._loaderClass = createjs.SoundLoader),
                 (this._soundInstanceClass = createjs.HTMLAudioSoundInstance);
             }
-            var t = createjs.extend(e, createjs.AbstractPlugin),
+            var HTMLAudioPlugin = createjs.extend(e, createjs.AbstractPlugin),
               n = e;
             (n.MAX_INSTANCES = 30),
               (n._AUDIO_READY = 'canplaythrough'),
@@ -17553,23 +17570,23 @@
                   }
                 }
               }),
-              (t.register = function(e) {
+              (HTMLAudioPlugin.register = function(e) {
                 var t = createjs.HTMLAudioTagPool.get(e.src),
                   n = this.AbstractPlugin_register(e);
                 return n.setTag(t), n;
               }),
-              (t.removeSound = function(e) {
+              (HTMLAudioPlugin.removeSound = function(e) {
                 this.AbstractPlugin_removeSound(e),
                   createjs.HTMLAudioTagPool.remove(e);
               }),
-              (t.create = function(e, t, n) {
+              (HTMLAudioPlugin.create = function(e, t, n) {
                 var i = this.AbstractPlugin_create(e, t, n);
                 return i.setPlaybackResource(null), i;
               }),
-              (t.toString = function() {
+              (HTMLAudioPlugin.toString = function() {
                 return '[HTMLAudioPlugin]';
               }),
-              (t.setVolume = t.getVolume = t.setMute = null),
+              (HTMLAudioPlugin.setVolume = HTMLAudioPlugin.getVolume = HTMLAudioPlugin.setMute = null),
               (createjs.HTMLAudioPlugin = createjs.promote(
                 e,
                 'AbstractPlugin'
@@ -17581,7 +17598,7 @@
     ],
     24: [
       function(e, t, n) {
-        var i = function() {
+        var Status = function() {
           var e = Date.now(),
             t = e,
             n = 0,
@@ -17694,7 +17711,7 @@
             }
           };
         };
-        'object' == typeof t && (t.exports = i);
+        'object' == typeof t && (t.exports = Status);
       },
       {}
     ],
@@ -39465,7 +39482,7 @@
           Loader.onLoadingProgress(function(e) {
             n.css('width', Math.round(100 * e) + '%');
           });
-          var i = _.flatten([Loader.load(t), s.preloadAll()]);
+          var i = _.flatten([Loader.load(t), Audios.preloadAll()]);
           $.when.apply(null, i).done(function() {
             Detector.webgl
               ? _.defer(function() {
@@ -39492,7 +39509,7 @@
         e('27'), e('22');
         var o = e('29'),
           Loader = e('21'),
-          s = e('16');
+          Audios = e('16');
         t.exports = i;
       },
       {
@@ -42060,10 +42077,10 @@
     45: [
       function(e, t, n) {
         var Loader = e('21'),
-          r = e('43'),
+          CustomCamera = e('43'),
           o = function(e) {
             THREE.Object3D.call(this);
-            var t = (this.cinematicCamera = new r({
+            var t = (this.cinematicCamera = new CustomCamera({
                 name: e.name,
                 near: 0.001,
                 far: 100
@@ -42144,7 +42161,7 @@
     46: [
       function(e, t, n) {
         var Loader = e('21'),
-          r = e('43'),
+          CustomCamera = e('43'),
           o = [
             [5, 97],
             [105, 245],
@@ -42157,7 +42174,7 @@
           ],
           a = function(e) {
             THREE.Object3D.call(this);
-            var t = (this.cinematicCamera = new r({
+            var t = (this.cinematicCamera = new CustomCamera({
                 name: e.name,
                 near: 0.001,
                 far: 100
@@ -42358,15 +42375,15 @@
     ],
     48: [
       function(e, t, n) {
-        var ExtendedScene = e('56'),
+        var CustomScene = e('56'),
           Loader = e('21'),
-          o = e('16'),
+          Audios = e('16'),
           Car = e('47'),
           Environment = (e('55'), e('58')),
           Vignetting = e('59'),
           WebGLLensFlare = e('54'),
           h = function() {
-            ExtendedScene.call(this, {
+            CustomScene.call(this, {
               car: new Car()
             }),
               (this.skyColor = new THREE.Color(16777215)),
@@ -42377,15 +42394,15 @@
               this.initLensFlare(),
               this.initCarHotspots(),
               (this.wheelEditMode = !1),
-              this.lights.forEach(function(e) {
-                e.updateMatrixWorld(!0);
+              this.lights.forEach(function(light) {
+                light.updateMatrixWorld(true);
               }),
               this.refreshCustomMaterials(),
               this.initRearGlow(),
               (this.controls.distance = 10),
               this.setMode('pitchblack');
           };
-        h.inherit(ExtendedScene, {
+        h.inherit(CustomScene, {
           playIntro: function() {
             (this.introMode = !0),
               Loader.delay(
@@ -42404,7 +42421,7 @@
                     this.setMode('day'),
                     this.fadeOutRearGlow(),
                     this.car.hideFrontGlow(),
-                    o.spotLight();
+                    Audios.spotLight();
                 },
                 this
               ),
@@ -42534,8 +42551,7 @@
               .start();
           },
           initGlow: function() {
-            ExtendedScene.prototype.initGlow.call(this),
-              (this.glowIntensity = 0);
+            CustomScene.prototype.initGlow.call(this), (this.glowIntensity = 0);
           },
           initTunnel: function() {
             (this.tunnel = new Environment({
@@ -42562,7 +42578,7 @@
               this.add(this.lensFlare);
           },
           initControls: function() {
-            ExtendedScene.prototype.initControls.call(this),
+            CustomScene.prototype.initControls.call(this),
               (this.controlsRotation = new THREE.Vector2(
                 Math.PI / 2,
                 Math.PI / 2.15
@@ -42581,7 +42597,7 @@
               this.showHotspots('exterior');
           },
           setupEvents: function() {
-            ExtendedScene.prototype.setupEvents.call(this),
+            CustomScene.prototype.setupEvents.call(this),
               this.objectPicker.addEventListener(
                 'pick',
                 function(e) {
@@ -42593,7 +42609,7 @@
               );
           },
           setMode: function(e, t) {
-            ExtendedScene.prototype.setMode.call(this, e, t);
+            CustomScene.prototype.setMode.call(this, e, t);
             var n = 350,
               o = TWEEN.Easing.Quadratic.InOut,
               a = new THREE.Color(16777215),
@@ -42631,31 +42647,31 @@
             this.car.setColor(e);
           },
           startCar: function() {
-            ExtendedScene.prototype.startCar.call(this),
+            CustomScene.prototype.startCar.call(this),
               this.vignetting.fadeOut(),
-              o.startCar();
+              Audios.startCar();
           },
           stopCar: function() {
-            ExtendedScene.prototype.stopCar.call(this),
+            CustomScene.prototype.stopCar.call(this),
               this.vignetting.fadeIn(),
-              o.stopCar();
+              Audios.stopCar();
           },
           enterCar: function() {
-            ExtendedScene.prototype.enterCar.call(this),
+            CustomScene.prototype.enterCar.call(this),
               Loader.delay(
                 4300,
                 function() {
-                  o.enterCar();
+                  Audios.enterCar();
                 },
                 this
               );
           },
           exitCar: function() {
-            ExtendedScene.prototype.exitCar.call(this),
+            CustomScene.prototype.exitCar.call(this),
               Loader.delay(
                 1e3,
                 function() {
-                  o.exitCar();
+                  Audios.exitCar();
                 },
                 this
               );
@@ -42688,7 +42704,7 @@
                 (this.lensFlare.scaleFactor = 0);
           },
           update: function(e) {
-            ExtendedScene.prototype.update.call(this, e),
+            CustomScene.prototype.update.call(this, e),
               this.vignetting &&
                 this.vignetting.update(this.exteriorControls.distance),
               this.updateSkyColor(this.camera),
@@ -42697,7 +42713,7 @@
               this.lensFlare && this.updateLensFlare();
           },
           render: function(e, t) {
-            ExtendedScene.prototype.render.call(this, e, t),
+            CustomScene.prototype.render.call(this, e, t),
               this.introPlayed || this.playIntro();
           }
         }),
@@ -43192,15 +43208,15 @@
     56: [
       function(e, t, n) {
         var Loader = e('21'),
-          r = e('19'),
-          o = e('18'),
-          a = e('16'),
+          OrbitControl = e('19'),
+          ObjectPicker = e('18'),
+          Audios = e('16'),
           CustomCamera = e('43'),
-          l = e('45'),
-          c = e('46'),
-          h = e('50'),
-          u = (e('44'), e('51')),
-          f =
+          transitionCamera = e('45'),
+          AutoCamera = e('46'),
+          Helpers = e('50'),
+          Ground = (e('44'), e('51')),
+          CustomScene =
             (e('42'),
             function(e) {
               THREE.Scene.call(this),
@@ -43225,7 +43241,7 @@
                 this.initGlow(),
                 this.setupEvents();
             });
-        f.inherit(THREE.Scene, {
+        CustomScene.inherit(THREE.Scene, {
           setRendererSize: function(e, t) {
             (this.rendererWidth = e), (this.rendererHeight = t);
           },
@@ -43240,9 +43256,13 @@
           },
           initLights: function() {
             this.lights = [];
-            var e = 15790831,
-              t = 1118481;
-            (this.hemisphereLight = new THREE.HemisphereLight(e, t, 0.8)),
+            var skyColor = 15790831,
+              groundColor = 1118481;
+            (this.hemisphereLight = new THREE.HemisphereLight(
+              skyColor,
+              groundColor,
+              0.8
+            )),
               this.lights.push(this.hemisphereLight),
               this.add(this.hemisphereLight),
               this.hemisphereLight.position.set(0, 10, 0),
@@ -43273,7 +43293,7 @@
               );
           },
           initGround: function() {
-            var e = new u();
+            var e = new Ground();
             (this.ground = e),
               this.materials.push(e.material),
               this.objects.push(e),
@@ -43313,7 +43333,9 @@
               r = n && n.easing,
               o = n && n.mute,
               s = this.controls.orbitTo(i.position, t, r);
-            return this.controls.lookAt(i.target, t, r), o || a.moveCamera(), s;
+            return (
+              this.controls.lookAt(i.target, t, r), o || Audios.moveCamera(), s
+            );
           },
           updateGlow: (function() {
             var e = new THREE.Vector3(),
@@ -43343,7 +43365,7 @@
             };
           })(),
           initControls: function() {
-            (this.exteriorControls = new r({
+            (this.exteriorControls = new OrbitControl({
               camera: this.camera,
               origin: new THREE.Vector3(0, 0.5, 0),
               clampY: Math.PI / 2
@@ -43358,9 +43380,9 @@
           },
           initHelpers: function() {
             this.helpers = [];
-            var e = new h();
-            this.add(e),
-              this.helpers.push(e),
+            var helper = new Helpers();
+            this.add(helper),
+              this.helpers.push(helper),
               _.each(
                 this.lights,
                 _.bind(function(e) {
@@ -43372,12 +43394,12 @@
             (t.position.y += 0.05), this.add(t), this.helpers.push(t);
           },
           initPicker: function() {
-            this.objectPicker = new o({
+            this.objectPicker = new ObjectPicker({
               camera: this.camera
             });
           },
           initAutoCamera: function() {
-            (this.autoCamera = new c({
+            (this.autoCamera = new AutoCamera({
               name: 'auto',
               animation: 'camera_auto',
               boneName: 'Camera_Bone_01',
@@ -43386,7 +43408,7 @@
               this.add(this.autoCamera);
           },
           initTransitionCamera: function() {
-            (this.transitionCamera = new l({
+            (this.transitionCamera = new transitionCamera({
               name: 'transition',
               animation: 'camera_transition',
               boneName: 'Camera_Bone_01',
@@ -43426,7 +43448,7 @@
               fov: 45
             }));
             this.add(e),
-              (this.interiorControls = new r({
+              (this.interiorControls = new OrbitControl({
                 camera: e,
                 distance: 0.01,
                 damp: 2,
@@ -43561,7 +43583,7 @@
                 this
               ),
               Loader.delay(1e3, function() {
-                a.openDoor();
+                Audios.openDoor();
               }),
               Loader.delay(
                 2e3,
@@ -43581,7 +43603,7 @@
               }),
               this.resetInteriorCamera(1e3).done(
                 function() {
-                  a.openDoor(),
+                  Audios.openDoor(),
                     (this.transitionCamera.started = !1),
                     (this.transitionCamera.enabled = !0),
                     (this.transitionCamera.reverse = !0),
@@ -43689,7 +43711,7 @@
             this.camera && e.render(this, this.camera);
           }
         }),
-          (t.exports = f);
+          (t.exports = CustomScene);
       },
       {
         16: 16,
@@ -44022,7 +44044,7 @@
     61: [
       // lensFlarePlugin
       function(e, t, n) {
-        var i = function(webGLRenderer) {
+        var LensFlarePlugin = function(webGLRenderer) {
             function buildProgram(e, t) {
               var program = gl.createProgram(),
                 frag_shader = gl.createShader(gl.FRAGMENT_SHADER),
@@ -44274,7 +44296,7 @@
               '}'
             ].join('\n')
           };
-        t.exports = i;
+        t.exports = LensFlarePlugin;
       },
       {}
     ],
@@ -44315,8 +44337,8 @@
     63: [
       function(e, t, n) {
         var CustomView = (e('21'), e('66')),
-          r = e('9'),
-          o = CustomView.extend({
+          Config = e('9'),
+          HudPage = CustomView.extend({
             template: 'hud.html',
             events: {
               'tap .js-lights-toggle': 'toggleLights',
@@ -44333,7 +44355,7 @@
                 (this.$compare = this.$('.js-compare')),
                 (this.savedCarCount = 0),
                 (this.carStarted = !1),
-                (!r.AUDIO || (r.AUDIO && window.isMobile)) &&
+                (!Config.AUDIO || (Config.AUDIO && window.isMobile)) &&
                   setTimeout(
                     function() {
                       this.toggleSound();
@@ -44385,7 +44407,7 @@
               this.trigger('showAbout');
             }
           });
-        t.exports = o;
+        t.exports = HudPage;
       },
       {
         21: 21,
