@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as THREE from 'three';
-import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
+import { LegacyJSONLoader } from 'three/examples/jsm/loaders/LegencyJSONLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 @Component({
   selector: 'app-flexware',

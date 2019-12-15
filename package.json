@@ -28,7 +28,7 @@
     "normalize.css": "^8.0.1",
     "rxjs": "~6.3.3",
     "simplex-noise": "^2.4.0",
-    "three": "^0.106.2",
+    "three": "^0.111.0",
     "tslib": "^1.9.0",
     "webfontloader": "^1.6.28",
     "zone.js": "~0.8.26"

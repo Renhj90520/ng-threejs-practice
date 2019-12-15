@@ -105,12 +105,8 @@ export class GravityArrowsComponent implements OnInit {
       new THREE.InstancedBufferAttribute(iColors, 4, true)
     );
 
-    (this.geometry.attributes.iRotation as THREE.BufferAttribute).setDynamic(
-      true
-    );
-    (this.geometry.attributes.iOffset as THREE.BufferAttribute).setDynamic(
-      true
-    );
+    this.geometry.attributes.iRotation;
+    this.geometry.attributes.iOffset;
 
     for (let i = 0; i < this.NUM_INSTANCE; i++) {
       this.arrows.push(

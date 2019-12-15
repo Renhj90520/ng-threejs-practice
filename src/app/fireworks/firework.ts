@@ -429,24 +429,21 @@ class ParticleMesh {
 
     bufferGeo.addAttribute(
       'position',
-      new THREE.Float32BufferAttribute(vertices, 3).setDynamic(true)
+      new THREE.Float32BufferAttribute(vertices, 3)
     );
     bufferGeo.addAttribute(
       'velocity',
-      new THREE.Float32BufferAttribute(velocities, 3).setDynamic(true)
+      new THREE.Float32BufferAttribute(velocities, 3)
     );
     bufferGeo.addAttribute(
       'color',
-      new THREE.Float32BufferAttribute(colors, 4).setDynamic(true)
+      new THREE.Float32BufferAttribute(colors, 4)
     );
     bufferGeo.addAttribute(
       'adjustSize',
-      new THREE.Float32BufferAttribute(adjustSizes, 1).setDynamic(true)
+      new THREE.Float32BufferAttribute(adjustSizes, 1)
     );
-    bufferGeo.addAttribute(
-      'mass',
-      new THREE.Float32BufferAttribute(masses, 1).setDynamic(true)
-    );
+    bufferGeo.addAttribute('mass', new THREE.Float32BufferAttribute(masses, 1));
 
     const shaderMaterial = new THREE.RawShaderMaterial({
       uniforms: {

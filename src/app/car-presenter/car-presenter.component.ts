@@ -25,7 +25,10 @@ export class CarPresenterComponent implements OnInit {
   ngOnInit() {
     this.initTHREE();
     this.initLights();
+    this.initGround();
     this.update();
+  }
+  initGround() {
   }
   initLights() {
     const skyColor = 0xf0f2ef;
