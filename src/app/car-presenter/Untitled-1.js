@@ -42393,7 +42393,7 @@
             }),
               (this.skyColor = new THREE.Color(0xffffff)),
               (this.skyColor1 = new THREE.Color(0xffffff)),
-              (this.skyColor2 = new THREE.Color(14475489)),
+              (this.skyColor2 = new THREE.Color(0xdce0e1)),
               this.initTunnel(),
               this.initVignetting(),
               this.initLensFlare(),
@@ -42619,7 +42619,7 @@
               o = TWEEN.Easing.Quadratic.InOut,
               a = new THREE.Color(0xffffff),
               s = new THREE.Color(0),
-              l = new THREE.Color(14475489);
+              l = new THREE.Color(0xdce0e1);
             'day' === e
               ? (Loader.tween(n, o).onUpdate(
                   function(e) {
@@ -42843,10 +42843,10 @@
           updateSkyColor: function(e) {
             this.mesh.material.colorStep3 = e;
           },
-          setMode: function(e, t) {
-            var n = void 0 !== t ? t : 350;
+          setMode: function(mode, t) {
+            var duration = void 0 !== t ? t : 350;
             (this.progress = 0),
-              'day' == e &&
+              'day' == mode &&
                 ((this.mesh.material.color = this.dayDiffuse),
                 this.tweens.intensity
                   .reset(this.mesh.material)
@@ -42855,12 +42855,12 @@
                       lightIntensity: 1,
                       lightMapOpacity: 0
                     },
-                    n
+                    duration
                   )
                   .onUpdate(
                     function(e) {
                       this.mesh.material.colorStep1.lerp(
-                        new THREE.Color(14342616),
+                        new THREE.Color(0xdad9d8),
                         e
                       ),
                         this.mesh.material.colorStep2.lerp(
@@ -42868,7 +42868,7 @@
                           e
                         ),
                         this.mesh.material.colorStep3.lerp(
-                          new THREE.Color(14475489),
+                          new THREE.Color(0xdce0e1),
                           e
                         );
                     }.bind(this)
@@ -42881,7 +42881,7 @@
                     {
                       progress: 1
                     },
-                    n
+                    duration
                   )
                   .easing(TWEEN.Easing.Quadratic.In)
                   .onUpdate(
@@ -42890,7 +42890,7 @@
                     }.bind(this)
                   )
                   .start()),
-              'night' == e &&
+              'night' == mode &&
                 (this.tweens.intensity
                   .reset(this.mesh.material)
                   .to(
@@ -42898,7 +42898,7 @@
                       lightIntensity: 0,
                       lightMapOpacity: 1
                     },
-                    n
+                    duration
                   )
                   .easing(TWEEN.Easing.Quadratic.InOut)
                   .onUpdate(
@@ -42921,7 +42921,7 @@
                     {
                       progress: 1
                     },
-                    n
+                    duration
                   )
                   .easing(TWEEN.Easing.Quadratic.In)
                   .onUpdate(
@@ -42930,7 +42930,7 @@
                     }.bind(this)
                   )
                   .start()),
-              'pitchblack' == e &&
+              'pitchblack' == mode &&
                 ((this.mesh.material.color = this.nightDiffuse),
                 (this.mesh.material.colorStep1 = new THREE.Color(0)),
                 (this.mesh.material.colorStep2 = new THREE.Color(0)),
@@ -43782,7 +43782,7 @@
               this.mapDiffuseNight.repeat.set(35, 35),
               (this.diffuseDay = new THREE.Color(0xffffff)),
               (this.diffuseNight = new THREE.Color(0)),
-              (this.baseColorDay = new THREE.Color(14342616)),
+              (this.baseColorDay = new THREE.Color(0xdad9d8)),
               (this.baseColorNight = new THREE.Color(0)),
               (this.glowColorDay = new THREE.Color(0xffffff)),
               (this.glowColorNight = new THREE.Color(0)),
