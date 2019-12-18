@@ -43532,26 +43532,26 @@
               (e && t.group !== e) || t.fadeIn();
             }, this);
           },
-          setMode: function(e, t) {
-            (this.mode = e),
+          setMode: function(mode, duration) {
+            (this.mode = mode),
               'day' === this.mode &&
-                (this.ground.setMode(e, t),
-                this.car.setMode(e, t),
+                (this.ground.setMode(mode, duration),
+                this.car.setMode(mode, duration),
                 (this.hemisphereLight.intensity = 0.8),
                 (this.spot.intensity = 1)),
               'night' === this.mode &&
-                (this.ground.setMode(e, t),
-                this.car.setMode(e, t),
+                (this.ground.setMode(mode, duration),
+                this.car.setMode(mode, duration),
                 (this.hemisphereLight.intensity = 0.5),
                 (this.spot.intensity = 0.5)),
               'pitchblack' === this.mode &&
-                (this.ground.setMode(e, t),
-                this.car.setMode(e, t),
+                (this.ground.setMode(mode, duration),
+                this.car.setMode(mode, duration),
                 (this.hemisphereLight.intensity = 0),
                 (this.spot.intensity = 0)),
               this.dispatchEvent({
                 type: 'changeMode',
-                mode: e
+                mode: mode
               }),
               this.refreshCustomMaterials();
           },

@@ -6,6 +6,7 @@ import {
   ElementRef
 } from '@angular/core';
 import * as THREE from 'three';
+import Ground from './ground';
 @Component({
   selector: 'app-car-presenter',
   templateUrl: './car-presenter.component.html',
@@ -19,6 +20,7 @@ export class CarPresenterComponent implements OnInit {
   orbitCamera: THREE.PerspectiveCamera;
   width;
   height;
+  ground: Ground;
 
   constructor() {}
 
@@ -29,6 +31,9 @@ export class CarPresenterComponent implements OnInit {
     this.update();
   }
   initGround() {
+    this.ground = new Ground();
+    this.ground.setMode('day');
+    this.scene.add(this.ground);
   }
   initLights() {
     const skyColor = 0xf0f2ef;

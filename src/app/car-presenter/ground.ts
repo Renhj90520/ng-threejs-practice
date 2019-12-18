@@ -51,12 +51,22 @@ export default class Ground extends THREE.Object3D {
     (this.mesh.material as any).colorStep3 = color;
   }
   setMode(mode, duration?) {
-    duration = duration !== undefined ? duration : 350;
+    duration = duration !== undefined ? duration : 0.35;
 
-    TweenLite.to(this.mesh.material, duration, {
-      lightIntensity: 1,
-      lightMapOpacity: 0,
-      ease: Power2.easeInOut
-    });
+    if (mode === 'day') {
+      const material: any = this.mesh.material;
+      let tn = TweenLite.to(this.mesh.material, duration, {
+        lightIntensity: 1,
+        lightMapOpacity: 0,
+        ease: Power2.easeInOut,
+        onUpdate: () => {
+          const progress = tn.progress();
+          material.colorStep1.lerp(new THREE.Color(0xdad9d8), progress);
+          material.colorStep2.lerp(new THREE.Color(0xcecdcb), progress);
+          material.colorStep3.lerp(new THREE.Color(0xdce0e1), progress);
+          material.color.lerp(this.dayDiffuse, progress);
+        }
+      }).play();
+    }
   }
 }

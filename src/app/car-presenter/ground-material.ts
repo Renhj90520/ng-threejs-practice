@@ -75,7 +75,7 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
         float m = smoothstep(4.0, 9.0, vDistance);
         vec3 color = mix(gl_FragColor.rgb, colorStep1, m);
         gl_FragColor = vec4(color, 1.0);
-        m = smoothStep(22.0, 25.0, max(vWorldPos.z - (vWorldPos.x * .45), abs(vWorldPos.x * .75)));
+        m = smoothstep(22.0, 25.0, max(vWorldPos.z - (vWorldPos.x * .45), abs(vWorldPos.x * .75)));
         color = mix(gl_FragColor.rgb, colorStep3, m);
         gl_FragColor = vec4(color, 1.);
     }
