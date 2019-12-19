@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import * as THREE from 'three';
 import Ground from './ground';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 @Component({
   selector: 'app-car-presenter',
   templateUrl: './car-presenter.component.html',
@@ -21,6 +22,7 @@ export class CarPresenterComponent implements OnInit {
   width;
   height;
   ground: Ground;
+  exteriorControls: OrbitControls;
 
   constructor() {}
 
@@ -28,8 +30,10 @@ export class CarPresenterComponent implements OnInit {
     this.initTHREE();
     this.initLights();
     this.initGround();
+    this.initControls();
     this.update();
   }
+  initControls() {}
   initGround() {
     this.ground = new Ground();
     this.ground.setMode('day');

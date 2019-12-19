@@ -13995,20 +13995,20 @@
         function r(e, t, n) {
           var r, o;
           if (e > t) {
-            var a = t + s - e,
+            var a = t + TWOPI - e,
               l = e - t;
-            a > l ? ((r = e), (o = t)) : ((r = e), (o = t + s));
+            a > l ? ((r = e), (o = t)) : ((r = e), (o = t + TWOPI));
           } else {
             var a = t - e,
-              l = e + s - t;
-            a > l ? ((r = e + s), (o = t)) : ((r = e), (o = t));
+              l = e + TWOPI - t;
+            a > l ? ((r = e + TWOPI), (o = t)) : ((r = e), (o = t));
           }
-          return i(r, o, n) % s;
+          return i(r, o, n) % TWOPI;
         }
         var Loader = e('21'),
-          a = e('3'),
-          s = 2 * Math.PI,
-          l = function(e) {
+          Hammer = e('3'),
+          TWOPI = 2 * Math.PI,
+          InteriorControls = function(e) {
             THREE.EventDispatcher.call(this),
               (this.enabled = !0),
               (this.camera = e.camera),
@@ -14031,7 +14031,7 @@
               this.setupEvents(),
               (this.zoomSpeed = 0.5),
               (this.zoomEnabled = void 0 !== e.zoom ? e.zoom : !0),
-              (this.hammer = new a($('body')[0])),
+              (this.hammer = new Hammer($('body')[0])),
               this.hammer.get('pinch').set({
                 enable: !1
               }),
@@ -14067,7 +14067,7 @@
                 distance: new TWEEN.Tween()
               });
           };
-        l.inherit(THREE.EventDispatcher, {
+        InteriorControls.inherit(THREE.EventDispatcher, {
           enablePinch: function() {
             this.hammer.get('pinch').set({
               enable: !0
@@ -14213,7 +14213,7 @@
               l.crossVectors(a, e).normalize(),
                 e.applyAxisAngle(l, Math.PI / 2 - p);
               var m = n.angleTo(e);
-              e.z < 0 && (m = s - m);
+              e.z < 0 && (m = TWOPI - m);
               var v = {
                 x: m,
                 y: p
@@ -14291,9 +14291,9 @@
           },
           update: function(e) {
             this.autoRotate && (this.target.x += this.autoRotationSpeed),
-              this.target.x > s
-                ? (this.target.x -= s)
-                : this.target.x < 0 && (this.target.x = s + this.target.x),
+              this.target.x > TWOPI
+                ? (this.target.x -= TWOPI)
+                : this.target.x < 0 && (this.target.x = TWOPI + this.target.x),
               (this.target.y = THREE.Math.clamp(this.target.y, 0, this.clampY)),
               this.horizontalOnly && (this.target.y = 1.5),
               this.resetting &&
@@ -14324,7 +14324,7 @@
             this.camera.lookAt(this.lookAtTarget);
           }
         }),
-          (t.exports = l);
+          (t.exports = InteriorControls);
       },
       {
         21: 21,
@@ -43213,7 +43213,7 @@
     56: [
       function(e, t, n) {
         var Loader = e('21'),
-          OrbitControl = e('19'),
+          InteriorControls = e('19'),
           ObjectPicker = e('18'),
           Audios = e('16'),
           CustomCamera = e('43'),
@@ -43370,7 +43370,7 @@
             };
           })(),
           initControls: function() {
-            (this.exteriorControls = new OrbitControl({
+            (this.exteriorControls = new InteriorControls({
               camera: this.camera,
               origin: new THREE.Vector3(0, 0.5, 0),
               clampY: Math.PI / 2
@@ -43453,7 +43453,7 @@
               fov: 45
             }));
             this.add(e),
-              (this.interiorControls = new OrbitControl({
+              (this.interiorControls = new InteriorControls({
                 camera: e,
                 distance: 0.01,
                 damp: 2,
