@@ -52,10 +52,10 @@ export default class Ground extends THREE.Object3D {
   }
   setMode(mode, duration?) {
     duration = duration !== undefined ? duration : 0.35;
-
+    let tn;
+    const material: any = this.mesh.material;
     if (mode === 'day') {
-      const material: any = this.mesh.material;
-      let tn = TweenLite.to(this.mesh.material, duration, {
+      tn = TweenLite.to(this.mesh.material, duration, {
         lightIntensity: 1,
         lightMapOpacity: 0,
         ease: Power2.easeInOut,
@@ -67,6 +67,22 @@ export default class Ground extends THREE.Object3D {
           material.color.lerp(this.dayDiffuse, progress);
         }
       }).play();
+    } else if (mode === 'night') {
+      tn = TweenLite.to({ lightIntensity: 0, lightMapOpacity: 1 }, duration, {
+        ease: Power2.easeInOut,
+        onUpdate: () => {
+          const progress = tn.progress();
+          material.colorStep1.lerp(new THREE.Color(0x000000), progress);
+          material.colorStep2.lerp(new THREE.Color(0x000000), progress);
+          material.colorStep3.lerp(new THREE.Color(0x000000), progress);
+          material.color.lerp(this.dayDiffuse, progress);
+        }
+      }).play();
+    } else if (mode === 'pitchblack') {
+      material.color = this.nightDiffuse;
+      material.colorStep1 = new THREE.Color(0x000000);
+      material.colorStep2 = new THREE.Color(0x000000);
+      material.colorStep3 = new THREE.Color(0x000000);
     }
   }
 }

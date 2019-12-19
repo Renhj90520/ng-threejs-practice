@@ -34,6 +34,12 @@ export class CarPresenterComponent implements OnInit {
     this.ground = new Ground();
     this.ground.setMode('day');
     this.scene.add(this.ground);
+    setTimeout(() => {
+      this.ground.setMode('night');
+    }, 10000);
+    setTimeout(() => {
+      this.ground.setMode('day');
+    }, 20000);
   }
   initLights() {
     const skyColor = 0xf0f2ef;
