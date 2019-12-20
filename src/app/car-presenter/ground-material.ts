@@ -113,7 +113,8 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
         fragmentShader: this.fragmentShader,
         uniforms: this.uniforms,
         defines: {
-          USE_MAP: false,
+          USE_AOMAP: false,
+          USE_MAP: true,
           LIGHTMAP_ENABLED: parameters.lightMap !== undefined
         }
       },

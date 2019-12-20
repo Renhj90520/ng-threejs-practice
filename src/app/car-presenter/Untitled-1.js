@@ -3,8 +3,8 @@
     if (!n[a]) {
       if (!t[a]) {
         var l = 'function' == typeof require && require;
-        if (!s && l) return l(a, !0);
-        if (o) return o(a, !0);
+        if (!s && l) return l(a, true);
+        if (o) return o(a, true);
         var c = new Error("Cannot find module '" + a + "'");
         throw ((c.code = 'MODULE_NOT_FOUND'), c);
       }
@@ -45,7 +45,7 @@
                 scene: new Stage(),
                 width: window.innerWidth,
                 height: window.innerHeight,
-                enableCompositing: !1
+                enableCompositing: false
               });
             },
             {
@@ -70,7 +70,7 @@
           o = e('10'),
           Stage = e('48');
         window.isPhonegap
-          ? document.addEventListener('deviceready', i, !1)
+          ? document.addEventListener('deviceready', i, false)
           : i();
       },
       {
@@ -112,8 +112,8 @@
               (t.noConflict = function() {
                 return (e.Backbone = r), this;
               }),
-              (t.emulateHTTP = !1),
-              (t.emulateJSON = !1);
+              (t.emulateHTTP = false),
+              (t.emulateJSON = false);
             var a = function(e, t, i) {
                 switch (e) {
                   case 1:
@@ -393,12 +393,12 @@
                   i || (i = {}),
                   !this._validate(r, i))
                 )
-                  return !1;
+                  return false;
                 var o = i.unset,
                   a = i.silent,
                   s = [],
                   l = this._changing;
-                (this._changing = !0),
+                (this._changing = true),
                   l ||
                     ((this._previousAttributes = n.clone(this.attributes)),
                     (this.changed = {}));
@@ -423,16 +423,16 @@
                 if (!a)
                   for (; this._pending; )
                     (i = this._pending),
-                      (this._pending = !1),
+                      (this._pending = false),
                       this.trigger('change', this, i);
-                return (this._pending = !1), (this._changing = !1), this;
+                return (this._pending = false), (this._changing = false), this;
               },
               unset: function(e, t) {
                 return this.set(
                   e,
                   void 0,
                   n.extend({}, t, {
-                    unset: !0
+                    unset: true
                   })
                 );
               },
@@ -442,7 +442,7 @@
                 return this.set(
                   t,
                   n.extend({}, e, {
-                    unset: !0
+                    unset: true
                   })
                 );
               },
@@ -452,7 +452,8 @@
                   : n.has(this.changed, e);
               },
               changedAttributes: function(e) {
-                if (!e) return this.hasChanged() ? n.clone(this.changed) : !1;
+                if (!e)
+                  return this.hasChanged() ? n.clone(this.changed) : false;
                 var t = this._changing
                     ? this._previousAttributes
                     : this.attributes,
@@ -461,7 +462,7 @@
                   var o = e[r];
                   n.isEqual(t[r], o) || (i[r] = o);
                 }
-                return n.size(i) ? i : !1;
+                return n.size(i) ? i : false;
               },
               previous: function(e) {
                 return null != e && this._previousAttributes
@@ -474,7 +475,7 @@
               fetch: function(e) {
                 e = n.extend(
                   {
-                    parse: !0
+                    parse: true
                   },
                   e
                 );
@@ -486,7 +487,7 @@
                     return t.set(r, e)
                       ? (i && i.call(e.context, t, n, e),
                         void t.trigger('sync', t, n, e))
-                      : !1;
+                      : false;
                   }),
                   z(this, e),
                   this.sync('read', this, e)
@@ -499,15 +500,15 @@
                   : ((r = {})[e] = t),
                   (i = n.extend(
                     {
-                      validate: !0,
-                      parse: !0
+                      validate: true,
+                      parse: true
                     },
                     i
                   ));
                 var o = i.wait;
                 if (r && !o) {
-                  if (!this.set(r, i)) return !1;
-                } else if (!this._validate(r, i)) return !1;
+                  if (!this.set(r, i)) return false;
+                } else if (!this._validate(r, i)) return false;
                 var a = this,
                   s = i.success,
                   l = this.attributes;
@@ -517,7 +518,7 @@
                   return (
                     o && (t = n.extend({}, r, t)),
                     t && !a.set(t, i)
-                      ? !1
+                      ? false
                       : (s && s.call(i.context, a, e, i),
                         void a.trigger('sync', a, e, i))
                   );
@@ -542,7 +543,7 @@
                     i && i.call(e.context, t, n, e),
                     t.isNew() || t.trigger('sync', t, n, e);
                 };
-                var a = !1;
+                var a = false;
                 return (
                   this.isNew()
                     ? n.defer(e.success)
@@ -573,12 +574,12 @@
                 return this._validate(
                   {},
                   n.extend({}, e, {
-                    validate: !0
+                    validate: true
                   })
                 );
               },
               _validate: function(e, t) {
-                if (!t.validate || !this.validate) return !0;
+                if (!t.validate || !this.validate) return true;
                 e = n.extend({}, this.attributes, e);
                 var i = (this.validationError = this.validate(e, t) || null);
                 return i
@@ -590,8 +591,8 @@
                         validationError: i
                       })
                     ),
-                    !1)
-                  : !0;
+                    false)
+                  : true;
               }
             });
             var w = {
@@ -616,20 +617,20 @@
                       e,
                       n.extend(
                         {
-                          silent: !0
+                          silent: true
                         },
                         t
                       )
                     );
               }),
               b = {
-                add: !0,
-                remove: !0,
-                merge: !0
+                add: true,
+                remove: true,
+                merge: true
               },
               E = {
-                add: !0,
-                remove: !1
+                add: true,
+                remove: false
               },
               M = function(e, t, n) {
                 n = Math.min(Math.max(n, 0), e.length);
@@ -656,7 +657,7 @@
                   e,
                   n.extend(
                     {
-                      merge: !1
+                      merge: false
                     },
                     t,
                     E
@@ -702,8 +703,8 @@
                     f = t.add,
                     d = t.merge,
                     p = t.remove,
-                    m = !1,
-                    v = this.comparator && null == r && t.sort !== !1,
+                    m = false,
+                    v = this.comparator && null == r && t.sort !== false,
                     g = n.isString(this.comparator) ? this.comparator : null;
                   for (a = 0; a < e.length; a++) {
                     o = e[a];
@@ -716,14 +717,14 @@
                           c.push(y),
                           v && !m && (m = y.hasChanged(g));
                       }
-                      u[y.cid] || ((u[y.cid] = !0), s.push(y)), (e[a] = y);
+                      u[y.cid] || ((u[y.cid] = true), s.push(y)), (e[a] = y);
                     } else
                       f &&
                         ((o = e[a] = this._prepareModel(o, t)),
                         o &&
                           (l.push(o),
                           this._addReference(o, t),
-                          (u[o.cid] = !0),
+                          (u[o.cid] = true),
                           s.push(o)));
                   }
                   if (p) {
@@ -731,7 +732,7 @@
                       (o = this.models[a]), u[o.cid] || h.push(o);
                     h.length && this._removeModels(h, t);
                   }
-                  var w = !1,
+                  var w = false,
                     _ = !v && f && p;
                   if (
                     (s.length && _
@@ -744,12 +745,12 @@
                         M(this.models, s, 0),
                         (this.length = this.models.length))
                       : l.length &&
-                        (v && (m = !0),
+                        (v && (m = true),
                         M(this.models, l, null == r ? this.length : r),
                         (this.length = this.models.length)),
                     m &&
                       this.sort({
-                        silent: !0
+                        silent: true
                       }),
                     !t.silent)
                   ) {
@@ -780,7 +781,7 @@
                     e,
                     n.extend(
                       {
-                        silent: !0
+                        silent: true
                       },
                       t
                     )
@@ -839,7 +840,7 @@
                 return this[t ? 'find' : 'filter'](e);
               },
               findWhere: function(e) {
-                return this.where(e, !0);
+                return this.where(e, true);
               },
               sort: function(e) {
                 var t = this.comparator;
@@ -862,7 +863,7 @@
               fetch: function(e) {
                 e = n.extend(
                   {
-                    parse: !0
+                    parse: true
                   },
                   e
                 );
@@ -882,7 +883,7 @@
               create: function(e, t) {
                 t = t ? n.clone(t) : {};
                 var i = t.wait;
-                if (((e = this._prepareModel(e, t)), !e)) return !1;
+                if (((e = this._prepareModel(e, t)), !e)) return false;
                 i || this.add(e, t);
                 var r = this,
                   o = t.success;
@@ -915,7 +916,7 @@
                 (t = t ? n.clone(t) : {}), (t.collection = this);
                 var i = new this.model(e, t);
                 return i.validationError
-                  ? (this.trigger('invalid', this, i.validationError, t), !1)
+                  ? (this.trigger('invalid', this, i.validationError, t), false)
                   : i;
               },
               _removeModels: function(e, t) {
@@ -1145,7 +1146,7 @@
                     );
                   };
                 }
-                'GET' === a.type || r.emulateJSON || (a.processData = !1);
+                'GET' === a.type || r.emulateJSON || (a.processData = false);
                 var l = r.error;
                 r.error = function(e, t, n) {
                   (r.textStatus = t),
@@ -1185,7 +1186,7 @@
                 return (
                   t.history.route(e, function(n) {
                     var a = o._extractParameters(e, n);
-                    o.execute(r, a, i) !== !1 &&
+                    o.execute(r, a, i) !== false &&
                       (o.trigger.apply(o, ['route:' + i].concat(a)),
                       o.trigger('route', i, a),
                       t.history.trigger('route', o, i, a));
@@ -1239,7 +1240,7 @@
               F = /^[#\/]|\s+$/g,
               k = /^\/+|\/+$/g,
               H = /#.*$/;
-            (U.started = !1),
+            (U.started = false),
               n.extend(U.prototype, h, {
                 interval: 50,
                 atRoot: function() {
@@ -1284,7 +1285,7 @@
                       'Backbone.history has already been started'
                     );
                   if (
-                    ((U.started = !0),
+                    ((U.started = true),
                     (this.options = n.extend(
                       {
                         root: '/'
@@ -1293,7 +1294,7 @@
                       e
                     )),
                     (this.root = this.options.root),
-                    (this._wantsHashChange = this.options.hashChange !== !1),
+                    (this._wantsHashChange = this.options.hashChange !== false),
                     (this._hasHashChange =
                       'onhashchange' in window &&
                       (void 0 === document.documentMode ||
@@ -1313,13 +1314,13 @@
                     if (!this._hasPushState && !this.atRoot()) {
                       var t = this.root.slice(0, -1) || '/';
                       return (
-                        this.location.replace(t + '#' + this.getPath()), !0
+                        this.location.replace(t + '#' + this.getPath()), true
                       );
                     }
                     this._hasPushState &&
                       this.atRoot() &&
                       this.navigate(this.getHash(), {
-                        replace: !0
+                        replace: true
                       });
                   }
                   if (
@@ -1345,9 +1346,9 @@
                     };
                   return (
                     this._usePushState
-                      ? o('popstate', this.checkUrl, !1)
+                      ? o('popstate', this.checkUrl, false)
                       : this._useHashChange && !this.iframe
-                      ? o('hashchange', this.checkUrl, !1)
+                      ? o('hashchange', this.checkUrl, false)
                       : this._wantsHashChange &&
                         (this._checkUrlInterval = setInterval(
                           this.checkUrl,
@@ -1363,16 +1364,16 @@
                       return detachEvent('on' + e, t);
                     };
                   this._usePushState
-                    ? e('popstate', this.checkUrl, !1)
+                    ? e('popstate', this.checkUrl, false)
                     : this._useHashChange &&
                       !this.iframe &&
-                      e('hashchange', this.checkUrl, !1),
+                      e('hashchange', this.checkUrl, false),
                     this.iframe &&
                       (document.body.removeChild(this.iframe),
                       (this.iframe = null)),
                     this._checkUrlInterval &&
                       clearInterval(this._checkUrlInterval),
-                    (U.started = !1);
+                    (U.started = false);
                 },
                 route: function(e, t) {
                   this.handlers.unshift({
@@ -1387,7 +1388,7 @@
                       this.iframe &&
                       (t = this.getHash(this.iframe.contentWindow)),
                     t === this.fragment
-                      ? !1
+                      ? false
                       : (this.iframe && this.navigate(t), void this.loadUrl())
                   );
                 },
@@ -1395,13 +1396,13 @@
                   return this.matchRoot()
                     ? ((e = this.fragment = this.getFragment(e)),
                       n.some(this.handlers, function(t) {
-                        return t.route.test(e) ? (t.callback(e), !0) : void 0;
+                        return t.route.test(e) ? (t.callback(e), true) : void 0;
                       }))
-                    : !1;
+                    : false;
                 },
                 navigate: function(e, t) {
-                  if (!U.started) return !1;
-                  (t && t !== !0) ||
+                  if (!U.started) return false;
+                  (t && t !== true) ||
                     (t = {
                       trigger: !!t
                     }),
@@ -1500,7 +1501,7 @@
             return setTimeout(h(e, n), t);
           }
           function a(e, t, n) {
-            return Array.isArray(e) ? (s(e, n[t], n), !0) : !1;
+            return Array.isArray(e) ? (s(e, n[t], n), true) : false;
           }
           function s(e, t, n) {
             var i;
@@ -1546,20 +1547,20 @@
           }
           function d(e, t, n) {
             s(g(t), function(t) {
-              e.addEventListener(t, n, !1);
+              e.addEventListener(t, n, false);
             });
           }
           function p(e, t, n) {
             s(g(t), function(t) {
-              e.removeEventListener(t, n, !1);
+              e.removeEventListener(t, n, false);
             });
           }
           function m(e, t) {
             for (; e; ) {
-              if (e == t) return !0;
+              if (e == t) return true;
               e = e.parentNode;
             }
-            return !1;
+            return false;
           }
           function v(e, t) {
             return e.indexOf(t) > -1;
@@ -1648,7 +1649,7 @@
             n.firstInput || (n.firstInput = D(t)),
               r > 1 && !n.firstMultiple
                 ? (n.firstMultiple = D(t))
-                : 1 === r && (n.firstMultiple = !1);
+                : 1 === r && (n.firstMultiple = false);
             var o = n.firstInput,
               a = n.firstMultiple,
               s = a ? a.center : o.center,
@@ -1784,7 +1785,7 @@
           function H() {
             (this.evEl = Xe),
               (this.evWin = qe),
-              (this.pressed = !1),
+              (this.pressed = false),
               M.apply(this, arguments);
           }
           function I() {
@@ -1796,14 +1797,14 @@
           function V() {
             (this.evTarget = Qe),
               (this.evWin = et),
-              (this.started = !1),
+              (this.started = false),
               M.apply(this, arguments);
           }
           function z(e, t) {
             var n = x(e.touches),
               i = x(e.changedTouches);
             return (
-              t & (Oe | Ne) && (n = w(n.concat(i), 'identifier', !0)), [n, i]
+              t & (Oe | Ne) && (n = w(n.concat(i), 'identifier', true)), [n, i]
             );
           }
           function B() {
@@ -1815,7 +1816,7 @@
             var n = x(e.touches),
               i = this.targetIds;
             if (t & (Le | Re) && 1 === n.length)
-              return (i[n[0].identifier] = !0), [n, n];
+              return (i[n[0].identifier] = true), [n, n];
             var r,
               o,
               a = x(e.changedTouches),
@@ -1827,12 +1828,12 @@
               })),
               t === Le)
             )
-              for (r = 0; r < o.length; ) (i[o[r].identifier] = !0), r++;
+              for (r = 0; r < o.length; ) (i[o[r].identifier] = true), r++;
             for (r = 0; r < a.length; )
               i[a[r].identifier] && s.push(a[r]),
                 t & (Oe | Ne) && delete i[a[r].identifier],
                 r++;
-            return s.length ? [w(o.concat(s), 'identifier', !0), s] : void 0;
+            return s.length ? [w(o.concat(s), 'identifier', true), s] : void 0;
           }
           function G() {
             M.apply(this, arguments);
@@ -1873,9 +1874,9 @@
               var r = this.lastTouches[i],
                 o = Math.abs(t - r.x),
                 a = Math.abs(n - r.y);
-              if (rt >= o && rt >= a) return !0;
+              if (rt >= o && rt >= a) return true;
             }
-            return !1;
+            return false;
           }
           function K(e, t) {
             (this.manager = e), this.set(t);
@@ -1887,7 +1888,7 @@
             return t && n ? ht : t || n ? (t ? ut : ft) : v(e, ct) ? ct : lt;
           }
           function $() {
-            if (!at) return !1;
+            if (!at) return false;
             var t = {},
               n = e.CSS && e.CSS.supports;
             return (
@@ -1899,7 +1900,7 @@
                 'pan-x pan-y',
                 'none'
               ].forEach(function(i) {
-                t[i] = n ? e.CSS.supports('touch-action', i) : !0;
+                t[i] = n ? e.CSS.supports('touch-action', i) : true;
               }),
               t
             );
@@ -1908,7 +1909,7 @@
             (this.options = fe({}, this.defaults, e || {})),
               (this.id = b()),
               (this.manager = null),
-              (this.options.enable = f(this.options.enable, !0)),
+              (this.options.enable = f(this.options.enable, true)),
               (this.state = pt),
               (this.simultaneous = {}),
               (this.requireFail = []);
@@ -1961,8 +1962,8 @@
           }
           function se() {
             J.apply(this, arguments),
-              (this.pTime = !1),
-              (this.pCenter = !1),
+              (this.pTime = false),
+              (this.pCenter = false),
               (this._timer = null),
               (this._input = null),
               (this.count = 0);
@@ -1984,7 +1985,7 @@
               (this.element = e),
               (this.input = S(this)),
               (this.touchAction = new K(this, this.options.touchAction)),
-              he(this, !0),
+              he(this, true),
               s(
                 this.options.recognizers,
                 function(e) {
@@ -2009,7 +2010,9 @@
           }
           function ue(e, t) {
             var i = n.createEvent('Event');
-            i.initEvent(e, !0, !0), (i.gesture = t), t.target.dispatchEvent(i);
+            i.initEvent(e, true, true),
+              (i.gesture = t),
+              t.target.dispatchEvent(i);
           }
           var fe,
             de = ['', 'webkit', 'Moz', 'MS', 'ms', 'o'],
@@ -2044,7 +2047,7 @@
             ),
             we = l(
               function(e, t) {
-                return xe(e, t, !0);
+                return xe(e, t, true);
               },
               'merge',
               'Use `assign`.'
@@ -2096,10 +2099,10 @@
           c(H, M, {
             handler: function(e) {
               var t = We[e.type];
-              t & Le && 0 === e.button && (this.pressed = !0),
+              t & Le && 0 === e.button && (this.pressed = true),
                 t & Re && 1 !== e.which && (t = Oe),
                 this.pressed &&
-                  (t & Oe && (this.pressed = !1),
+                  (t & Oe && (this.pressed = false),
                   this.callback(this.manager, t, {
                     pointers: [e],
                     changedPointers: [e],
@@ -2130,7 +2133,7 @@
             c(I, M, {
               handler: function(e) {
                 var t = this.store,
-                  n = !1,
+                  n = false,
                   i = e.type.toLowerCase().replace('ms', ''),
                   r = Ke[i],
                   o = Ye[e.pointerType] || e.pointerType,
@@ -2138,7 +2141,7 @@
                   s = y(t, e.pointerId, 'pointerId');
                 r & Le && (0 === e.button || a)
                   ? 0 > s && (t.push(e), (s = t.length - 1))
-                  : r & (Oe | Ne) && (n = !0),
+                  : r & (Oe | Ne) && (n = true),
                   0 > s ||
                     ((t[s] = e),
                     this.callback(this.manager, r, {
@@ -2161,11 +2164,11 @@
           c(V, M, {
             handler: function(e) {
               var t = Ze[e.type];
-              if ((t === Le && (this.started = !0), this.started)) {
+              if ((t === Le && (this.started = true), this.started)) {
                 var n = z.call(this, e, t);
                 t & (Oe | Ne) &&
                   n[0].length - n[1].length === 0 &&
-                  (this.started = !1),
+                  (this.started = false),
                   this.callback(this.manager, t, {
                     pointers: n[0],
                     changedPointers: n[1],
@@ -2270,7 +2273,7 @@
                 : void 0;
             },
             preventSrc: function(e) {
-              (this.manager.session.prevented = !0), e.preventDefault();
+              (this.manager.session.prevented = true), e.preventDefault();
             }
           };
           var pt = 1,
@@ -2340,10 +2343,10 @@
             },
             canEmit: function() {
               for (var e = 0; e < this.requireFail.length; ) {
-                if (!(this.requireFail[e].state & (wt | pt))) return !1;
+                if (!(this.requireFail[e].state & (wt | pt))) return false;
                 e++;
               }
-              return !0;
+              return true;
             },
             recognize: function(e) {
               var t = fe({}, e);
@@ -2395,7 +2398,7 @@
               },
               directionTest: function(e) {
                 var t = this.options,
-                  n = !0,
+                  n = true,
                   i = e.distance,
                   r = e.direction,
                   o = e.deltaX,
@@ -2569,7 +2572,7 @@
                   if (e.eventType != Oe) return this.failTimeout();
                   var a = this.pTime
                       ? e.timeStamp - this.pTime < t.interval
-                      : !0,
+                      : true,
                     s =
                       !this.pCenter ||
                       N(this.pCenter, e.center) < t.posThreshold;
@@ -2615,22 +2618,22 @@
             }),
             (le.VERSION = '2.0.7'),
             (le.defaults = {
-              domEvents: !1,
+              domEvents: false,
               touchAction: st,
-              enable: !0,
+              enable: true,
               inputTarget: null,
               inputClass: null,
               preset: [
                 [
                   oe,
                   {
-                    enable: !1
+                    enable: false
                   }
                 ],
                 [
                   ie,
                   {
-                    enable: !1
+                    enable: false
                   },
                   ['rotate']
                 ],
@@ -2761,7 +2764,7 @@
               }
             },
             destroy: function() {
-              this.element && he(this, !1),
+              this.element && he(this, false),
                 (this.handlers = {}),
                 (this.session = {}),
                 this.input.destroy(),
@@ -2838,7 +2841,7 @@
         !(function(e, n) {
           'object' == typeof t && 'object' == typeof t.exports
             ? (t.exports = e.document
-                ? n(e, !0)
+                ? n(e, true)
                 : function(e) {
                     if (!e.document)
                       throw new Error(
@@ -2852,9 +2855,9 @@
             var t = 'length' in e && e.length,
               n = Q.type(e);
             return 'function' === n || Q.isWindow(e)
-              ? !1
+              ? false
               : 1 === e.nodeType && t
-              ? !0
+              ? true
               : 'array' === n ||
                 0 === t ||
                 ('number' == typeof t && t > 0 && t - 1 in e);
@@ -2884,14 +2887,14 @@
             var t = (pe[e] = {});
             return (
               Q.each(e.match(de) || [], function(e, n) {
-                t[n] = !0;
+                t[n] = true;
               }),
               t
             );
           }
           function a() {
-            J.removeEventListener('DOMContentLoaded', a, !1),
-              e.removeEventListener('load', a, !1),
+            J.removeEventListener('DOMContentLoaded', a, false),
+              e.removeEventListener('load', a, false),
               Q.ready();
           }
           function s() {
@@ -2913,9 +2916,9 @@
                 try {
                   n =
                     'true' === n
-                      ? !0
+                      ? true
                       : 'false' === n
-                      ? !1
+                      ? false
                       : 'null' === n
                       ? null
                       : +n + '' === n
@@ -2929,10 +2932,10 @@
             return n;
           }
           function c() {
-            return !0;
+            return true;
           }
           function h() {
-            return !1;
+            return false;
           }
           function u() {
             try {
@@ -3078,22 +3081,22 @@
               4 > o;
               o += 2
             )
-              'margin' === n && (a += Q.css(e, n + be[o], !0, r)),
+              'margin' === n && (a += Q.css(e, n + be[o], true, r)),
                 i
                   ? ('content' === n &&
-                      (a -= Q.css(e, 'padding' + be[o], !0, r)),
+                      (a -= Q.css(e, 'padding' + be[o], true, r)),
                     'margin' !== n &&
-                      (a -= Q.css(e, 'border' + be[o] + 'Width', !0, r)))
-                  : ((a += Q.css(e, 'padding' + be[o], !0, r)),
+                      (a -= Q.css(e, 'border' + be[o] + 'Width', true, r)))
+                  : ((a += Q.css(e, 'padding' + be[o], true, r)),
                     'padding' !== n &&
-                      (a += Q.css(e, 'border' + be[o] + 'Width', !0, r)));
+                      (a += Q.css(e, 'border' + be[o] + 'Width', true, r)));
             return a;
           }
           function T(e, t, n) {
-            var i = !0,
+            var i = true,
               r = 'width' === t ? e.offsetWidth : e.offsetHeight,
               o = je(e),
-              a = 'border-box' === Q.css(e, 'boxSizing', !1, o);
+              a = 'border-box' === Q.css(e, 'boxSizing', false, o);
             if (0 >= r || null == r) {
               if (
                 ((r = _(e, t, o)),
@@ -3210,7 +3213,7 @@
                   r === (p ? 'hide' : 'show'))
                 ) {
                   if ('show' !== r || !m || void 0 === m[i]) continue;
-                  p = !0;
+                  p = true;
                 }
                 f[i] = (m && m[i]) || Q.style(e, i);
               } else c = void 0;
@@ -3266,7 +3269,7 @@
                 delete l.elem;
               }),
               l = function() {
-                if (r) return !1;
+                if (r) return false;
                 for (
                   var t = $e || P(),
                     n = Math.max(0, c.startTime + c.duration - t),
@@ -3280,14 +3283,14 @@
                   c.tweens[a].run(o);
                 return (
                   s.notifyWith(e, [c, o, n]),
-                  1 > o && l ? n : (s.resolveWith(e, [c]), !1)
+                  1 > o && l ? n : (s.resolveWith(e, [c]), false)
                 );
               },
               c = s.promise({
                 elem: e,
                 props: Q.extend({}, t),
                 opts: Q.extend(
-                  !0,
+                  true,
                   {
                     specialEasing: {}
                   },
@@ -3312,7 +3315,7 @@
                   var n = 0,
                     i = t ? c.tweens.length : 0;
                   if (r) return this;
-                  for (r = !0; i > n; n++) c.tweens[n].run(1);
+                  for (r = true; i > n; n++) c.tweens[n].run(1);
                   return (
                     t ? s.resolveWith(e, [c, t]) : s.rejectWith(e, [c, t]), this
                   );
@@ -3355,14 +3358,14 @@
             function r(s) {
               var l;
               return (
-                (o[s] = !0),
+                (o[s] = true),
                 Q.each(e[s] || [], function(e, s) {
                   var c = s(t, n, i);
                   return 'string' != typeof c || a || o[c]
                     ? a
                       ? !(l = c)
                       : void 0
-                    : (t.dataTypes.unshift(c), r(c), !1);
+                    : (t.dataTypes.unshift(c), r(c), false);
                 }),
                 l
               );
@@ -3377,7 +3380,7 @@
               r = Q.ajaxSettings.flatOptions || {};
             for (n in t)
               void 0 !== t[n] && ((r[n] ? e : i || (i = {}))[n] = t[n]);
-            return i && Q.extend(!0, e, i), e;
+            return i && Q.extend(true, e, i), e;
           }
           function H(e, t, n) {
             for (
@@ -3432,12 +3435,12 @@
                         ((s = r.split(' ')),
                         s[1] === o && (a = c[l + ' ' + s[0]] || c['* ' + s[0]]))
                       ) {
-                        a === !0
+                        a === true
                           ? (a = c[r])
-                          : c[r] !== !0 && ((o = s[0]), h.unshift(s[1]));
+                          : c[r] !== true && ((o = s[0]), h.unshift(s[1]));
                         break;
                       }
-                  if (a !== !0)
+                  if (a !== true)
                     if (a && e['throws']) t = a(t);
                     else
                       try {
@@ -3548,7 +3551,7 @@
                 a = arguments[0] || {},
                 s = 1,
                 l = arguments.length,
-                c = !1;
+                c = false;
               for (
                 'boolean' == typeof a &&
                   ((c = a), (a = arguments[s] || {}), s++),
@@ -3564,7 +3567,7 @@
                       a !== i &&
                         (c && i && (Q.isPlainObject(i) || (r = Q.isArray(i)))
                           ? (r
-                              ? ((r = !1), (o = n && Q.isArray(n) ? n : []))
+                              ? ((r = false), (o = n && Q.isArray(n) ? n : []))
                               : (o = n && Q.isPlainObject(n) ? n : {}),
                             (a[t] = Q.extend(c, o, i)))
                           : void 0 !== i && (a[t] = i));
@@ -3572,7 +3575,7 @@
             }),
             Q.extend({
               expando: 'jQuery' + (Z + Math.random()).replace(/\D/g, ''),
-              isReady: !0,
+              isReady: true,
               error: function(e) {
                 throw new Error(e);
               },
@@ -3589,14 +3592,14 @@
               },
               isPlainObject: function(e) {
                 return 'object' !== Q.type(e) || e.nodeType || Q.isWindow(e)
-                  ? !1
+                  ? false
                   : !e.constructor ||
                       Y.call(e.constructor.prototype, 'isPrototypeOf');
               },
               isEmptyObject: function(e) {
                 var t;
-                for (t in e) return !1;
-                return !0;
+                for (t in e) return false;
+                return true;
               },
               type: function(e) {
                 return null == e
@@ -3631,14 +3634,19 @@
                   s = n(e);
                 if (i) {
                   if (s)
-                    for (; a > o && ((r = t.apply(e[o], i)), r !== !1); o++);
+                    for (; a > o && ((r = t.apply(e[o], i)), r !== false); o++);
                   else
-                    for (o in e) if (((r = t.apply(e[o], i)), r === !1)) break;
+                    for (o in e)
+                      if (((r = t.apply(e[o], i)), r === false)) break;
                 } else if (s)
-                  for (; a > o && ((r = t.call(e[o], o, e[o])), r !== !1); o++);
+                  for (
+                    ;
+                    a > o && ((r = t.call(e[o], o, e[o])), r !== false);
+                    o++
+                  );
                 else
                   for (o in e)
-                    if (((r = t.call(e[o], o, e[o])), r === !1)) break;
+                    if (((r = t.call(e[o], o, e[o])), r === false)) break;
                 return e;
               },
               trim: function(e) {
@@ -3778,14 +3786,14 @@
               return e;
             }
             function i(e) {
-              return (e[I] = !0), e;
+              return (e[I] = true), e;
             }
             function r(e) {
               var t = R.createElement('div');
               try {
                 return !!e(t);
               } catch (n) {
-                return !1;
+                return false;
               } finally {
                 t.parentNode && t.parentNode.removeChild(t), (t = null);
               }
@@ -3851,7 +3859,7 @@
                       c = [z, o];
                     if (a) {
                       for (; (t = t[i]); )
-                        if ((1 === t.nodeType || r) && e(t, n, a)) return !0;
+                        if ((1 === t.nodeType || r) && e(t, n, a)) return true;
                     } else
                       for (; (t = t[i]); )
                         if (1 === t.nodeType || r) {
@@ -3860,15 +3868,16 @@
                             (s = l[i]) && s[0] === z && s[1] === o)
                           )
                             return (c[2] = s[2]);
-                          if (((l[i] = c), (c[2] = e(t, n, a)))) return !0;
+                          if (((l[i] = c), (c[2] = e(t, n, a)))) return true;
                         }
                   };
             }
             function p(e) {
               return e.length > 1
                 ? function(t, n, i) {
-                    for (var r = e.length; r--; ) if (!e[r](t, n, i)) return !1;
-                    return !0;
+                    for (var r = e.length; r--; )
+                      if (!e[r](t, n, i)) return false;
+                    return true;
                   }
                 : e[0];
             }
@@ -3933,14 +3942,14 @@
                       return e === t;
                     },
                     a,
-                    !0
+                    true
                   ),
                   c = d(
                     function(e) {
                       return ee(t, e) > -1;
                     },
                     a,
-                    !0
+                    true
                   ),
                   h = [
                     function(e, n, i) {
@@ -4052,7 +4061,7 @@
               G = n(),
               W = n(),
               X = function(e, t) {
-                return e === t && (D = !0), 0;
+                return e === t && (D = true), 0;
               },
               q = 1 << 31,
               K = {}.hasOwnProperty,
@@ -4170,7 +4179,7 @@
             (_ = t.support = {}),
               (M = t.isXML = function(e) {
                 var t = e && (e.ownerDocument || e).documentElement;
-                return t ? 'HTML' !== t.nodeName : !1;
+                return t ? 'HTML' !== t.nodeName : false;
               }),
               (L = t.setDocument = function(e) {
                 var t,
@@ -4183,7 +4192,7 @@
                     n &&
                       n !== n.top &&
                       (n.addEventListener
-                        ? n.addEventListener('unload', Ee, !1)
+                        ? n.addEventListener('unload', Ee, false)
                         : n.attachEvent && n.attachEvent('onunload', Ee)),
                     (N = !M(i)),
                     (_.attributes = r(function(e) {
@@ -4320,12 +4329,12 @@
                         : function(e, t) {
                             if (t)
                               for (; (t = t.parentNode); )
-                                if (t === e) return !0;
-                            return !1;
+                                if (t === e) return true;
+                            return false;
                           }),
                     (X = t
                       ? function(e, t) {
-                          if (e === t) return (D = !0), 0;
+                          if (e === t) return (D = true), 0;
                           var n =
                             !e.compareDocumentPosition -
                             !t.compareDocumentPosition;
@@ -4352,7 +4361,7 @@
                                 : 1);
                         }
                       : function(e, t) {
-                          if (e === t) return (D = !0), 0;
+                          if (e === t) return (D = true), 0;
                           var n,
                             r = 0,
                             o = e.parentNode,
@@ -4468,14 +4477,14 @@
                 relative: {
                   '>': {
                     dir: 'parentNode',
-                    first: !0
+                    first: true
                   },
                   ' ': {
                     dir: 'parentNode'
                   },
                   '+': {
                     dir: 'previousSibling',
-                    first: !0
+                    first: true
                   },
                   '~': {
                     dir: 'previousSibling'
@@ -4512,7 +4521,7 @@
                           ? (e[2] = e[4] || e[5] || '')
                           : n &&
                             fe.test(n) &&
-                            (t = S(n, !0)) &&
+                            (t = S(n, true)) &&
                             (t = n.indexOf(')', n.length - t) - n.length) &&
                             ((e[0] = e[0].slice(0, t)), (e[2] = n.slice(0, t))),
                         e.slice(0, 3));
@@ -4523,7 +4532,7 @@
                     var t = e.replace(_e, be).toLowerCase();
                     return '*' === e
                       ? function() {
-                          return !0;
+                          return true;
                         }
                       : function(e) {
                           return e.nodeName && e.nodeName.toLowerCase() === t;
@@ -4567,8 +4576,8 @@
                             ? (' ' + o.replace(se, ' ') + ' ').indexOf(i) > -1
                             : '|=' === n
                             ? o === i || o.slice(0, i.length + 1) === i + '-'
-                            : !1)
-                        : !0;
+                            : false)
+                        : true;
                     };
                   },
                   CHILD: function(e, t, n, i, r) {
@@ -4599,10 +4608,10 @@
                                       ? u.nodeName.toLowerCase() === g
                                       : 1 === u.nodeType
                                   )
-                                    return !1;
+                                    return false;
                                 p = m = 'only' === e && !p && 'nextSibling';
                               }
-                              return !0;
+                              return true;
                             }
                             if (
                               ((p = [a ? v.firstChild : v.lastChild]), a && y)
@@ -4725,7 +4734,7 @@
                               n === e || 0 === n.indexOf(e + '-')
                             );
                         while ((t = t.parentNode) && 1 === t.nodeType);
-                        return !1;
+                        return false;
                       }
                     );
                   }),
@@ -4744,10 +4753,10 @@
                     );
                   },
                   enabled: function(e) {
-                    return e.disabled === !1;
+                    return e.disabled === false;
                   },
                   disabled: function(e) {
-                    return e.disabled === !0;
+                    return e.disabled === true;
                   },
                   checked: function(e) {
                     var t = e.nodeName.toLowerCase();
@@ -4759,13 +4768,13 @@
                   selected: function(e) {
                     return (
                       e.parentNode && e.parentNode.selectedIndex,
-                      e.selected === !0
+                      e.selected === true
                     );
                   },
                   empty: function(e) {
                     for (e = e.firstChild; e; e = e.nextSibling)
-                      if (e.nodeType < 6) return !1;
-                    return !0;
+                      if (e.nodeType < 6) return false;
+                    return true;
                   },
                   parent: function(e) {
                     return !b.pseudos.empty(e);
@@ -4820,16 +4829,16 @@
               }),
               (b.pseudos.nth = b.pseudos.eq);
             for (w in {
-              radio: !0,
-              checkbox: !0,
-              file: !0,
-              password: !0,
-              image: !0
+              radio: true,
+              checkbox: true,
+              file: true,
+              password: true,
+              image: true
             })
               b.pseudos[w] = s(w);
             for (w in {
-              submit: !0,
-              reset: !0
+              submit: true,
+              reset: true
             })
               b.pseudos[w] = l(w);
             return (
@@ -4848,7 +4857,7 @@
                 for (s = e, l = [], c = b.preFilter; s; ) {
                   (i && !(r = ce.exec(s))) ||
                     (r && (s = s.slice(r[0].length) || s), l.push((o = []))),
-                    (i = !1),
+                    (i = false),
                     (r = he.exec(s)) &&
                       ((i = r.shift()),
                       o.push({
@@ -4977,7 +4986,7 @@
                   var i;
                   return n
                     ? void 0
-                    : e[t] === !0
+                    : e[t] === true
                     ? t.toLowerCase()
                     : (i = e.getAttributeNode(t)) && i.specified
                     ? i.value
@@ -5022,7 +5031,7 @@
                   return this.pushStack(
                     Q(e).filter(function() {
                       for (t = 0; n > t; t++)
-                        if (Q.contains(r[t], this)) return !0;
+                        if (Q.contains(r[t], this)) return true;
                     })
                   );
                 for (t = 0; n > t; t++) Q.find(e, r[t], i);
@@ -5033,16 +5042,16 @@
                 );
               },
               filter: function(e) {
-                return this.pushStack(i(this, e || [], !1));
+                return this.pushStack(i(this, e || [], false));
               },
               not: function(e) {
-                return this.pushStack(i(this, e || [], !0));
+                return this.pushStack(i(this, e || [], true));
               },
               is: function(e) {
                 return !!i(
                   this,
                   'string' == typeof e && oe.test(e) ? Q(e) : e || [],
-                  !1
+                  false
                 ).length;
               }
             });
@@ -5070,7 +5079,7 @@
                       Q.parseHTML(
                         n[1],
                         t && t.nodeType ? t.ownerDocument || t : J,
-                        !0
+                        true
                       )
                     ),
                     ae.test(n[1]) && Q.isPlainObject(t))
@@ -5102,10 +5111,10 @@
           (he.prototype = Q.fn), (le = Q(J));
           var ue = /^(?:parents|prev(?:Until|All))/,
             fe = {
-              children: !0,
-              contents: !0,
-              next: !0,
-              prev: !0
+              children: true,
+              contents: true,
+              next: true,
+              prev: true
             };
           Q.extend({
             dir: function(e, t, n) {
@@ -5132,7 +5141,7 @@
                   n = t.length;
                 return this.filter(function() {
                   for (var e = 0; n > e; e++)
-                    if (Q.contains(this, t[e])) return !0;
+                    if (Q.contains(this, t[e])) return true;
                 });
               },
               closest: function(e, t) {
@@ -5246,19 +5255,19 @@
               h = function(o) {
                 for (
                   t = e.memory && o,
-                    n = !0,
+                    n = true,
                     s = r || 0,
                     r = 0,
                     a = l.length,
-                    i = !0;
+                    i = true;
                   l && a > s;
                   s++
                 )
-                  if (l[s].apply(o[0], o[1]) === !1 && e.stopOnFalse) {
-                    t = !1;
+                  if (l[s].apply(o[0], o[1]) === false && e.stopOnFalse) {
+                    t = false;
                     break;
                   }
-                (i = !1),
+                (i = false),
                   l &&
                     (c ? c.length && h(c.shift()) : t ? (l = []) : u.disable());
               },
@@ -5433,15 +5442,15 @@
             return Q.ready.promise().done(e), this;
           }),
             Q.extend({
-              isReady: !1,
+              isReady: false,
               readyWait: 1,
               holdReady: function(e) {
-                e ? Q.readyWait++ : Q.ready(!0);
+                e ? Q.readyWait++ : Q.ready(true);
               },
               ready: function(e) {
-                (e === !0 ? --Q.readyWait : Q.isReady) ||
-                  ((Q.isReady = !0),
-                  (e !== !0 && --Q.readyWait > 0) ||
+                (e === true ? --Q.readyWait : Q.isReady) ||
+                  ((Q.isReady = true),
+                  (e !== true && --Q.readyWait > 0) ||
                     (me.resolveWith(J, [Q]),
                     Q.fn.triggerHandler &&
                       (Q(J).triggerHandler('ready'), Q(J).off('ready'))));
@@ -5453,8 +5462,8 @@
                   ((me = Q.Deferred()),
                   'complete' === J.readyState
                     ? setTimeout(Q.ready)
-                    : (J.addEventListener('DOMContentLoaded', a, !1),
-                      e.addEventListener('load', a, !1))),
+                    : (J.addEventListener('DOMContentLoaded', a, false),
+                      e.addEventListener('load', a, false))),
                 me.promise(t)
               );
             }),
@@ -5464,12 +5473,12 @@
               l = e.length,
               c = null == n;
             if ('object' === Q.type(n)) {
-              r = !0;
-              for (s in n) Q.access(e, t, s, n[s], !0, o, a);
+              r = true;
+              for (s in n) Q.access(e, t, s, n[s], true, o, a);
             } else if (
               void 0 !== i &&
-              ((r = !0),
-              Q.isFunction(i) || (a = !0),
+              ((r = true),
+              Q.isFunction(i) || (a = true),
               c &&
                 (a
                   ? (t.call(e, i), (t = null))
@@ -5591,7 +5600,7 @@
                         ((i = a[n].name),
                         0 === i.indexOf('data-') &&
                           ((i = Q.camelCase(i.slice(5))), l(o, i, r[i])));
-                    ge.set(o, 'hasDataAttrs', !0);
+                    ge.set(o, 'hasDataAttrs', true);
                   }
                   return r;
                 }
@@ -5621,7 +5630,7 @@
                       t,
                       arguments.length > 1,
                       null,
-                      !0
+                      true
                     );
               },
               removeData: function(e) {
@@ -5735,9 +5744,11 @@
               n.setAttribute('checked', 'checked'),
               n.setAttribute('name', 't'),
               t.appendChild(n),
-              ($.checkClone = t.cloneNode(!0).cloneNode(!0).lastChild.checked),
+              ($.checkClone = t
+                .cloneNode(true)
+                .cloneNode(true).lastChild.checked),
               (t.innerHTML = '<textarea>x</textarea>'),
-              ($.noCloneChecked = !!t.cloneNode(!0).lastChild.defaultValue);
+              ($.noCloneChecked = !!t.cloneNode(true).lastChild.defaultValue);
           })();
           var Se = 'undefined';
           $.focusinBubbles = 'onfocusin' in e;
@@ -5799,13 +5810,14 @@
                       (f = l[d]) ||
                         ((f = l[d] = []),
                         (f.delegateCount = 0),
-                        (u.setup && u.setup.call(e, i, p, a) !== !1) ||
-                          (e.addEventListener && e.addEventListener(d, a, !1))),
+                        (u.setup && u.setup.call(e, i, p, a) !== false) ||
+                          (e.addEventListener &&
+                            e.addEventListener(d, a, false))),
                       u.add &&
                         (u.add.call(e, h),
                         h.handler.guid || (h.handler.guid = n.guid)),
                       r ? f.splice(f.delegateCount++, 0, h) : f.push(h),
-                      (Q.event.global[d] = !0));
+                      (Q.event.global[d] = true));
             },
             remove: function(e, t, n, i, r) {
               var o,
@@ -5853,10 +5865,11 @@
                           u.remove && u.remove.call(e, h));
                     a &&
                       !f.length &&
-                      ((u.teardown && u.teardown.call(e, p, v.handle) !== !1) ||
+                      ((u.teardown &&
+                        u.teardown.call(e, p, v.handle) !== false) ||
                         Q.removeEvent(e, d, v.handle),
                       delete l[d]);
-                  } else for (d in l) Q.event.remove(e, d + t[c], n, i, !0);
+                  } else for (d in l) Q.event.remove(e, d + t[c], n, i, true);
                 Q.isEmptyObject(l) && (delete v.handle, ge.remove(e, 'events'));
               }
             },
@@ -5893,7 +5906,7 @@
                   t.target || (t.target = i),
                   (n = null == n ? [t] : Q.makeArray(n, [t])),
                   (u = Q.event.special[d] || {}),
-                  r || !u.trigger || u.trigger.apply(i, n) !== !1))
+                  r || !u.trigger || u.trigger.apply(i, n) !== false))
               ) {
                 if (!r && !u.noBubble && !Q.isWindow(i)) {
                   for (
@@ -5917,12 +5930,12 @@
                       h.apply &&
                       Q.acceptData(a) &&
                       ((t.result = h.apply(a, n)),
-                      t.result === !1 && t.preventDefault());
+                      t.result === false && t.preventDefault());
                 return (
                   (t.type = d),
                   r ||
                     t.isDefaultPrevented() ||
-                    (u._default && u._default.apply(f.pop(), n) !== !1) ||
+                    (u._default && u._default.apply(f.pop(), n) !== false) ||
                     !Q.acceptData(i) ||
                     (c &&
                       Q.isFunction(i[d]) &&
@@ -5951,7 +5964,7 @@
               if (
                 ((s[0] = e),
                 (e.delegateTarget = this),
-                !c.preDispatch || c.preDispatch.call(this, e) !== !1)
+                !c.preDispatch || c.preDispatch.call(this, e) !== false)
               ) {
                 for (
                   a = Q.event.handlers.call(this, e, l), t = 0;
@@ -5970,7 +5983,7 @@
                         (Q.event.special[o.origType] || {}).handle || o.handler
                       ).apply(r.elem, s)),
                       void 0 !== i &&
-                        (e.result = i) === !1 &&
+                        (e.result = i) === false &&
                         (e.preventDefault(), e.stopPropagation()));
                 return c.postDispatch && c.postDispatch.call(this, e), e.result;
               }
@@ -5985,7 +5998,7 @@
                 l = e.target;
               if (s && l.nodeType && (!e.button || 'click' !== e.type))
                 for (; l !== this; l = l.parentNode || this)
-                  if (l.disabled !== !0 || 'click' !== e.type) {
+                  if (l.disabled !== true || 'click' !== e.type) {
                     for (i = [], n = 0; s > n; n++)
                       (o = t[n]),
                         (r = o.selector + ' '),
@@ -6083,19 +6096,21 @@
             },
             special: {
               load: {
-                noBubble: !0
+                noBubble: true
               },
               focus: {
                 trigger: function() {
                   return this !== u() && this.focus
-                    ? (this.focus(), !1)
+                    ? (this.focus(), false)
                     : void 0;
                 },
                 delegateType: 'focusin'
               },
               blur: {
                 trigger: function() {
-                  return this === u() && this.blur ? (this.blur(), !1) : void 0;
+                  return this === u() && this.blur
+                    ? (this.blur(), false)
+                    : void 0;
                 },
                 delegateType: 'focusout'
               },
@@ -6104,7 +6119,7 @@
                   return 'checkbox' === this.type &&
                     this.click &&
                     Q.nodeName(this, 'input')
-                    ? (this.click(), !1)
+                    ? (this.click(), false)
                     : void 0;
                 },
                 _default: function(e) {
@@ -6122,7 +6137,7 @@
             simulate: function(e, t, n, i) {
               var r = Q.extend(new Q.Event(), n, {
                 type: e,
-                isSimulated: !0,
+                isSimulated: true,
                 originalEvent: {}
               });
               i ? Q.event.trigger(r, null, t) : Q.event.dispatch.call(t, r),
@@ -6130,7 +6145,7 @@
             }
           }),
             (Q.removeEvent = function(e, t, n) {
-              e.removeEventListener && e.removeEventListener(t, n, !1);
+              e.removeEventListener && e.removeEventListener(t, n, false);
             }),
             (Q.Event = function(e, t) {
               return this instanceof Q.Event
@@ -6139,13 +6154,14 @@
                       (this.type = e.type),
                       (this.isDefaultPrevented =
                         e.defaultPrevented ||
-                        (void 0 === e.defaultPrevented && e.returnValue === !1)
+                        (void 0 === e.defaultPrevented &&
+                          e.returnValue === false)
                           ? c
                           : h))
                     : (this.type = e),
                   t && Q.extend(this, t),
                   (this.timeStamp = (e && e.timeStamp) || Q.now()),
-                  void (this[Q.expando] = !0))
+                  void (this[Q.expando] = true))
                 : new Q.Event(e, t);
             }),
             (Q.Event.prototype = {
@@ -6206,13 +6222,13 @@
                 },
                 function(e, t) {
                   var n = function(e) {
-                    Q.event.simulate(t, e.target, Q.event.fix(e), !0);
+                    Q.event.simulate(t, e.target, Q.event.fix(e), true);
                   };
                   Q.event.special[t] = {
                     setup: function() {
                       var i = this.ownerDocument || this,
                         r = ge.access(i, t);
-                      r || i.addEventListener(e, n, !0),
+                      r || i.addEventListener(e, n, true),
                         ge.access(i, t, (r || 0) + 1);
                     },
                     teardown: function() {
@@ -6220,7 +6236,7 @@
                         r = ge.access(i, t) - 1;
                       r
                         ? ge.access(i, t, r)
-                        : (i.removeEventListener(e, n, !0), ge.remove(i, t));
+                        : (i.removeEventListener(e, n, true), ge.remove(i, t));
                     }
                   };
                 }
@@ -6240,7 +6256,7 @@
                       ('string' == typeof t
                         ? ((i = n), (n = void 0))
                         : ((i = n), (n = t), (t = void 0))),
-                  i === !1)
+                  i === false)
                 )
                   i = h;
                 else if (!i) return this;
@@ -6276,9 +6292,9 @@
                   return this;
                 }
                 return (
-                  (t !== !1 && 'function' != typeof t) ||
+                  (t !== false && 'function' != typeof t) ||
                     ((n = t), (t = void 0)),
-                  n === !1 && (n = h),
+                  n === false && (n = h),
                   this.each(function() {
                     Q.event.remove(this, e, n, t);
                   })
@@ -6291,7 +6307,7 @@
               },
               triggerHandler: function(e, t) {
                 var n = this[0];
-                return n ? Q.event.trigger(e, t, n, !0) : void 0;
+                return n ? Q.event.trigger(e, t, n, true) : void 0;
               }
             });
           var De = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi,
@@ -6319,7 +6335,7 @@
                   r,
                   o,
                   a,
-                  s = e.cloneNode(!0),
+                  s = e.cloneNode(true),
                   l = Q.contains(e.ownerDocument, e);
                 if (
                   !(
@@ -6481,12 +6497,12 @@
               empty: function() {
                 for (var e, t = 0; null != (e = this[t]); t++)
                   1 === e.nodeType &&
-                    (Q.cleanData(g(e, !1)), (e.textContent = ''));
+                    (Q.cleanData(g(e, false)), (e.textContent = ''));
                 return this;
               },
               clone: function(e, t) {
                 return (
-                  (e = null == e ? !1 : e),
+                  (e = null == e ? false : e),
                   (t = null == t ? e : t),
                   this.map(function() {
                     return Q.clone(this, e, t);
@@ -6511,7 +6527,7 @@
                         for (; i > n; n++)
                           (t = this[n] || {}),
                             1 === t.nodeType &&
-                              (Q.cleanData(g(t, !1)), (t.innerHTML = e));
+                              (Q.cleanData(g(t, false)), (t.innerHTML = e));
                         t = 0;
                       } catch (r) {}
                     }
@@ -6534,7 +6550,7 @@
                 );
               },
               detach: function(e) {
-                return this.remove(e, !0);
+                return this.remove(e, true);
               },
               domManip: function(e, t) {
                 e = G.apply([], e);
@@ -6560,7 +6576,7 @@
                   });
                 if (
                   c &&
-                  ((n = Q.buildFragment(e, this[0].ownerDocument, !1, this)),
+                  ((n = Q.buildFragment(e, this[0].ownerDocument, false, this)),
                   (i = n.firstChild),
                   1 === n.childNodes.length && (n = i),
                   i)
@@ -6568,7 +6584,7 @@
                   for (r = Q.map(g(n, 'script'), d), o = r.length; c > l; l++)
                     (a = n),
                       l !== u &&
-                        ((a = Q.clone(a, !0, !0)),
+                        ((a = Q.clone(a, true, true)),
                         o && Q.merge(r, g(a, 'script'))),
                       t.call(this[l], a, l);
                   if (o)
@@ -6603,7 +6619,7 @@
                     o >= a;
                     a++
                   )
-                    (n = a === o ? this : this.clone(!0)),
+                    (n = a === o ? this : this.clone(true)),
                       Q(r[a])[t](n),
                       W.apply(i, n.get());
                   return this.pushStack(i);
@@ -6635,7 +6651,7 @@
               a = J.createElement('div');
             a.style &&
               ((a.style.backgroundClip = 'content-box'),
-              (a.cloneNode(!0).style.backgroundClip = ''),
+              (a.cloneNode(true).style.backgroundClip = ''),
               ($.clearCloneStyle = 'content-box' === a.style.backgroundClip),
               (o.style.cssText =
                 'border:0;width:0;height:0;top:0;left:-9999px;margin-top:1px;position:absolute'),
@@ -6701,18 +6717,18 @@
               }
             },
             cssNumber: {
-              columnCount: !0,
-              fillOpacity: !0,
-              flexGrow: !0,
-              flexShrink: !0,
-              fontWeight: !0,
-              lineHeight: !0,
-              opacity: !0,
-              order: !0,
-              orphans: !0,
-              widows: !0,
-              zIndex: !0,
-              zoom: !0
+              columnCount: true,
+              fillOpacity: true,
+              flexGrow: true,
+              flexShrink: true,
+              fontWeight: true,
+              lineHeight: true,
+              opacity: true,
+              order: true,
+              orphans: true,
+              widows: true,
+              zIndex: true,
+              zoom: true
             },
             cssProps: {
               float: 'cssFloat'
@@ -6728,7 +6744,7 @@
                   (t = Q.cssProps[s] || (Q.cssProps[s] = E(l, s))),
                   (a = Q.cssHooks[t] || Q.cssHooks[s]),
                   void 0 === n
-                    ? a && 'get' in a && void 0 !== (r = a.get(e, !1, i))
+                    ? a && 'get' in a && void 0 !== (r = a.get(e, false, i))
                       ? r
                       : l[t]
                     : ((o = typeof n),
@@ -6757,12 +6773,12 @@
               return (
                 (t = Q.cssProps[s] || (Q.cssProps[s] = E(e.style, s))),
                 (a = Q.cssHooks[t] || Q.cssHooks[s]),
-                a && 'get' in a && (r = a.get(e, !0, n)),
+                a && 'get' in a && (r = a.get(e, true, n)),
                 void 0 === r && (r = _(e, t, i)),
                 'normal' === r && t in Ke && (r = Ke[t]),
                 '' === n || n
                   ? ((o = parseFloat(r)),
-                    n === !0 || Q.isNumeric(o) ? o || 0 : r)
+                    n === true || Q.isNumeric(o) ? o || 0 : r)
                   : r
               );
             }
@@ -6788,7 +6804,7 @@
                           e,
                           t,
                           i,
-                          'border-box' === Q.css(e, 'boxSizing', !1, r),
+                          'border-box' === Q.css(e, 'boxSizing', false, r),
                           r
                         )
                       : 0
@@ -6842,7 +6858,7 @@
                       a = 0;
                     if (Q.isArray(t)) {
                       for (i = je(e), r = t.length; r > a; a++)
-                        o[t[a]] = Q.css(e, t[a], !1, i);
+                        o[t[a]] = Q.css(e, t[a], false, i);
                       return o;
                     }
                     return void 0 !== n ? Q.style(e, t, n) : Q.css(e, t);
@@ -6853,7 +6869,7 @@
                 );
               },
               show: function() {
-                return C(this, !0);
+                return C(this, true);
               },
               hide: function() {
                 return C(this);
@@ -7006,7 +7022,7 @@
                   : i.duration in Q.fx.speeds
                   ? Q.fx.speeds[i.duration]
                   : Q.fx.speeds._default),
-                (null != i.queue && i.queue !== !0) || (i.queue = 'fx'),
+                (null != i.queue && i.queue !== true) || (i.queue = 'fx'),
                 (i.old = i.complete),
                 (i.complete = function() {
                   Q.isFunction(i.old) && i.old.call(this),
@@ -7035,11 +7051,11 @@
                   o = Q.speed(t, n, i),
                   a = function() {
                     var t = N(this, Q.extend({}, e), o);
-                    (r || ge.get(this, 'finish')) && t.stop(!0);
+                    (r || ge.get(this, 'finish')) && t.stop(true);
                   };
                 return (
                   (a.finish = a),
-                  r || o.queue === !1 ? this.each(a) : this.queue(o.queue, a)
+                  r || o.queue === false ? this.each(a) : this.queue(o.queue, a)
                 );
               },
               stop: function(e, t, n) {
@@ -7049,9 +7065,9 @@
                 };
                 return (
                   'string' != typeof e && ((n = t), (t = e), (e = void 0)),
-                  t && e !== !1 && this.queue(e || 'fx', []),
+                  t && e !== false && this.queue(e || 'fx', []),
                   this.each(function() {
-                    var t = !0,
+                    var t = true,
                       r = null != e && e + 'queueHooks',
                       o = Q.timers,
                       a = ge.get(this);
@@ -7061,14 +7077,14 @@
                     for (r = o.length; r--; )
                       o[r].elem !== this ||
                         (null != e && o[r].queue !== e) ||
-                        (o[r].anim.stop(n), (t = !1), o.splice(r, 1));
+                        (o[r].anim.stop(n), (t = false), o.splice(r, 1));
                     (!t && n) || Q.dequeue(this, e);
                   })
                 );
               },
               finish: function(e) {
                 return (
-                  e !== !1 && (e = e || 'fx'),
+                  e !== false && (e = e || 'fx'),
                   this.each(function() {
                     var t,
                       n = ge.get(this),
@@ -7077,16 +7093,16 @@
                       o = Q.timers,
                       a = i ? i.length : 0;
                     for (
-                      n.finish = !0,
+                      n.finish = true,
                         Q.queue(this, e, []),
-                        r && r.stop && r.stop.call(this, !0),
+                        r && r.stop && r.stop.call(this, true),
                         t = o.length;
                       t--;
 
                     )
                       o[t].elem === this &&
                         o[t].queue === e &&
-                        (o[t].anim.stop(!0), o.splice(t, 1));
+                        (o[t].anim.stop(true), o.splice(t, 1));
                     for (t = 0; a > t; t++)
                       i[t] && i[t].finish && i[t].finish.call(this);
                     delete n.finish;
@@ -7099,7 +7115,7 @@
               Q.fn[t] = function(e, i, r) {
                 return null == e || 'boolean' == typeof e
                   ? n.apply(this, arguments)
-                  : this.animate(D(t, !0), e, i, r);
+                  : this.animate(D(t, true), e, i, r);
               };
             }),
             Q.each(
@@ -7166,7 +7182,7 @@
               (e.type = 'checkbox'),
                 ($.checkOn = '' !== e.value),
                 ($.optSelected = n.selected),
-                (t.disabled = !0),
+                (t.disabled = true),
                 ($.optDisabled = !n.disabled),
                 (e = J.createElement('input')),
                 (e.value = 't'),
@@ -7217,7 +7233,7 @@
                 if (o && 1 === e.nodeType)
                   for (; (n = o[r++]); )
                     (i = Q.propFix[n] || n),
-                      Q.expr.match.bool.test(n) && (e[i] = !1),
+                      Q.expr.match.bool.test(n) && (e[i] = false),
                       e.removeAttribute(n);
               },
               attrHooks: {
@@ -7237,7 +7253,9 @@
             }),
             (rt = {
               set: function(e, t, n) {
-                return t === !1 ? Q.removeAttr(e, n) : e.setAttribute(n, n), n;
+                return (
+                  t === false ? Q.removeAttr(e, n) : e.setAttribute(n, n), n
+                );
               }
             }),
             Q.each(Q.expr.match.bool.source.match(/\w+/g), function(e, t) {
@@ -7411,7 +7429,7 @@
                         (this.className &&
                           ge.set(this, '__className__', this.className),
                         (this.className =
-                          this.className || e === !1
+                          this.className || e === false
                             ? ''
                             : ge.get(this, '__className__') || ''));
                   });
@@ -7423,8 +7441,8 @@
                   (' ' + this[n].className + ' ').replace(st, ' ').indexOf(t) >=
                     0
                 )
-                  return !0;
-              return !1;
+                  return true;
+              return false;
             }
           });
           var lt = /\r/g;
@@ -7519,7 +7537,7 @@
 
                     )
                       (i = r[a]),
-                        (i.selected = Q.inArray(i.value, o) >= 0) && (n = !0);
+                        (i.selected = Q.inArray(i.value, o) >= 0) && (n = true);
                     return n || (e.selectedIndex = -1), o;
                   }
                 }
@@ -7608,9 +7626,9 @@
               url: _t,
               type: 'GET',
               isLocal: pt.test(bt[1]),
-              global: !0,
-              processData: !0,
-              async: !0,
+              global: true,
+              processData: true,
+              async: true,
               contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
               accepts: {
                 '*': wt,
@@ -7631,13 +7649,13 @@
               },
               converters: {
                 '* text': String,
-                'text html': !0,
+                'text html': true,
                 'text json': Q.parseJSON,
                 'text xml': Q.parseXML
               },
               flatOptions: {
-                url: !0,
-                context: !0
+                url: true,
+                context: true
               }
             },
             ajaxSetup: function(e, t) {
@@ -7783,7 +7801,7 @@
                   (u.data &&
                     ((r = u.url += (ht.test(r) ? '&' : '?') + u.data),
                     delete u.data),
-                  u.cache === !1 &&
+                  u.cache === false &&
                     (u.url = ft.test(r)
                       ? r.replace(ft, '$1_=' + ct++)
                       : r + (ht.test(r) ? '&' : '?') + '_=' + ct++)),
@@ -7791,7 +7809,7 @@
                   (Q.lastModified[r] &&
                     _.setRequestHeader('If-Modified-Since', Q.lastModified[r]),
                   Q.etag[r] && _.setRequestHeader('If-None-Match', Q.etag[r])),
-                ((u.data && u.hasContent && u.contentType !== !1) ||
+                ((u.data && u.hasContent && u.contentType !== false) ||
                   t.contentType) &&
                   _.setRequestHeader('Content-Type', u.contentType),
                 _.setRequestHeader(
@@ -7804,7 +7822,7 @@
               for (h in u.headers) _.setRequestHeader(h, u.headers[h]);
               if (
                 u.beforeSend &&
-                (u.beforeSend.call(f, _, u) === !1 || 2 === x)
+                (u.beforeSend.call(f, _, u) === false || 2 === x)
               )
                 return _.abort();
               w = 'abort';
@@ -7857,9 +7875,9 @@
                 url: e,
                 type: 'GET',
                 dataType: 'script',
-                async: !1,
-                global: !1,
-                throws: !0
+                async: false,
+                global: false,
+                throws: true
               });
             }),
             Q.fn.extend({
@@ -7872,7 +7890,7 @@
                   : (this[0] &&
                       ((t = Q(e, this[0].ownerDocument)
                         .eq(0)
-                        .clone(!0)),
+                        .clone(true)),
                       this[0].parentNode && t.insertBefore(this[0]),
                       t
                         .map(function() {
@@ -8066,7 +8084,7 @@
               }
             }),
             Q.ajaxPrefilter('script', function(e) {
-              void 0 === e.cache && (e.cache = !1),
+              void 0 === e.cache && (e.cache = false),
                 e.crossDomain && (e.type = 'GET');
             }),
             Q.ajaxTransport('script', function(e) {
@@ -8076,7 +8094,7 @@
                   send: function(i, r) {
                     (t = Q('<script>')
                       .prop({
-                        async: !0,
+                        async: true,
                         charset: e.scriptCharset,
                         src: e.url
                       })
@@ -8102,7 +8120,7 @@
             jsonp: 'callback',
             jsonpCallback: function() {
               var e = Rt.pop() || Q.expando + '_' + ct++;
-              return (this[e] = !0), e;
+              return (this[e] = true), e;
             }
           }),
             Q.ajaxPrefilter('json jsonp', function(t, n, i) {
@@ -8110,7 +8128,7 @@
                 o,
                 a,
                 s =
-                  t.jsonp !== !1 &&
+                  t.jsonp !== false &&
                   (Ot.test(t.url)
                     ? 'url'
                     : 'string' == typeof t.data &&
@@ -8125,7 +8143,7 @@
                     : t.jsonpCallback),
                   s
                     ? (t[s] = t[s].replace(Ot, '$1' + r))
-                    : t.jsonp !== !1 &&
+                    : t.jsonp !== false &&
                       (t.url +=
                         (ht.test(t.url) ? '&' : '?') + t.jsonp + '=' + r),
                   (t.converters['script json'] = function() {
@@ -8147,7 +8165,7 @@
             }),
             (Q.parseHTML = function(e, t, n) {
               if (!e || 'string' != typeof e) return null;
-              'boolean' == typeof t && ((n = t), (t = !1)), (t = t || J);
+              'boolean' == typeof t && ((n = t), (t = false)), (t = t || J);
               var i = ae.exec(e),
                 r = !n && [];
               return i
@@ -8289,11 +8307,11 @@
                       : ((e = this.offsetParent()),
                         (t = this.offset()),
                         Q.nodeName(e[0], 'html') || (i = e.offset()),
-                        (i.top += Q.css(e[0], 'borderTopWidth', !0)),
-                        (i.left += Q.css(e[0], 'borderLeftWidth', !0))),
+                        (i.top += Q.css(e[0], 'borderTopWidth', true)),
+                        (i.left += Q.css(e[0], 'borderLeftWidth', true))),
                     {
-                      top: t.top - i.top - Q.css(n, 'marginTop', !0),
-                      left: t.left - i.left - Q.css(n, 'marginLeft', !0)
+                      top: t.top - i.top - Q.css(n, 'marginTop', true),
+                      left: t.left - i.left - Q.css(n, 'marginLeft', true)
                     }
                   );
                 }
@@ -8365,7 +8383,8 @@
                   function(n, i) {
                     Q.fn[i] = function(i, r) {
                       var o = arguments.length && (n || 'boolean' != typeof i),
-                        a = n || (i === !0 || r === !0 ? 'margin' : 'border');
+                        a =
+                          n || (i === true || r === true ? 'margin' : 'border');
                       return ve(
                         this,
                         function(t, n, i) {
@@ -8445,12 +8464,12 @@
             function o(e) {
               var t = this.cache,
                 n = typeof e;
-              if ('boolean' == n || null == e) t[e] = !0;
+              if ('boolean' == n || null == e) t[e] = true;
               else {
                 'number' != n && 'string' != n && (n = 'object');
                 var i = 'number' == n ? e : w + e,
                   r = t[n] || (t[n] = {});
-                'object' == n ? (r[i] || (r[i] = [])).push(e) : (r[i] = !0);
+                'object' == n ? (r[i] || (r[i] = [])).push(e) : (r[i] = true);
               }
             }
             function a(e) {
@@ -8485,9 +8504,9 @@
                 a &&
                 'object' == typeof a
               )
-                return !1;
+                return false;
               var s = u();
-              s['false'] = s['null'] = s['true'] = s.undefined = !1;
+              s['false'] = s['null'] = s['true'] = s.undefined = false;
               var l = u();
               for (l.array = e, l.cache = s, l.push = o; ++t < n; )
                 l.push(e[t]);
@@ -8505,15 +8524,15 @@
                   array: null,
                   cache: null,
                   criteria: null,
-                  false: !1,
+                  false: false,
                   index: 0,
-                  null: !1,
+                  null: false,
                   number: null,
                   object: null,
                   push: null,
                   string: null,
-                  true: !1,
-                  undefined: !1,
+                  true: false,
+                  undefined: false,
                   value: null
                 }
               );
@@ -8628,7 +8647,7 @@
                   $n.funcNames || (i = !P.test(r)),
                     i || ((i = O.test(r)), Jn(e, i));
                 }
-                if (i === !1 || (i !== !0 && 1 & i[1])) return e;
+                if (i === false || (i !== true && 1 & i[1])) return e;
                 switch (n) {
                   case 1:
                     return function(n) {
@@ -8693,7 +8712,7 @@
                   c = [];
                 if (s) {
                   var h = l(t);
-                  h ? ((o = r), (t = h)) : (s = !1);
+                  h ? ((o = r), (t = h)) : (s = false);
                 }
                 for (; ++n < a; ) {
                   var u = e[n];
@@ -8731,11 +8750,12 @@
                 if (e === t) return 0 !== e || 1 / e == 1 / t;
                 var s = typeof e,
                   l = typeof t;
-                if (!(e !== e || (e && Y[s]) || (t && Y[l]))) return !1;
+                if (!(e !== e || (e && Y[s]) || (t && Y[l]))) return false;
                 if (null == e || null == t) return e === t;
                 var c = Cn.call(e),
                   u = Cn.call(t);
-                if ((c == k && (c = j), u == k && (u = j), c != u)) return !1;
+                if ((c == k && (c = j), u == k && (u = j), c != u))
+                  return false;
                 switch (c) {
                   case I:
                   case V:
@@ -8763,7 +8783,7 @@
                       r,
                       o
                     );
-                  if (c != j) return !1;
+                  if (c != j) return false;
                   var v = e.constructor,
                     g = t.constructor;
                   if (
@@ -8772,13 +8792,13 @@
                     'constructor' in e &&
                     'constructor' in t
                   )
-                    return !1;
+                    return false;
                 }
                 var y = !r;
                 r || (r = h()), o || (o = h());
                 for (var x = r.length; x--; ) if (r[x] == e) return o[x] == t;
                 var w = 0;
-                if (((a = !0), r.push(e), o.push(t), d)) {
+                if (((a = true), r.push(e), o.push(t), d)) {
                   if (((x = e.length), (w = t.length), (a = w == x), a || i))
                     for (; w--; ) {
                       var _ = x,
@@ -8872,10 +8892,10 @@
                   h = 16 & t,
                   u = 32 & t;
                 if (!l && !Pe(e)) throw new En();
-                h && !n.length && ((t &= -17), (h = n = !1)),
-                  u && !i.length && ((t &= -33), (u = i = !1));
+                h && !n.length && ((t &= -17), (h = n = false)),
+                  u && !i.length && ((t &= -33), (u = i = false));
                 var f = e && e.__bindData__;
-                if (f && f !== !0)
+                if (f && f !== true)
                   return (
                     (f = p(f)),
                     f[2] && (f[2] = p(f[2])),
@@ -8910,7 +8930,7 @@
                       n = t;
                     }),
                     'undefined' == typeof n || Nn.call(e, n))
-                  : !1;
+                  : false;
               }
               function ue(e) {
                 return ni[e];
@@ -8921,19 +8941,19 @@
                     'object' == typeof e &&
                     'number' == typeof e.length &&
                     Cn.call(e) == k) ||
-                  !1
+                  false
                 );
               }
               function de(e, t, n, i) {
                 return (
                   'boolean' != typeof t &&
                     null != t &&
-                    ((i = n), (n = t), (t = !1)),
+                    ((i = n), (n = t), (t = false)),
                   g(e, t, 'function' == typeof n && b(n, i, 1))
                 );
               }
               function pe(e, t, n) {
-                return g(e, !0, 'function' == typeof t && b(t, n, 1));
+                return g(e, true, 'function' == typeof t && b(t, n, 1));
               }
               function me(e, t) {
                 var n = y(e);
@@ -8944,7 +8964,7 @@
                 return (
                   (n = t.createCallback(n, i, 3)),
                   li(e, function(e, t, i) {
-                    return n(e, t, i) ? ((r = t), !1) : void 0;
+                    return n(e, t, i) ? ((r = t), false) : void 0;
                   }),
                   r
                 );
@@ -8954,7 +8974,7 @@
                 return (
                   (n = t.createCallback(n, i, 3)),
                   xe(e, function(e, t, i) {
-                    return n(e, t, i) ? ((r = t), !1) : void 0;
+                    return n(e, t, i) ? ((r = t), false) : void 0;
                   }),
                   r
                 );
@@ -8965,7 +8985,7 @@
                   i.push(t, e);
                 });
                 var r = i.length;
-                for (t = b(t, n, 3); r-- && t(i[r--], i[r], e) !== !1; );
+                for (t = b(t, n, 3); r-- && t(i[r--], i[r], e) !== false; );
                 return e;
               }
               function xe(e, t, n) {
@@ -8973,7 +8993,7 @@
                   r = i.length;
                 for (t = b(t, n, 3); r--; ) {
                   var o = i[r];
-                  if (t(e[o], o, e) === !1) break;
+                  if (t(e[o], o, e) === false) break;
                 }
                 return e;
               }
@@ -8987,7 +9007,7 @@
                 );
               }
               function _e(e, t) {
-                return e ? Nn.call(e, t) : !1;
+                return e ? Nn.call(e, t) : false;
               }
               function be(e) {
                 for (var t = -1, n = ei(e), i = n.length, r = {}; ++t < i; ) {
@@ -8998,20 +9018,20 @@
               }
               function Ee(e) {
                 return (
-                  e === !0 ||
-                  e === !1 ||
+                  e === true ||
+                  e === false ||
                   (e && 'object' == typeof e && Cn.call(e) == I) ||
-                  !1
+                  false
                 );
               }
               function Me(e) {
-                return (e && 'object' == typeof e && Cn.call(e) == V) || !1;
+                return (e && 'object' == typeof e && Cn.call(e) == V) || false;
               }
               function Se(e) {
-                return (e && 1 === e.nodeType) || !1;
+                return (e && 1 === e.nodeType) || false;
               }
               function Te(e) {
-                var t = !0;
+                var t = true;
                 if (!e) return t;
                 var n = Cn.call(e),
                   i = e.length;
@@ -9021,7 +9041,7 @@
                   (n == j && 'number' == typeof i && Pe(e.splice))
                   ? !i
                   : (li(e, function() {
-                      return (t = !1);
+                      return (t = false);
                     }),
                     t);
               }
@@ -9047,17 +9067,17 @@
                 return (
                   'number' == typeof e ||
                   (e && 'object' == typeof e && Cn.call(e) == B) ||
-                  !1
+                  false
                 );
               }
               function Ne(e) {
-                return (e && 'object' == typeof e && Cn.call(e) == G) || !1;
+                return (e && 'object' == typeof e && Cn.call(e) == G) || false;
               }
               function Ue(e) {
                 return (
                   'string' == typeof e ||
                   (e && 'object' == typeof e && Cn.call(e) == W) ||
-                  !1
+                  false
                 );
               }
               function Fe(e) {
@@ -9098,7 +9118,7 @@
                   si(e, function(e, t) {
                     o.push(t);
                   }),
-                    (o = Z(o, Q(arguments, !0, !1, 1)));
+                    (o = Z(o, Q(arguments, true, false, 1)));
                   for (var a = -1, s = o.length; ++a < s; ) {
                     var l = o[a];
                     r[l] = e[l];
@@ -9126,7 +9146,7 @@
                 if ('function' != typeof n)
                   for (
                     var o = -1,
-                      a = Q(arguments, !0, !1, 1),
+                      a = Q(arguments, true, false, 1),
                       s = De(e) ? a.length : 0;
                     ++o < s;
 
@@ -9168,7 +9188,7 @@
                 for (
                   var t = arguments,
                     n = -1,
-                    i = Q(t, !0, !1, 1),
+                    i = Q(t, true, false, 1),
                     r = t[2] && t[2][t[1]] === e ? 1 : i.length,
                     o = pn(r);
                   ++n < r;
@@ -9181,7 +9201,7 @@
                 var i = -1,
                   r = le(),
                   o = e ? e.length : 0,
-                  a = !1;
+                  a = false;
                 return (
                   (n = (0 > n ? Wn(0, o + n) : n) || 0),
                   Zn(e)
@@ -9195,7 +9215,7 @@
                 );
               }
               function Xe(e, n, i) {
-                var r = !0;
+                var r = true;
                 n = t.createCallback(n, i, 3);
                 var o = -1,
                   a = e ? e.length : 0;
@@ -9231,7 +9251,7 @@
                   var a;
                   return (
                     li(e, function(e, t, i) {
-                      return n(e, t, i) ? ((a = e), !1) : void 0;
+                      return n(e, t, i) ? ((a = e), false) : void 0;
                     }),
                     a
                   );
@@ -9246,7 +9266,7 @@
                 return (
                   (n = t.createCallback(n, i, 3)),
                   Je(e, function(e, t, i) {
-                    return n(e, t, i) ? ((r = e), !1) : void 0;
+                    return n(e, t, i) ? ((r = e), false) : void 0;
                   }),
                   r
                 );
@@ -9258,7 +9278,7 @@
                   ((t = t && 'undefined' == typeof n ? t : b(t, n, 3)),
                   'number' == typeof r)
                 )
-                  for (; ++i < r && t(e[i], i, e) !== !1; );
+                  for (; ++i < r && t(e[i], i, e) !== false; );
                 else li(e, t);
                 return e;
               }
@@ -9268,7 +9288,7 @@
                   ((t = t && 'undefined' == typeof n ? t : b(t, n, 3)),
                   'number' == typeof i)
                 )
-                  for (; i-- && t(e[i], i, e) !== !1; );
+                  for (; i-- && t(e[i], i, e) !== false; );
                 else {
                   var r = ei(e);
                   (i = r.length),
@@ -9351,7 +9371,7 @@
                   for (o && (i = e[++a]); ++a < s; ) i = n(i, e[a], a, e);
                 else
                   li(e, function(e, t, r) {
-                    i = o ? ((o = !1), e) : n(i, e, t, r);
+                    i = o ? ((o = false), e) : n(i, e, t, r);
                   });
                 return i;
               }
@@ -9360,7 +9380,7 @@
                 return (
                   (n = t.createCallback(n, r, 4)),
                   Je(e, function(e, t, r) {
-                    i = o ? ((o = !1), e) : n(i, e, t, r);
+                    i = o ? ((o = false), e) : n(i, e, t, r);
                   }),
                   i
                 );
@@ -9449,7 +9469,7 @@
                 return i;
               }
               function ft(e) {
-                return Z(e, Q(arguments, !0, !0, 1));
+                return Z(e, Q(arguments, true, true, 1));
               }
               function dt(e, n, i) {
                 var r = -1,
@@ -9484,7 +9504,7 @@
                     null != t &&
                     ((i = n),
                     (n = 'function' != typeof t && i && i[t] === e ? null : t),
-                    (t = !1)),
+                    (t = false)),
                   null != n && (e = Qe(e, n, i)),
                   Q(e, t)
                 );
@@ -9622,7 +9642,7 @@
                 return o;
               }
               function Ct() {
-                return re(Q(arguments, !0, !0));
+                return re(Q(arguments, true, true));
               }
               function At(e, n, i, r) {
                 return (
@@ -9630,7 +9650,7 @@
                     null != n &&
                     ((r = i),
                     (i = 'function' != typeof n && r && r[n] === e ? null : n),
-                    (n = !1)),
+                    (n = false)),
                   null != i && (i = t.createCallback(i, r, 3)),
                   re(e, n, i)
                 );
@@ -9682,7 +9702,9 @@
               function Ut(e) {
                 for (
                   var t =
-                      arguments.length > 1 ? Q(arguments, !0, !1, 1) : we(e),
+                      arguments.length > 1
+                        ? Q(arguments, true, false, 1)
+                        : we(e),
                     n = -1,
                     i = t.length;
                   ++n < i;
@@ -9722,12 +9744,12 @@
                   l,
                   c,
                   h = 0,
-                  u = !1,
-                  f = !0;
+                  u = false,
+                  f = true;
                 if (!Pe(e)) throw new En();
-                if (((t = Wn(0, t) || 0), n === !0)) {
-                  var d = !0;
-                  f = !1;
+                if (((t = Wn(0, t) || 0), n === true)) {
+                  var d = true;
+                  f = false;
                 } else
                   De(n) &&
                     ((d = n.leading),
@@ -9759,7 +9781,7 @@
                     (a = mi()),
                     (s = this),
                     (c = f && (l || !d)),
-                    u === !1)
+                    u === false)
                   )
                     var n = d && !l;
                   else {
@@ -9772,7 +9794,7 @@
                   }
                   return (
                     g && l ? (l = Dn(l)) : l || t === u || (l = Fn(p, t)),
-                    n && ((g = !0), (o = e.apply(s, i))),
+                    n && ((g = true), (o = e.apply(s, i))),
                     !g || l || r || (i = s = null),
                     o
                   );
@@ -9809,7 +9831,10 @@
                 return function() {
                   return t
                     ? n
-                    : ((t = !0), (n = e.apply(this, arguments)), (e = null), n);
+                    : ((t = true),
+                      (n = e.apply(this, arguments)),
+                      (e = null),
+                      n);
                 };
               }
               function Gt(e) {
@@ -9819,12 +9844,12 @@
                 return ae(e, 32, null, p(arguments, 1));
               }
               function Xt(e, t, n) {
-                var i = !0,
-                  r = !0;
+                var i = true,
+                  r = true;
                 if (!Pe(e)) throw new En();
                 return (
-                  n === !1
-                    ? (i = !1)
+                  n === false
+                    ? (i = false)
                     : De(n) &&
                       ((i = 'leading' in n ? n.leading : i),
                       (r = 'trailing' in n ? n.trailing : r)),
@@ -9852,8 +9877,8 @@
                 return 1 != r.length || a !== a || De(a)
                   ? function(t) {
                       for (
-                        var n = r.length, i = !1;
-                        n-- && (i = ee(t[r[n]], e[r[n]], null, !0));
+                        var n = r.length, i = false;
+                        n-- && (i = ee(t[r[n]], e[r[n]], null, true));
 
                       );
                       return i;
@@ -9870,7 +9895,7 @@
                 return e;
               }
               function Zt(e, i, r) {
-                var o = !0,
+                var o = true,
                   a = i && we(i);
                 (i && (r || a.length)) ||
                   (null == r && (r = i),
@@ -9878,7 +9903,9 @@
                   (i = e),
                   (e = t),
                   (a = we(i))),
-                  r === !1 ? (o = !1) : De(r) && 'chain' in r && (o = r.chain);
+                  r === false
+                    ? (o = false)
+                    : De(r) && 'chain' in r && (o = r.chain);
                 var s = e,
                   l = Pe(s);
                 $e(a, function(t) {
@@ -9914,7 +9941,7 @@
                   (null == n &&
                     ('boolean' == typeof e && r
                       ? ((n = e), (e = 1))
-                      : r || 'boolean' != typeof t || ((n = t), (r = !0))),
+                      : r || 'boolean' != typeof t || ((n = t), (r = true))),
                   i && r && (t = 1),
                   (e = +e || 0),
                   r ? ((t = e), (e = 0)) : (t = +t || 0),
@@ -9960,7 +9987,7 @@
                     i || (i = r),
                     (f += e.slice(h, s).replace(N, c)),
                     n && (f += "' +\n__e(" + n + ") +\n'"),
-                    a && ((o = !0), (f += "';\n" + a + ";\n__p += '")),
+                    a && ((o = true), (f += "';\n" + a + ";\n__p += '")),
                     i &&
                       (f +=
                         "' +\n((__t = (" + i + ")) == null ? '' : __t) +\n'"),
@@ -10012,13 +10039,13 @@
                 return bn(null == e ? '' : e) + t;
               }
               function cn(e) {
-                return (e = new n(e)), (e.__chain__ = !0), e;
+                return (e = new n(e)), (e.__chain__ = true), e;
               }
               function hn(e, t) {
                 return t(e), e;
               }
               function un() {
-                return (this.__chain__ = !0), this;
+                return (this.__chain__ = true), this;
               }
               function fn() {
                 return bn(this.__wrapped__);
@@ -10122,7 +10149,7 @@
                         'object' == typeof e &&
                         'number' == typeof e.length &&
                         Cn.call(e) == H) ||
-                      !1
+                      false
                     );
                   },
                 Qn = function(e) {
@@ -10202,7 +10229,7 @@
                   if (!r) return o;
                   if (!Y[typeof r]) return o;
                   t = t && 'undefined' == typeof n ? t : b(t, n, 3);
-                  for (i in r) if (t(r[i], i, e) === !1) return o;
+                  for (i in r) if (t(r[i], i, e) === false) return o;
                   return o;
                 },
                 li = function(e, t, n) {
@@ -10217,12 +10244,12 @@
                     ++a < l;
 
                   )
-                    if (((i = s[a]), t(r[i], i, e) === !1)) return o;
+                    if (((i = s[a]), t(r[i], i, e) === false)) return o;
                   return o;
                 },
                 ci = On
                   ? function(e) {
-                      if (!e || Cn.call(e) != j) return !1;
+                      if (!e || Cn.call(e) != j) return false;
                       var t = e.valueOf,
                         n = ce(t) && (n = On(t)) && On(n);
                       return n ? e == n || On(e) == n : he(e);
@@ -10399,7 +10426,7 @@
                       e
                     );
                   })(),
-                  !1
+                  false
                 ),
                 (t.first = mt),
                 (t.last = wt),
@@ -10497,26 +10524,26 @@
               G = '[object RegExp]',
               W = '[object String]',
               X = {};
-            (X[z] = !1),
-              (X[k] = X[H] = X[I] = X[V] = X[B] = X[j] = X[G] = X[W] = !0);
+            (X[z] = false),
+              (X[k] = X[H] = X[I] = X[V] = X[B] = X[j] = X[G] = X[W] = true);
             var q = {
-                leading: !1,
+                leading: false,
                 maxWait: 0,
-                trailing: !1
+                trailing: false
               },
               K = {
-                configurable: !1,
-                enumerable: !1,
+                configurable: false,
+                enumerable: false,
                 value: null,
-                writable: !1
+                writable: false
               },
               Y = {
-                boolean: !1,
-                function: !0,
-                object: !0,
-                number: !1,
-                string: !1,
-                undefined: !1
+                boolean: false,
+                function: true,
+                object: true,
+                number: false,
+                string: false,
+                undefined: false
               },
               $ = {
                 '\\': '\\',
@@ -10648,7 +10675,7 @@
                     (i.message = e),
                     (i.lineno = t),
                     (i.colno = n),
-                    (i.firstUpdate = !0),
+                    (i.firstUpdate = true),
                     (i.Update = function(e) {
                       var t = '(' + (e || 'unknown path') + ')';
                       return (
@@ -10665,7 +10692,7 @@
                         (t += '\n '),
                         this.firstUpdate && (t += ' '),
                         (this.message = t + (this.message || '')),
-                        (this.firstUpdate = !1),
+                        (this.firstUpdate = false),
                         this
                       );
                     }),
@@ -10822,7 +10849,7 @@
                 };
               }
               function n(e) {
-                return (e.__keywords = !0), e;
+                return (e.__keywords = true), e;
               }
               function i(e) {
                 var t = e.length;
@@ -11086,7 +11113,7 @@
                   fetch: function(e, t) {
                     var n,
                       i,
-                      r = !0;
+                      r = true;
                     return (
                       window.XMLHttpRequest
                         ? (n = new XMLHttpRequest())
@@ -11096,13 +11123,13 @@
                         4 !== n.readyState ||
                           (0 !== n.status && 200 !== n.status) ||
                           !r ||
-                          ((r = !1), (i = n.responseText));
+                          ((r = false), (i = n.responseText));
                       }),
                       (e +=
                         (-1 === e.indexOf('?') ? '?' : '&') +
                         's=' +
                         new Date().getTime()),
-                      n.open('GET', e, !1),
+                      n.open('GET', e, false),
                       n.send(),
                       i
                     );
@@ -11373,7 +11400,7 @@
                   },
                   urlize: function(e, t, n) {
                     isNaN(t) && (t = 1 / 0);
-                    var i = n === !0 ? ' rel="nofollow"' : '',
+                    var i = n === true ? ' rel="nofollow"' : '',
                       r = /^(?:\(|<|&lt;)?(.*?)(?:\.|,|\)|\n|&gt;)?$/,
                       o = /^[\w.!#$%&'*+\-\/=?\^`{|}~]+@[a-z\d\-]+(\.[a-z\d\-]+)+$/i,
                       a = /^https?:\/\/.*$/,
@@ -11453,10 +11480,10 @@
               }
               function n(e) {
                 e = e || ',';
-                var t = !0;
+                var t = true;
                 return function() {
                   var n = t ? '' : e;
-                  return (t = !1), n;
+                  return (t = false), n;
                 };
               }
               var i = {
@@ -11534,7 +11561,7 @@
                     return this.filters[e];
                   },
                   resolveTemplate: function(e, t, n) {
-                    var i = e.isRelative && t ? e.isRelative(n) : !1;
+                    var i = e.isRelative && t ? e.isRelative(n) : false;
                     return i && e.resolve ? e.resolve(t, n) : n;
                   },
                   getTemplate: function(e, t, i, r) {
@@ -11542,8 +11569,9 @@
                       a = null;
                     if (
                       (e && e.raw && (e = e.raw),
-                      n.isFunction(i) && ((r = i), (i = null), (t = t || !1)),
-                      n.isFunction(t) && ((r = t), (t = !1)),
+                      n.isFunction(i) &&
+                        ((r = i), (i = null), (t = t || false)),
+                      n.isFunction(t) && ((r = t), (t = false)),
                       'string' != typeof e)
                     )
                       throw new Error('template names must be a string: ' + e);
@@ -11703,7 +11731,7 @@
                             this.env.dev,
                             this._compile.bind(this)
                           )
-                        : (this.compiled = !1);
+                        : (this.compiled = false);
                   },
                   render: function(e, t, i) {
                     return (
@@ -11779,7 +11807,7 @@
                     }
                     (this.blocks = this._getBlocks(e)),
                       (this.rootRenderFunc = e.root),
-                      (this.compiled = !0);
+                      (this.compiled = true);
                   },
                   _getBlocks: function(e) {
                     var t = {};
@@ -11816,7 +11844,7 @@
           var f;
           (n.configure = function(e, t) {
             (t = t || {}), i.isObject(e) && ((t = e), (e = null));
-            var n = 'watch' in t ? !t.watch : !1,
+            var n = 'watch' in t ? !t.watch : false,
               o = h.FileSystemLoader || h.WebLoader;
             return (
               (f = new r.Environment(new o(e, n), t)),
@@ -12055,9 +12083,9 @@
                 o++
               ) {
                 var a = i ? i[o] : o;
-                if (!t(e[a], a, e)) return !1;
+                if (!t(e[a], a, e)) return false;
               }
-              return !0;
+              return true;
             }),
             (w.some = w.any = function(e, t, n) {
               t = b(t, n);
@@ -12067,9 +12095,9 @@
                 o++
               ) {
                 var a = i ? i[o] : o;
-                if (t(e[a], a, e)) return !0;
+                if (t(e[a], a, e)) return true;
               }
-              return !1;
+              return false;
             }),
             (w.contains = w.includes = w.include = function(e, t, n, i) {
               return (
@@ -12259,13 +12287,13 @@
             return r;
           };
           (w.flatten = function(e, t) {
-            return D(e, t, !1);
+            return D(e, t, false);
           }),
             (w.without = function(e) {
               return w.difference(e, f.call(arguments, 1));
             }),
             (w.uniq = w.unique = function(e, t, n, i) {
-              w.isBoolean(t) || ((i = n), (n = t), (t = !1)),
+              w.isBoolean(t) || ((i = n), (n = t), (t = false)),
                 null != n && (n = b(n, i));
               for (var r = [], o = [], a = 0, s = C(e); s > a; a++) {
                 var l = e[a],
@@ -12279,7 +12307,7 @@
               return r;
             }),
             (w.union = function() {
-              return w.uniq(D(arguments, !0, !0));
+              return w.uniq(D(arguments, true, true));
             }),
             (w.intersection = function(e) {
               for (
@@ -12296,7 +12324,7 @@
               return t;
             }),
             (w.difference = function(e) {
-              var t = D(arguments, !0, !0, 1);
+              var t = D(arguments, true, true, 1);
               return w.filter(e, function(e) {
                 return !w.contains(t, e);
               });
@@ -12401,14 +12429,14 @@
                 s = 0;
               n || (n = {});
               var l = function() {
-                (s = n.leading === !1 ? 0 : w.now()),
+                (s = n.leading === false ? 0 : w.now()),
                   (a = null),
                   (o = e.apply(i, r)),
                   a || (i = r = null);
               };
               return function() {
                 var c = w.now();
-                s || n.leading !== !1 || (s = c);
+                s || n.leading !== false || (s = c);
                 var h = t - (c - s);
                 return (
                   (i = this),
@@ -12418,7 +12446,7 @@
                       (s = c),
                       (o = e.apply(i, r)),
                       a || (i = r = null))
-                    : a || n.trailing === !1 || (a = setTimeout(l, h)),
+                    : a || n.trailing === false || (a = setTimeout(l, h)),
                   o
                 );
               };
@@ -12556,7 +12584,7 @@
               if (null == a) return o;
               w.isFunction(t)
                 ? ((r = w.allKeys(a)), (i = _(t, n)))
-                : ((r = D(arguments, !1, !1, 1)),
+                : ((r = D(arguments, false, false, 1)),
                   (i = function(e, t, n) {
                     return t in n;
                   }),
@@ -12571,14 +12599,14 @@
             (w.omit = function(e, t, n) {
               if (w.isFunction(t)) t = w.negate(t);
               else {
-                var i = w.map(D(arguments, !1, !1, 1), String);
+                var i = w.map(D(arguments, false, false, 1), String);
                 t = function(e, t) {
                   return !w.contains(i, t);
                 };
               }
               return w.pick(e, t, n);
             }),
-            (w.defaults = E(w.allKeys, !0)),
+            (w.defaults = E(w.allKeys, true)),
             (w.create = function(e, t) {
               var n = M(e);
               return t && w.extendOwn(n, t), n;
@@ -12599,9 +12627,9 @@
               if (null == e) return !i;
               for (var r = Object(e), o = 0; i > o; o++) {
                 var a = n[o];
-                if (t[a] !== r[a] || !(a in r)) return !1;
+                if (t[a] !== r[a] || !(a in r)) return false;
               }
-              return !0;
+              return true;
             });
           var N = function(e, t, n, i) {
             if (e === t) return 0 !== e || 1 / e === 1 / t;
@@ -12609,7 +12637,7 @@
             e instanceof w && (e = e._wrapped),
               t instanceof w && (t = t._wrapped);
             var r = d.call(e);
-            if (r !== d.call(t)) return !1;
+            if (r !== d.call(t)) return false;
             switch (r) {
               case '[object RegExp]':
               case '[object String]':
@@ -12626,7 +12654,7 @@
             }
             var o = '[object Array]' === r;
             if (!o) {
-              if ('object' != typeof e || 'object' != typeof t) return !1;
+              if ('object' != typeof e || 'object' != typeof t) return false;
               var a = e.constructor,
                 s = t.constructor;
               if (
@@ -12640,29 +12668,29 @@
                 'constructor' in e &&
                 'constructor' in t
               )
-                return !1;
+                return false;
             }
             (n = n || []), (i = i || []);
             for (var l = n.length; l--; ) if (n[l] === e) return i[l] === t;
             if ((n.push(e), i.push(t), o)) {
-              if (((l = e.length), l !== t.length)) return !1;
-              for (; l--; ) if (!N(e[l], t[l], n, i)) return !1;
+              if (((l = e.length), l !== t.length)) return false;
+              for (; l--; ) if (!N(e[l], t[l], n, i)) return false;
             } else {
               var c,
                 h = w.keys(e);
-              if (((l = h.length), w.keys(t).length !== l)) return !1;
+              if (((l = h.length), w.keys(t).length !== l)) return false;
               for (; l--; )
                 if (((c = h[l]), !w.has(t, c) || !N(e[c], t[c], n, i)))
-                  return !1;
+                  return false;
             }
-            return n.pop(), i.pop(), !0;
+            return n.pop(), i.pop(), true;
           };
           (w.isEqual = function(e, t) {
             return N(e, t);
           }),
             (w.isEmpty = function(e) {
               return null == e
-                ? !0
+                ? true
                 : A(e) && (w.isArray(e) || w.isString(e) || w.isArguments(e))
                 ? 0 === e.length
                 : 0 === w.keys(e).length;
@@ -12702,7 +12730,7 @@
             'function' != typeof /./ &&
               'object' != typeof Int8Array &&
               (w.isFunction = function(e) {
-                return 'function' == typeof e || !1;
+                return 'function' == typeof e || false;
               }),
             (w.isFinite = function(e) {
               return isFinite(e) && !isNaN(parseFloat(e));
@@ -12711,7 +12739,9 @@
               return w.isNumber(e) && e !== +e;
             }),
             (w.isBoolean = function(e) {
-              return e === !0 || e === !1 || '[object Boolean]' === d.call(e);
+              return (
+                e === true || e === false || '[object Boolean]' === d.call(e)
+              );
             }),
             (w.isNull = function(e) {
               return null === e;
@@ -12861,7 +12891,7 @@
           }),
             (w.chain = function(e) {
               var t = w(e);
-              return (t._chain = !0), t;
+              return (t._chain = true), t;
             });
           var j = function(e, t) {
             return e._chain ? w(t).chain() : t;
@@ -12934,8 +12964,8 @@
           h = function(e) {
             (this.scene = e.scene),
               (this.renderer = new THREE.WebGLRenderer({
-                antialias: !0,
-                alpha: !0
+                antialias: true,
+                alpha: true
               })),
               (this.clearColor = new THREE.Color(0xffffff)),
               this.renderer.setClearColor(this.clearColor),
@@ -12981,7 +13011,7 @@
           showStatusBar: function() {
             'undefined' != typeof window.StatusBar &&
               (StatusBar.styleDefault(),
-              StatusBar.overlaysWebView(!0),
+              StatusBar.overlaysWebView(true),
               StatusBar.show());
           },
           hideStatusBar: function() {
@@ -13017,20 +13047,20 @@
             };
           })(),
           pause: function() {
-            this.clock.stop(), (this.paused = !0);
+            this.clock.stop(), (this.paused = true);
           },
           resume: function() {
-            this.clock.start(), (this.paused = !1), this.update();
+            this.clock.start(), (this.paused = false), this.update();
           },
           onLeaveTab: function() {
             this.pause(),
               Audios.isMute() ||
-                (Audios.toggleMute(), (this.audioShouldResume = !0));
+                (Audios.toggleMute(), (this.audioShouldResume = true));
           },
           onFocusTab: function() {
             this.resume(),
               this.audioShouldResume &&
-                (Audios.toggleMute(), (this.audioShouldResume = !1));
+                (Audios.toggleMute(), (this.audioShouldResume = false));
           },
           toggleGUIMode: function() {
             this.stats && $(this.stats.domElement).toggle();
@@ -13052,8 +13082,8 @@
     9: [
       function(e, t, n) {
         var i = {
-          FPS: !1,
-          AUDIO: !0,
+          FPS: false,
+          AUDIO: true,
           models: {
             exterior: 'jfc-ext.js',
             interior: 'jfc-int.js',
@@ -13083,7 +13113,7 @@
               (this.tweens = {
                 clearColor: new TWEEN.Tween()
               }),
-              (this.isHome = !0),
+              (this.isHome = true),
               this.scene.controls.enablePinch(),
               this.handleSceneEvents();
           };
@@ -13198,7 +13228,7 @@
                 'showHome',
                 function() {
                   this.scene.hideHotspots(),
-                    (this.scene.controls.horizontalOnly = !0),
+                    (this.scene.controls.horizontalOnly = true),
                     this.scene.controls.reset(),
                     this.scene.controls.tweenDistance(10),
                     this.scene.controls.lookAt(
@@ -13215,7 +13245,7 @@
                 'showConfigurator',
                 function() {
                   this.scene.showHotspots('exterior'),
-                    (this.scene.controls.horizontalOnly = !1),
+                    (this.scene.controls.horizontalOnly = false),
                     this.scene.controls.enablePinch(),
                     this.hideStatusBar();
                 },
@@ -13224,14 +13254,14 @@
               this.view.on(
                 'pause',
                 function() {
-                  this.pause(), (this.scene.controls.enabled = !1);
+                  this.pause(), (this.scene.controls.enabled = false);
                 },
                 this
               ),
               this.view.on(
                 'resume',
                 function() {
-                  this.resume(), (this.scene.controls.enabled = !0);
+                  this.resume(), (this.scene.controls.enabled = true);
                 },
                 this
               ),
@@ -13665,8 +13695,8 @@
         var i = function(e) {
           THREE.Animation.call(this, e.node, e.data),
             e.sequences && this.initSequences(e.sequences),
-            (this.started = !1),
-            (this.ended = !1);
+            (this.started = false),
+            (this.ended = false);
         };
         i.inherit(THREE.Animation, {
           initSequences: function(e) {
@@ -13688,11 +13718,11 @@
               (this.currentSequence = _.keys(this.sequences)[0]);
           },
           play: function(e) {
-            THREE.Animation.prototype.play.call(this, e), (this.started = !0);
+            THREE.Animation.prototype.play.call(this, e), (this.started = true);
           },
           playSequence: function(e) {
             var t = (this.currentSequence = this.sequences[e]);
-            this.play(t.start), (this.ended = !1);
+            this.play(t.start), (this.ended = false);
           },
           update: function(e) {
             var t = this.currentSequence;
@@ -13700,7 +13730,7 @@
               ? (e = 0)
               : t &&
                 this.currentTime > t.end &&
-                ((this.currentTime = t.end), (this.ended = !0)),
+                ((this.currentTime = t.end), (this.ended = true)),
               THREE.Animation.prototype.update.call(this, e);
           }
         }),
@@ -13772,7 +13802,7 @@
         var Loader = e('21'),
           EventDispatcher = e('23');
         EventDispatcher.alternateExtensions = ['mp3'];
-        var u = !1,
+        var u = false,
           f = {},
           d = {
             exterior: 'audio/loops/base.mp3',
@@ -13789,10 +13819,10 @@
             woosh: 'audio/sfx/woosh.mp3'
           },
           m = {
-            mute: !1,
+            mute: false,
             load: function() {
               return $.when(r(), o()).done(function() {
-                u = !0;
+                u = true;
               });
             },
             play: function(e) {
@@ -13818,7 +13848,7 @@
               a(e, t, n);
             },
             fadeOut: function(e, t, n) {
-              a(e, t, n, !0);
+              a(e, t, n, true);
             },
             setVolume: function(e, t) {
               s(e, t);
@@ -13839,7 +13869,7 @@
         var AudioManager = e('15'),
           Loader = e('21'),
           Audios = {
-            musicStarted: !1,
+            musicStarted: false,
             toggleMute: function() {
               AudioManager.toggleMute();
             },
@@ -13850,7 +13880,7 @@
               return AudioManager.load();
             },
             playMusic: function() {
-              (this.musicStarted = !0),
+              (this.musicStarted = true),
                 AudioManager.loop('exterior'),
                 AudioManager.loop('interior'),
                 AudioManager.fadeIn('exterior', 4e3),
@@ -13989,28 +14019,32 @@
     ],
     19: [
       function(e, t, n) {
-        function i(e, t, n) {
-          return e + (t - e) * n;
+        function lerp(a, b, t) {
+          return a + (b - a) * t;
         }
-        function r(e, t, n) {
-          var r, o;
-          if (e > t) {
-            var a = t + TWOPI - e,
-              l = e - t;
-            a > l ? ((r = e), (o = t)) : ((r = e), (o = t + TWOPI));
+        function lerpRadian(r1, r2, t) {
+          var a, b;
+          if (r1 > r2) {
+            var diff2PI = r2 + TWOPI - r1,
+              diff = r1 - r2;
+            diff2PI > diff
+              ? ((a = r1), (b = r2))
+              : ((a = r1), (b = r2 + TWOPI));
           } else {
-            var a = t - e,
-              l = e + TWOPI - t;
-            a > l ? ((r = e + TWOPI), (o = t)) : ((r = e), (o = t));
+            var diff = r2 - r1,
+              diff2PI = r1 + TWOPI - r2;
+            diff > diff2PI
+              ? ((a = r1 + TWOPI), (b = r2))
+              : ((a = r1), (b = r2));
           }
-          return i(r, o, n) % TWOPI;
+          return lerp(a, b, t) % TWOPI;
         }
         var Loader = e('21'),
           Hammer = e('3'),
           TWOPI = 2 * Math.PI,
-          InteriorControls = function(e) {
+          CustomControls = function(e) {
             THREE.EventDispatcher.call(this),
-              (this.enabled = !0),
+              (this.enabled = true),
               (this.camera = e.camera),
               (this.$container = $('body')),
               (this.mouse = new THREE.Vector2()),
@@ -14024,16 +14058,16 @@
               (this.dampFactor = e.damp || 1e3),
               (this.origin = e.origin || new THREE.Vector3(0, 0, 0)),
               (this.clampY = e.clampY || Math.PI),
-              (this.reverse = void 0 !== e.reverse ? e.reverse : !1),
+              (this.reverse = void 0 !== e.reverse ? e.reverse : false),
               (this.fixedDistance =
-                void 0 !== e.fixedDistance ? e.fixedDistance : !1),
-              (this.horizontalOnly = !1),
+                void 0 !== e.fixedDistance ? e.fixedDistance : false),
+              (this.horizontalOnly = false),
               this.setupEvents(),
               (this.zoomSpeed = 0.5),
-              (this.zoomEnabled = void 0 !== e.zoom ? e.zoom : !0),
+              (this.zoomEnabled = void 0 !== e.zoom ? e.zoom : true),
               (this.hammer = new Hammer($('body')[0])),
               this.hammer.get('pinch').set({
-                enable: !1
+                enable: false
               }),
               (this.maxDistance = e.maxDistance || 10),
               (this.minDistance = e.minDistance || 4),
@@ -14057,9 +14091,9 @@
                   );
                 }.bind(this)
               ),
-              (this.autoRotate = !1),
+              (this.autoRotate = false),
               (this.autoRotationSpeed = -0.002),
-              (this.locked = !1),
+              (this.locked = false),
               (this.lockRotation = new THREE.Vector2()),
               (this.tweens = {
                 rotation: new TWEEN.Tween(),
@@ -14067,31 +14101,31 @@
                 distance: new TWEEN.Tween()
               });
           };
-        InteriorControls.inherit(THREE.EventDispatcher, {
+        CustomControls.inherit(THREE.EventDispatcher, {
           enablePinch: function() {
             this.hammer.get('pinch').set({
-              enable: !0
+              enable: true
             });
           },
           disablePinch: function() {
             this.hammer.get('pinch').set({
-              enable: !1
+              enable: false
             });
           },
           setupEvents: function() {
             this.$container.on(
               'mouseover',
               function() {
-                this.overRenderer = !0;
+                this.overRenderer = true;
               },
-              !1
+              false
             ),
               this.$container.on(
                 'mouseout',
                 function() {
-                  this.overRenderer = !1;
+                  this.overRenderer = false;
                 },
-                !1
+                false
               ),
               this.$container.on(
                 'mousedown.orbit touchstart.orbit',
@@ -14139,7 +14173,8 @@
               if (
                 (this.horizontalOnly || e.preventDefault(),
                 this.autoRotate &&
-                  ((this.autoRotate = !1), (this.autoRotateNeedsResume = !0)),
+                  ((this.autoRotate = false),
+                  (this.autoRotateNeedsResume = true)),
                 this.autoRotateTimer && this.autoRotateTimer.stop(),
                 !('touchmove' === e.type && e.originalEvent.touches.length > 1))
               ) {
@@ -14164,7 +14199,7 @@
                 (this.autoRotateTimer = Loader.delay(
                   2e3,
                   function() {
-                    this.autoRotate = !0;
+                    this.autoRotate = true;
                   },
                   this
                 )),
@@ -14196,96 +14231,97 @@
           },
           start: function(e, t) {
             this.started ||
-              ((this.enabled = 'phone' !== window.mode), (this.started = !0));
+              ((this.enabled = 'phone' !== window.mode), (this.started = true));
           },
           orbitTo: (function() {
-            var e = new THREE.Vector3(),
-              t = new THREE.Vector3(0, 0, 0),
-              n = new THREE.Vector3(1, 0, 0),
-              a = new THREE.Vector3(0, 1, 0),
-              l = new THREE.Vector3();
-            return function(c, h, u) {
-              var f = new $.Deferred();
-              (u = void 0 !== u ? u : TWEEN.Easing.Quartic.Out),
-                e.subVectors(c, this.origin).normalize();
-              var d = new THREE.Vector2().copy(this.rotation),
-                p = a.angleTo(e);
-              l.crossVectors(a, e).normalize(),
-                e.applyAxisAngle(l, Math.PI / 2 - p);
-              var m = n.angleTo(e);
-              e.z < 0 && (m = TWOPI - m);
-              var v = {
-                x: m,
-                y: p
+            var move = new THREE.Vector3(),
+              origin = new THREE.Vector3(0, 0, 0),
+              xAxis = new THREE.Vector3(1, 0, 0),
+              yAxis = new THREE.Vector3(0, 1, 0),
+              zAxis = new THREE.Vector3();
+            return function(target, duration, easing) {
+              var deferred = new $.Deferred();
+              (easing = void 0 !== easing ? easing : TWEEN.Easing.Quartic.Out),
+                move.subVectors(target, this.origin).normalize();
+              var rotationCopy = new THREE.Vector2().copy(this.rotation),
+                angleToY = yAxis.angleTo(move);
+              zAxis.crossVectors(yAxis, move).normalize(),
+                move.applyAxisAngle(zAxis, Math.PI / 2 - angleToY);
+              var angleToX = xAxis.angleTo(move);
+              move.z < 0 && (angleToX = TWOPI - angleToX);
+              var rotation = {
+                x: angleToX,
+                y: angleToY
               };
-              if (h > 0) {
+              if (duration > 0) {
                 var g = new THREE.Vector2();
-                Loader.tween(h, u)
+                Loader.tween(duration, easing)
                   .onUpdate(
                     function(e) {
-                      (g.x = r(d.x, v.x, e)),
-                        (g.y = i(d.y, v.y, e)),
+                      (g.x = lerpRadian(rotationCopy.x, rotation.x, e)),
+                        (g.y = lerp(rotationCopy.y, rotation.y, e)),
                         this.setRotation(g);
                     }.bind(this)
                   )
                   .onComplete(function() {
-                    f.resolve();
+                    deferred.resolve();
                   }),
                   this.fixedDistance ||
                     this.tweens.distance
                       .reset(this)
                       .to(
                         {
-                          distance: c.distanceTo(t)
+                          distance: target.distanceTo(origin)
                         },
-                        h
+                        duration
                       )
-                      .easing(u)
+                      .easing(easing)
                       .start();
               } else
-                this.setRotation(v),
-                  this.fixedDistance || (this.distance = c.distanceTo(t));
-              return f.promise();
+                this.setRotation(rotation),
+                  this.fixedDistance ||
+                    (this.distance = target.distanceTo(origin));
+              return deferred.promise();
             };
           })(),
-          lookAt: function(e, t) {
+          lookAt: function(target, duration) {
             this.tweens.target
               .reset(this.origin)
               .to(
                 {
-                  x: e.x,
-                  y: e.y,
-                  z: e.z
+                  x: target.x,
+                  y: target.y,
+                  z: target.z
                 },
-                t
+                duration
               )
               .easing(TWEEN.Easing.Quartic.Out)
               .start();
           },
           lock: function() {
-            (this.locked = !0),
+            (this.locked = true),
               this.lockRotation.copy(this.rotation),
               (this.dampFactor *= 8);
           },
           unlock: function() {
-            (this.locked = !1), (this.dampFactor /= 8);
+            (this.locked = false), (this.dampFactor /= 8);
           },
           reset: function() {
-            (this.resetting = !0),
+            (this.resetting = true),
               Loader.delay(
                 1e3,
                 function() {
-                  this.resetting = !1;
+                  this.resetting = false;
                 },
                 this
               );
           },
-          tweenDistance: function(e) {
-            var t = this.distance,
-              n = e - t;
+          tweenDistance: function(newDistance) {
+            var distance = this.distance,
+              diff = newDistance - distance;
             Loader.tween(1200, TWEEN.Easing.Quartic.Out).onUpdate(
               function(e) {
-                this.distance = t + e * n;
+                this.distance = distance + e * diff;
               }.bind(this)
             );
           },
@@ -14298,24 +14334,28 @@
               this.horizontalOnly && (this.target.y = 1.5),
               this.resetting &&
                 ((this.target.x = 0.9828), (this.target.y = 1.5)),
-              (this.rotation.x = r(this.rotation.x, this.target.x, 0.1)),
-              (this.rotation.y = i(this.rotation.y, this.target.y, 0.1));
-            var t = this.rotation.x,
-              n = this.rotation.y,
-              o = Math.sin(n);
+              (this.rotation.x = lerpRadian(
+                this.rotation.x,
+                this.target.x,
+                0.1
+              )),
+              (this.rotation.y = lerp(this.rotation.y, this.target.y, 0.1));
+            var rotationX = this.rotation.x,
+              rotationY = this.rotation.y,
+              yFactor = Math.sin(rotationY);
             if (
-              ((this.camera.position.x = Math.cos(t) * o),
-              (this.camera.position.y = Math.cos(n)),
-              (this.camera.position.z = Math.sin(t) * o),
+              ((this.camera.position.x = Math.cos(rotationX) * yFactor),
+              (this.camera.position.y = Math.cos(rotationY)),
+              (this.camera.position.z = Math.sin(rotationX) * yFactor),
               this.camera.position.setLength(this.distance),
               this.reverse)
             ) {
-              var a = new THREE.Vector3()
+              var position = new THREE.Vector3()
                 .copy(this.camera.position)
                 .setLength(0.1);
               this.lookAtTarget
                 .copy(this.camera.position)
-                .add(a)
+                .add(position)
                 .add(this.origin),
                 this.camera.position.add(this.origin);
             } else
@@ -14324,7 +14364,7 @@
             this.camera.lookAt(this.lookAtTarget);
           }
         }),
-          (t.exports = InteriorControls);
+          (t.exports = CustomControls);
       },
       {
         21: 21,
@@ -14338,7 +14378,7 @@
             {},
             {
               duration: 1e3,
-              repeat: !1,
+              repeat: false,
               onStart: function() {},
               onEnd: function() {}
             },
@@ -14353,9 +14393,9 @@
         i.inherit(Object, {
           reset: function() {
             return (
-              (this.started = !1),
-              (this.paused = !1),
-              (this.ended = !1),
+              (this.started = false),
+              (this.paused = false),
+              (this.ended = false),
               (this.elapsedTime = 0),
               this
             );
@@ -14363,23 +14403,23 @@
           start: function() {
             return this.started || this.ended
               ? this
-              : ((this.started = !0), this.startCallback(), this);
+              : ((this.started = true), this.startCallback(), this);
           },
           stop: function() {
             return this.started ? this.reset() : this;
           },
           pause: function() {
-            return (this.paused = !0), this;
+            return (this.paused = true), this;
           },
           resume: function() {
-            return (this.paused = !1), this;
+            return (this.paused = false), this;
           },
           update: function(e) {
             return !this.started || this.paused || this.ended
               ? this
               : ((this.elapsedTime += 1e3 * e.delta),
                 this.elapsedTime > this.duration &&
-                  (this.endCallback(), (this.ended = !0)),
+                  (this.endCallback(), (this.ended = true)),
                 this);
           }
         }),
@@ -14524,8 +14564,8 @@
             );
             return (
               (n.format = THREE.RGBFormat),
-              (n.flipY = !1),
-              (n.needsUpdate = !0),
+              (n.flipY = false),
+              (n.needsUpdate = true),
               n
             );
           }),
@@ -14629,8 +14669,8 @@
             var t = new THREE.BoxGeometry(e, e, e),
               n = new THREE.MeshBasicMaterial({
                 color: 0xff00ff,
-                wireframe: !0,
-                depthTest: !1
+                wireframe: true,
+                depthTest: false
               }),
               i = new THREE.Mesh(t, n);
             return i;
@@ -14670,7 +14710,7 @@
                   return r;
                 },
                 u = function(e) {
-                  if (e.isTrigger) return !1;
+                  if (e.isTrigger) return false;
                   var n = c.event,
                     i = Math.abs(e.pageX - n.pageX),
                     r = Math.abs(e.pageY - n.pageY),
@@ -14683,7 +14723,7 @@
                   );
                 },
                 f = function(e) {
-                  if (!r) return !1;
+                  if (!r) return false;
                   var n = Math.abs(e.pageX - r.pageX),
                     i = Math.abs(e.pageY - r.pageY),
                     o = Math.max(n, i);
@@ -14701,18 +14741,18 @@
                   e.timeStamp = Date.now ? Date.now() : +new Date();
                 },
                 p = {
-                  isEnabled: !1,
-                  isTracking: !1,
+                  isEnabled: false,
+                  isTracking: false,
                   enable: function() {
                     p.isEnabled ||
-                      ((p.isEnabled = !0),
+                      ((p.isEnabled = true),
                       (n = t(e.body)
                         .on('touchstart' + o, p.onStart)
                         .on('mousedown' + o, p.onStart)
                         .on('click' + o, p.onClick)));
                   },
                   disable: function() {
-                    p.isEnabled && ((p.isEnabled = !1), n.off(o));
+                    p.isEnabled && ((p.isEnabled = false), n.off(o));
                   },
                   onStart: function(e) {
                     e.isTrigger ||
@@ -14721,7 +14761,7 @@
                         (e.touches && (c.count = e.touches.length),
                         p.isTracking ||
                           (!e.touches && f(e)) ||
-                          ((p.isTracking = !0),
+                          ((p.isTracking = true),
                           (c.event = e),
                           e.touches
                             ? ((r = e),
@@ -14740,7 +14780,7 @@
                   },
                   onCancel: function(e) {
                     e && 'touchcancel' === e.type && e.preventDefault(),
-                      (p.isTracking = !1),
+                      (p.isTracking = false),
                       n.off(a);
                   },
                   onClick: function(e) {
@@ -14751,7 +14791,7 @@
                       i.pageX === e.pageX &&
                       i.pageY === e.pageY &&
                       e.timeStamp - i.timeStamp < 750
-                      ? ((i = null), !1)
+                      ? ((i = null), false)
                       : void 0;
                   }
                 };
@@ -14759,7 +14799,7 @@
                 (t.tap = {
                   POSITION_DELTA: 10,
                   TIME_DELTA: 400,
-                  LEFT_BUTTON_ONLY: !0
+                  LEFT_BUTTON_ONLY: true
                 });
             })(document, jQuery);
           }.call(n, t, void 0, void 0));
@@ -14917,7 +14957,7 @@
               (EventDispatcher.dispatchEvent = function(e) {
                 if ('string' == typeof e) {
                   var t = this._listeners;
-                  if (!t || !t[e]) return !1;
+                  if (!t || !t[e]) return false;
                   e = new createjs.Event(e);
                 } else e.target && e.clone && (e = e.clone());
                 try {
@@ -14942,10 +14982,10 @@
               }),
               (EventDispatcher.willTrigger = function(e) {
                 for (var t = this; t; ) {
-                  if (t.hasEventListener(e)) return !0;
+                  if (t.hasEventListener(e)) return true;
                   t = t.parent;
                 }
-                return !1;
+                return false;
               }),
               (EventDispatcher.toString = function() {
                 return '[EventDispatcher]';
@@ -14962,7 +15002,7 @@
                   try {
                     e.eventPhase = t;
                   } catch (o) {}
-                  (e.removed = !1), (r = r.slice());
+                  (e.removed = false), (r = r.slice());
                   for (
                     var a = 0;
                     n > a && !e.immediatePropagationStopped;
@@ -14971,7 +15011,7 @@
                     var s = r[a];
                     s.handleEvent ? s.handleEvent(e) : s(e),
                       e.removed &&
-                        (this.off(e.type, s, 1 == t), (e.removed = !1));
+                        (this.off(e.type, s, 1 == t), (e.removed = false));
                   }
                 }
               }),
@@ -14988,23 +15028,23 @@
                 (this.bubbles = !!t),
                 (this.cancelable = !!n),
                 (this.timeStamp = new Date().getTime()),
-                (this.defaultPrevented = !1),
-                (this.propagationStopped = !1),
-                (this.immediatePropagationStopped = !1),
-                (this.removed = !1);
+                (this.defaultPrevented = false),
+                (this.propagationStopped = false),
+                (this.immediatePropagationStopped = false),
+                (this.removed = false);
             }
             var t = e.prototype;
             (t.preventDefault = function() {
-              this.defaultPrevented = this.cancelable && !0;
+              this.defaultPrevented = this.cancelable && true;
             }),
               (t.stopPropagation = function() {
-                this.propagationStopped = !0;
+                this.propagationStopped = true;
               }),
               (t.stopImmediatePropagation = function() {
-                this.immediatePropagationStopped = this.propagationStopped = !0;
+                this.immediatePropagationStopped = this.propagationStopped = true;
               }),
               (t.remove = function() {
-                this.removed = !0;
+                this.removed = true;
               }),
               (t.clone = function() {
                 return new e(this.type, this.bubbles, this.cancelable);
@@ -15059,13 +15099,13 @@
               (this.src = null),
                 (this.type = null),
                 (this.id = null),
-                (this.maintainOrder = !1),
+                (this.maintainOrder = false),
                 (this.callback = null),
                 (this.data = null),
                 (this.method = createjs.LoadItem.GET),
                 (this.values = null),
                 (this.headers = null),
-                (this.withCredentials = !1),
+                (this.withCredentials = false),
                 (this.mimeType = null),
                 (this.crossOrigin = null),
                 (this.loadTimeout = n.LOAD_TIMEOUT_DEFAULT);
@@ -15100,8 +15140,8 @@
               (e.EXTENSION_PATT = /\/?[^\/]+\.(\w{1,5})$/i),
               (e.parseURI = function(t) {
                 var n = {
-                  absolute: !1,
-                  relative: !1
+                  absolute: false,
+                  relative: false
                 };
                 if (null == t) return n;
                 var i = t.indexOf('?');
@@ -15109,8 +15149,8 @@
                 var r;
                 return (
                   e.ABSOLUTE_PATT.test(t)
-                    ? (n.absolute = !0)
-                    : e.RELATIVE_PATT.test(t) && (n.relative = !0),
+                    ? (n.absolute = true)
+                    : e.RELATIVE_PATT.test(t) && (n.relative = true),
                   (r = t.match(e.EXTENSION_PATT)) &&
                     (n.extension = r[1].toLowerCase()),
                   n
@@ -15156,9 +15196,9 @@
                 switch (e) {
                   case createjs.AbstractLoader.IMAGE:
                   case createjs.AbstractLoader.BINARY:
-                    return !0;
+                    return true;
                   default:
-                    return !1;
+                    return false;
                 }
               }),
               (e.isImageTag = function(e) {
@@ -15167,12 +15207,12 @@
               (e.isAudioTag = function(e) {
                 return window.HTMLAudioElement
                   ? e instanceof HTMLAudioElement
-                  : !1;
+                  : false;
               }),
               (e.isVideoTag = function(e) {
                 return window.HTMLVideoElement
                   ? e instanceof HTMLVideoElement
-                  : !1;
+                  : false;
               }),
               (e.isText = function(e) {
                 switch (e) {
@@ -15184,9 +15224,9 @@
                   case createjs.AbstractLoader.SVG:
                   case createjs.AbstractLoader.JAVASCRIPT:
                   case createjs.AbstractLoader.SPRITESHEET:
-                    return !0;
+                    return true;
                   default:
-                    return !1;
+                    return false;
                 }
               }),
               (e.getTypeByExtension = function(e) {
@@ -15228,8 +15268,8 @@
             'use strict';
             function e(e, t, n) {
               this.EventDispatcher_constructor(),
-                (this.loaded = !1),
-                (this.canceled = !1),
+                (this.loaded = false),
+                (this.canceled = false),
                 (this.progress = 0),
                 (this.type = n),
                 (this.resultFormatter = null),
@@ -15284,7 +15324,7 @@
                   this._request.load();
               }),
               (AbstractLoader.cancel = function() {
-                (this.canceled = !0), this.destroy();
+                (this.canceled = true), this.destroy();
               }),
               (AbstractLoader.destroy = function() {
                 this._request &&
@@ -15331,7 +15371,7 @@
               }),
               (AbstractLoader._sendComplete = function() {
                 if (!this._isCanceled()) {
-                  this.loaded = !0;
+                  this.loaded = true;
                   var e = new createjs.Event('complete');
                   (e.rawResult = this._rawResult),
                     null != this._result && (e.result = this._result),
@@ -15420,7 +15460,7 @@
                       this._loadedHandler
                     ),
                   (this._tag.onstalled = null),
-                  this._preferXHR && (e.getTag().src = e.getResult(!0)),
+                  this._preferXHR && (e.getTag().src = e.getResult(true)),
                   e.getTag()
                 );
               }),
@@ -15455,7 +15495,7 @@
                   this._handleTagComplete,
                   this
                 )),
-                (this._addedToDOM = !1),
+                (this._addedToDOM = false),
                 (this._startTagVisibility = null);
             }
             var t = createjs.extend(e, createjs.AbstractRequest);
@@ -15480,7 +15520,7 @@
                 (this._tag[this._tagSrcAttribute] = this._item.src),
                 null == this._tag.parentNode &&
                   (window.document.body.appendChild(this._tag),
-                  (this._addedToDOM = !0));
+                  (this._addedToDOM = true));
             }),
               (t.destroy = function() {
                 this._clean(),
@@ -15552,7 +15592,7 @@
                   this._tag.addEventListener(
                     'canplaythrough',
                     this._loadedHandler,
-                    !1
+                    false
                   ),
                 this.TagRequest_load();
             }),
@@ -15597,7 +15637,7 @@
                 (this._xhrLevel = 1),
                 (this._response = null),
                 (this._rawResponse = null),
-                (this._canceled = !1),
+                (this._canceled = false),
                 (this._handleLoadStartProxy = createjs.proxy(
                   this._handleLoadStart,
                   this
@@ -15643,44 +15683,44 @@
                   : this._response;
               }),
               (XHRHttpRequest.cancel = function() {
-                (this.canceled = !0), this._clean(), this._request.abort();
+                (this.canceled = true), this._clean(), this._request.abort();
               }),
               (XHRHttpRequest.load = function() {
                 if (null == this._request) return void this._handleError();
                 this._request.addEventListener(
                   'loadstart',
                   this._handleLoadStartProxy,
-                  !1
+                  false
                 ),
                   this._request.addEventListener(
                     'progress',
                     this._handleProgressProxy,
-                    !1
+                    false
                   ),
                   this._request.addEventListener(
                     'abort',
                     this._handleAbortProxy,
-                    !1
+                    false
                   ),
                   this._request.addEventListener(
                     'error',
                     this._handleErrorProxy,
-                    !1
+                    false
                   ),
                   this._request.addEventListener(
                     'timeout',
                     this._handleTimeoutProxy,
-                    !1
+                    false
                   ),
                   this._request.addEventListener(
                     'load',
                     this._handleLoadProxy,
-                    !1
+                    false
                   ),
                   this._request.addEventListener(
                     'readystatechange',
                     this._handleReadyStateChangeProxy,
-                    !1
+                    false
                   ),
                   1 == this._xhrLevel &&
                     (this._loadTimeout = setTimeout(
@@ -15741,7 +15781,7 @@
               }),
               (XHRHttpRequest._handleLoad = function() {
                 if (!this.loaded) {
-                  this.loaded = !0;
+                  this.loaded = true;
                   var e = this._checkError();
                   if (e) return void this._handleError(e);
                   (this._response = this._getResponse()),
@@ -15796,7 +15836,7 @@
                       break;
                     } catch (a) {}
                   }
-                  if (null == i) return !1;
+                  if (null == i) return false;
                 }
                 null == e.mimeType &&
                   createjs.RequestUtils.isText(e.type) &&
@@ -15811,7 +15851,7 @@
                     e.method == createjs.AbstractLoader.GET
                       ? createjs.RequestUtils.buildPath(e.src, e.values)
                       : e.src),
-                  i.open(e.method || createjs.AbstractLoader.GET, l, !0),
+                  i.open(e.method || createjs.AbstractLoader.GET, l, true),
                   t &&
                     i instanceof XMLHttpRequest &&
                     1 == this._xhrLevel &&
@@ -15831,7 +15871,7 @@
                     void 0 !== e.withCredentials &&
                     (i.withCredentials = e.withCredentials),
                   (this._request = i),
-                  !0
+                  true
                 );
               }),
               (XHRHttpRequest._clean = function() {
@@ -15887,7 +15927,7 @@
                     (this._tag = createjs.RequestUtils.isAudioTag(e)
                       ? e
                       : e.src),
-                null != this._tag && (this._preferXHR = !1);
+                null != this._tag && (this._preferXHR = false);
             }
             var t = createjs.extend(e, createjs.AbstractMediaLoader),
               n = e;
@@ -15896,7 +15936,9 @@
             }),
               (t._createTag = function(e) {
                 var t = document.createElement('audio');
-                return (t.autoplay = !1), (t.preload = 'none'), (t.src = e), t;
+                return (
+                  (t.autoplay = false), (t.preload = 'none'), (t.src = e), t
+                );
               }),
               (createjs.SoundLoader = createjs.promote(
                 e,
@@ -15978,7 +16020,7 @@
                   return this._masterVolume;
                 },
                 set: function(e) {
-                  if (null == Number(e)) return !1;
+                  if (null == Number(e)) return false;
                   if (
                     ((e = Math.max(0, Math.min(1, e))),
                     (n._masterVolume = e),
@@ -15994,13 +16036,13 @@
                       t[i].setMasterVolume(e);
                 }
               }),
-              (n._masterMute = !1),
+              (n._masterMute = false),
               Object.defineProperty(n, 'muted', {
                 get: function() {
                   return this._masterMute;
                 },
                 set: function(e) {
-                  if (null == e) return !1;
+                  if (null == e) return false;
                   if (
                     ((this._masterMute = e),
                     !this.activePlugin ||
@@ -16013,7 +16055,7 @@
                       n++
                     )
                       t[n].setMasterMute(e);
-                  return !0;
+                  return true;
                 }
               }),
               Object.defineProperty(n, 'capabilities', {
@@ -16023,10 +16065,10 @@
                     : n.activePlugin._capabilities;
                 },
                 set: function() {
-                  return !1;
+                  return false;
                 }
               }),
-              (n._pluginsRegistered = !1),
+              (n._pluginsRegistered = false),
               (n._lastID = 0),
               (n._instances = []),
               (n._idHash = {}),
@@ -16052,7 +16094,7 @@
                   for (var i = 0, r = n._preloadHash[t].length; r > i; i++) {
                     var o = n._preloadHash[t][i];
                     if (
-                      ((n._preloadHash[t][i] = !0),
+                      ((n._preloadHash[t][i] = true),
                       n.hasEventListener('fileload'))
                     ) {
                       var e = new createjs.Event('fileload');
@@ -16070,7 +16112,7 @@
                   for (var i = 0, r = n._preloadHash[t].length; r > i; i++) {
                     var o = n._preloadHash[t][i];
                     if (
-                      ((n._preloadHash[t][i] = !1),
+                      ((n._preloadHash[t][i] = false),
                       n.hasEventListener('fileerror'))
                     ) {
                       var e = new createjs.Event('fileerror');
@@ -16083,19 +16125,21 @@
                   }
               }),
               (n._registerPlugin = function(e) {
-                return e.isSupported() ? ((n.activePlugin = new e()), !0) : !1;
+                return e.isSupported()
+                  ? ((n.activePlugin = new e()), true)
+                  : false;
               }),
               (n.registerPlugins = function(e) {
-                n._pluginsRegistered = !0;
+                n._pluginsRegistered = true;
                 for (var t = 0, i = e.length; i > t; t++)
-                  if (n._registerPlugin(e[t])) return !0;
-                return !1;
+                  if (n._registerPlugin(e[t])) return true;
+                return false;
               }),
               (n.initializeDefaultPlugins = function() {
                 return null != n.activePlugin
-                  ? !0
+                  ? true
                   : n._pluginsRegistered
-                  ? !1
+                  ? false
                   : !!n.registerPlugins([
                       createjs.WebAudioPlugin,
                       createjs.HTMLAudioPlugin
@@ -16118,7 +16162,7 @@
                 return n._registerSound(e);
               }),
               (n._registerSound = function(e) {
-                if (!n.initializeDefaultPlugins()) return !1;
+                if (!n.initializeDefaultPlugins()) return false;
                 var i;
                 if (
                   (e.src instanceof Object
@@ -16126,7 +16170,7 @@
                     : (i = n._parsePath(e.src)),
                   null == i)
                 )
-                  return !1;
+                  return false;
                 (e.src = i.src), (e.type = 'sound');
                 var r = e.data,
                   o = null;
@@ -16180,7 +16224,7 @@
                   (a.path = r),
                   null == r || a.src instanceof Object || (a.src = r + e);
                 var s = n._registerSound(a);
-                if (!s) return !1;
+                if (!s) return false;
                 if (
                   (n._preloadHash[a.src] || (n._preloadHash[a.src] = []),
                   n._preloadHash[a.src].push(a),
@@ -16192,7 +16236,7 @@
                   ),
                     s.on('error', createjs.proxy(this._handleLoadError, this)),
                     n.activePlugin.preload(s);
-                else if (1 == n._preloadHash[a.src][0]) return !0;
+                else if (1 == n._preloadHash[a.src][0]) return true;
                 return a;
               }),
               (n.registerSounds = function(e, t) {
@@ -16209,7 +16253,7 @@
                 return n;
               }),
               (n.removeSound = function(e, i) {
-                if (null == n.activePlugin) return !1;
+                if (null == n.activePlugin) return false;
                 e instanceof Object && e.src && (e = e.src);
                 var r;
                 if (
@@ -16218,7 +16262,7 @@
                     : ((e = n._getSrcById(e).src), (r = n._parsePath(e))),
                   null == r)
                 )
-                  return !1;
+                  return false;
                 (e = r.src), null != i && (e = i + e);
                 for (var o in n._idHash)
                   n._idHash[o].src == e && delete n._idHash[o];
@@ -16226,7 +16270,7 @@
                   t.removeSrc(e),
                   delete n._preloadHash[e],
                   n.activePlugin.removeSound(e),
-                  !0
+                  true
                 );
               }),
               (n.removeSounds = function(e, t) {
@@ -16243,17 +16287,19 @@
                   n.activePlugin && n.activePlugin.removeAllSounds();
               }),
               (n.loadComplete = function(e) {
-                if (!n.isReady()) return !1;
+                if (!n.isReady()) return false;
                 var t = n._parsePath(e);
                 return (
                   (e = t ? n._getSrcById(t.src).src : n._getSrcById(e).src),
-                  void 0 == n._preloadHash[e] ? !1 : 1 == n._preloadHash[e][0]
+                  void 0 == n._preloadHash[e]
+                    ? false
+                    : 1 == n._preloadHash[e][0]
                 );
               }),
               (n._parsePath = function(e) {
                 'string' != typeof e && (e = e.toString());
                 var t = e.match(n.FILE_PATTERN);
-                if (null == t) return !1;
+                if (null == t) return false;
                 for (var i = t[4], r = t[5], o = n.capabilities, a = 0; !o[r]; )
                   if (
                     ((r = n.alternateExtensions[a++]),
@@ -16280,7 +16326,7 @@
                     (t.src = e[r]), (t.extension = r);
                     break;
                   }
-                if (!t.src) return !1;
+                if (!t.src) return false;
                 var o = t.src.lastIndexOf('/');
                 return (t.name = -1 != o ? t.src.slice(o + 1) : t.src), t;
               }),
@@ -16327,7 +16373,7 @@
                 for (var e = this._instances, t = e.length; t--; ) e[t].stop();
               }),
               (n.setVolume = function(e) {
-                if (null == Number(e)) return !1;
+                if (null == Number(e)) return false;
                 if (
                   ((e = Math.max(0, Math.min(1, e))),
                   (n._masterVolume = e),
@@ -16342,7 +16388,7 @@
                 return this._masterVolume;
               }),
               (n.setMute = function(e) {
-                if (null == e) return !1;
+                if (null == e) return false;
                 if (
                   ((this._masterMute = e),
                   !this.activePlugin ||
@@ -16351,7 +16397,7 @@
                 )
                   for (var t = this._instances, n = 0, i = t.length; i > n; n++)
                     t[n].setMasterMute(e);
-                return !0;
+                return true;
               }),
               (n.getMute = function() {
                 return this._masterMute;
@@ -16381,23 +16427,23 @@
                   0 == t.delay)
                 ) {
                   var r = n._beginPlaying(e, t);
-                  if (!r) return !1;
+                  if (!r) return false;
                 } else {
                   var o = setTimeout(function() {
                     n._beginPlaying(e, t);
                   }, t.delay);
                   e.delayTimeoutId = o;
                 }
-                return this._instances.push(e), !0;
+                return this._instances.push(e), true;
               }),
               (n._beginPlaying = function(e, n) {
-                if (!t.add(e, n.interrupt)) return !1;
+                if (!t.add(e, n.interrupt)) return false;
                 var i = e._beginPlaying(n);
                 if (!i) {
                   var r = createjs.indexOf(this._instances, e);
-                  return r > -1 && this._instances.splice(r, 1), !1;
+                  return r > -1 && this._instances.splice(r, 1), false;
                 }
-                return !0;
+                return true;
               }),
               (n._getSrcById = function(e) {
                 return (
@@ -16415,13 +16461,15 @@
               (t.channels = {}),
               (t.create = function(e, n) {
                 var i = t.get(e);
-                return null == i ? ((t.channels[e] = new t(e, n)), !0) : !1;
+                return null == i
+                  ? ((t.channels[e] = new t(e, n)), true)
+                  : false;
               }),
               (t.removeSrc = function(e) {
                 var n = t.get(e);
                 return null == n
-                  ? !1
-                  : (n._removeAll(), delete t.channels[e], !0);
+                  ? false
+                  : (n._removeAll(), delete t.channels[e], true);
               }),
               (t.removeAll = function() {
                 for (var e in t.channels) t.channels[e]._removeAll();
@@ -16429,11 +16477,11 @@
               }),
               (t.add = function(e, n) {
                 var i = t.get(e.src);
-                return null == i ? !1 : i._add(e, n);
+                return null == i ? false : i._add(e, n);
               }),
               (t.remove = function(e) {
                 var n = t.get(e.src);
-                return null == n ? !1 : (n._remove(e), !0);
+                return null == n ? false : (n._remove(e), true);
               }),
               (t.maxPerChannel = function() {
                 return SoundChannel.maxDefault;
@@ -16458,14 +16506,14 @@
               }),
               (SoundChannel._add = function(e, t) {
                 return this._getSlot(t, e)
-                  ? (this._instances.push(e), this.length++, !0)
-                  : !1;
+                  ? (this._instances.push(e), this.length++, true)
+                  : false;
               }),
               (SoundChannel._remove = function(e) {
                 var t = createjs.indexOf(this._instances, e);
                 return -1 == t
-                  ? !1
-                  : (this._instances.splice(t, 1), this.length--, !0);
+                  ? false
+                  : (this._instances.splice(t, 1), this.length--, true);
               }),
               (SoundChannel._removeAll = function() {
                 for (var e = this.length - 1; e >= 0; e--)
@@ -16474,9 +16522,9 @@
               (SoundChannel._getSlot = function(t) {
                 var n, i;
                 if (t != e.INTERRUPT_NONE && ((i = this._get(0)), null == i))
-                  return !0;
+                  return true;
                 for (var r = 0, o = this.max; o > r; r++) {
-                  if (((n = this._get(r)), null == n)) return !0;
+                  if (((n = this._get(r)), null == n)) return true;
                   if (
                     n.playState == e.PLAY_FINISHED ||
                     n.playState == e.PLAY_INTERRUPTED ||
@@ -16492,7 +16540,9 @@
                         n.getPosition() > i.getPosition())) &&
                     (i = n);
                 }
-                return null != i ? (i._interrupt(), this._remove(i), !0) : !1;
+                return null != i
+                  ? (i._interrupt(), this._remove(i), true)
+                  : false;
               }),
               (SoundChannel.toString = function() {
                 return '[Sound SoundChannel]';
@@ -16532,7 +16582,7 @@
                     get: this.getPlaybackResource,
                     set: this.setPlaybackResource
                   }),
-                  i !== !1 && i !== !0 && this.setPlaybackResource(i),
+                  i !== false && i !== true && this.setPlaybackResource(i),
                   (this._position = 0),
                   Object.defineProperty(this, 'position', {
                     get: this.getPosition,
@@ -16543,12 +16593,12 @@
                     get: this.getLoop,
                     set: this.setLoop
                   }),
-                  (this._muted = !1),
+                  (this._muted = false),
                   Object.defineProperty(this, 'muted', {
                     get: this.getMuted,
                     set: this.setMuted
                   }),
-                  (this._paused = !1),
+                  (this._paused = false),
                   Object.defineProperty(this, 'paused', {
                     get: this.getPaused,
                     set: this.setPaused
@@ -16575,7 +16625,7 @@
                 )),
                 this.playState == createjs.Sound.PLAY_SUCCEEDED
                   ? (this.applyPlayProps(a),
-                    void (this._paused && this.setPaused(!1)))
+                    void (this._paused && this.setPaused(false)))
                   : (this._cleanUp(),
                     createjs.Sound._playInstance(this, a),
                     this)
@@ -16584,7 +16634,7 @@
               (AbstractSoundInstance.stop = function() {
                 return (
                   (this._position = 0),
-                  (this._paused = !1),
+                  (this._paused = false),
                   this._handleStop(),
                   this._cleanUp(),
                   (this.playState = createjs.Sound.PLAY_FINISHED),
@@ -16616,7 +16666,7 @@
                 return this._paused;
               }),
               (AbstractSoundInstance.setPaused = function(e) {
-                return (e !== !0 && e !== !1) ||
+                return (e !== true && e !== false) ||
                   this._paused == e ||
                   (1 == e && this.playState != createjs.Sound.PLAY_SUCCEEDED)
                   ? void 0
@@ -16636,7 +16686,7 @@
                 return this._volume;
               }),
               (AbstractSoundInstance.setMuted = function(e) {
-                return e === !0 || e === !1
+                return e === true || e === false
                   ? ((this._muted = e), this._updateVolume(), this)
                   : void 0;
               }),
@@ -16716,7 +16766,7 @@
               (AbstractSoundInstance._cleanUp = function() {
                 clearTimeout(this.delayTimeoutId),
                   this._handleCleanUp(),
-                  (this._paused = !1),
+                  (this._paused = false),
                   createjs.Sound._playFinished(this);
               }),
               (AbstractSoundInstance._interrupt = function() {
@@ -16735,12 +16785,12 @@
                     this.setDuration(e.duration)),
                   null != this._playbackResource &&
                   this._position < this._duration
-                    ? ((this._paused = !1),
+                    ? ((this._paused = false),
                       this._handleSoundReady(),
                       (this.playState = createjs.Sound.PLAY_SUCCEEDED),
                       this._sendEvent('succeeded'),
-                      !0)
-                    : (this._playFailed(), !1)
+                      true)
+                    : (this._playFailed(), false)
                 );
               }),
               (AbstractSoundInstance._playFailed = function() {
@@ -16796,13 +16846,13 @@
               AbstractPlugin = e.prototype;
             (e._capabilities = null),
               (e.isSupported = function() {
-                return !0;
+                return true;
               }),
               (AbstractPlugin.register = function(e) {
                 var t = this._loaders[e.src];
                 return t && !t.canceled
                   ? this._loaders[e.src]
-                  : ((this._audioSources[e.src] = !0),
+                  : ((this._audioSources[e.src] = true),
                     (this._soundInstances[e.src] = []),
                     (t = new this._loaderClass(e)),
                     t.on(
@@ -16850,13 +16900,13 @@
                 return this._soundInstances[e].push(i), i;
               }),
               (AbstractPlugin.setVolume = function(e) {
-                return (this._volume = e), this._updateVolume(), !0;
+                return (this._volume = e), this._updateVolume(), true;
               }),
               (AbstractPlugin.getVolume = function() {
                 return this._volume;
               }),
               (AbstractPlugin.setMute = function() {
-                return this._updateVolume(), !0;
+                return this._updateVolume(), true;
               }),
               (AbstractPlugin.toString = function() {
                 return '[AbstractPlugin]';
@@ -16883,7 +16933,7 @@
             function e(e) {
               this.AbstractLoader_constructor(
                 e,
-                !0,
+                true,
                 createjs.AbstractLoader.SOUND
               );
             }
@@ -16893,7 +16943,7 @@
                 return '[WebAudioLoader]';
               }),
               (WebAudioLoader._createRequest = function() {
-                (this._request = new createjs.XHRRequest(this._item, !1)),
+                (this._request = new createjs.XHRRequest(this._item, false)),
                   this._request.setResponseType('arraybuffer');
               }),
               (WebAudioLoader._sendComplete = function() {
@@ -17089,7 +17139,7 @@
                   e ||
                   this._isFileXHRSupported()
                   ? (n._generateCapabilities(), null != n.context)
-                  : !1;
+                  : false;
               }),
               (n.playEmptySound = function() {
                 if (null != n.context) {
@@ -17100,15 +17150,15 @@
                 }
               }),
               (n._isFileXHRSupported = function() {
-                var e = !0,
+                var e = true,
                   t = new XMLHttpRequest();
                 try {
-                  t.open('GET', 'WebAudioPluginTest.fail', !1);
+                  t.open('GET', 'WebAudioPluginTest.fail', false);
                 } catch (n) {
-                  return (e = !1);
+                  return (e = false);
                 }
                 (t.onerror = function() {
-                  e = !1;
+                  e = false;
                 }),
                   (t.onload = function() {
                     e =
@@ -17119,7 +17169,7 @@
                 try {
                   t.send();
                 } catch (n) {
-                  e = !1;
+                  e = false;
                 }
                 return e;
               }),
@@ -17136,8 +17186,8 @@
                   n._compatibilitySetUp(),
                     n.playEmptySound(),
                     (n._capabilities = {
-                      panning: !0,
-                      volume: !0,
+                      panning: true,
+                      volume: true,
                       tracks: -1
                     });
                   for (
@@ -17157,7 +17207,7 @@
                         '' != e.canPlayType('audio/' + s));
                   }
                   n.context.destination.numberOfChannels < 2 &&
-                    (n._capabilities.panning = !1);
+                    (n._capabilities.panning = false);
                 }
               }),
               (n._compatibilitySetUp = function() {
@@ -17205,21 +17255,21 @@
                     ? ((t = n._tags[e] = n._tagPool.get()), (t.src = e))
                     : n._tagUsed[e]
                     ? ((t = n._tagPool.get()), (t.src = e))
-                    : (n._tagUsed[e] = !0),
+                    : (n._tagUsed[e] = true),
                   t
                 );
               }),
               (n.set = function(e, t) {
-                t == n._tags[e] ? (n._tagUsed[e] = !1) : n._tagPool.set(t);
+                t == n._tags[e] ? (n._tagUsed[e] = false) : n._tagPool.set(t);
               }),
               (n.remove = function(e) {
                 var t = n._tags[e];
                 return null == t
-                  ? !1
+                  ? false
                   : (n._tagPool.set(t),
                     delete n._tags[e],
                     delete n._tagUsed[e],
-                    !0);
+                    true);
               }),
               (n.getDuration = function(e) {
                 var t = n._tags[e];
@@ -17248,7 +17298,7 @@
               }),
               (TagPool._createTag = function() {
                 var e = document.createElement('audio');
-                return (e.autoplay = !1), (e.preload = 'none'), e;
+                return (e.autoplay = false), (e.preload = 'none'), e;
               });
           })(),
           (this.createjs = this.createjs || {}),
@@ -17296,11 +17346,11 @@
               }),
               (HTMLAudioSoundInstance._removeLooping = function() {
                 null != this._playbackResource &&
-                  ((this._playbackResource.loop = !1),
+                  ((this._playbackResource.loop = false),
                   this._playbackResource.removeEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                     this._loopHandler,
-                    !1
+                    false
                   ));
               }),
               (HTMLAudioSoundInstance._addLooping = function() {
@@ -17309,39 +17359,39 @@
                   (this._playbackResource.addEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                     this._loopHandler,
-                    !1
+                    false
                   ),
-                  (this._playbackResource.loop = !0));
+                  (this._playbackResource.loop = true));
               }),
               (HTMLAudioSoundInstance._handleCleanUp = function() {
                 var e = this._playbackResource;
                 if (null != e) {
                   e.pause(),
-                    (e.loop = !1),
+                    (e.loop = false),
                     e.removeEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_ENDED,
                       this._endedHandler,
-                      !1
+                      false
                     ),
                     e.removeEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_READY,
                       this._readyHandler,
-                      !1
+                      false
                     ),
                     e.removeEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_STALLED,
                       this._stalledHandler,
-                      !1
+                      false
                     ),
                     e.removeEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                       this._loopHandler,
-                      !1
+                      false
                     ),
                     e.removeEventListener(
                       createjs.HTMLAudioPlugin._TIME_UPDATE,
                       this._audioSpriteEndHandler,
-                      !1
+                      false
                     );
                   try {
                     e.currentTime = this._startTime;
@@ -17365,12 +17415,12 @@
                     e.addEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_READY,
                       this._readyHandler,
-                      !1
+                      false
                     ),
                     e.addEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_STALLED,
                       this._stalledHandler,
-                      !1
+                      false
                     ),
                     (e.preload = 'auto'),
                     void e.load()
@@ -17383,32 +17433,32 @@
                     ? this._playbackResource.addEventListener(
                         createjs.HTMLAudioPlugin._TIME_UPDATE,
                         this._audioSpriteEndHandler,
-                        !1
+                        false
                       )
                     : (this._playbackResource.addEventListener(
                         createjs.HTMLAudioPlugin._AUDIO_ENDED,
                         this._endedHandler,
-                        !1
+                        false
                       ),
                       0 != this._loop &&
                         (this._playbackResource.addEventListener(
                           createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                           this._loopHandler,
-                          !1
+                          false
                         ),
-                        (this._playbackResource.loop = !0))),
+                        (this._playbackResource.loop = true))),
                   this._playbackResource.play();
               }),
               (HTMLAudioSoundInstance._handleTagReady = function() {
                 this._playbackResource.removeEventListener(
                   createjs.HTMLAudioPlugin._AUDIO_READY,
                   this._readyHandler,
-                  !1
+                  false
                 ),
                   this._playbackResource.removeEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_STALLED,
                     this._stalledHandler,
-                    !1
+                    false
                   ),
                   this._handleSoundReady();
               }),
@@ -17437,12 +17487,12 @@
                 this._playbackResource.removeEventListener(
                   createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                   this._loopHandler,
-                  !1
+                  false
                 ),
                   this._playbackResource.addEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                     this._handleSetPositionSeek,
-                    !1
+                    false
                   );
                 try {
                   this._playbackResource.currentTime =
@@ -17456,12 +17506,12 @@
                   (this._playbackResource.removeEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                     this._handleSetPositionSeek,
-                    !1
+                    false
                   ),
                   this._playbackResource.addEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                     this._loopHandler,
-                    !1
+                    false
                   ));
               }),
               (HTMLAudioSoundInstance._handleAudioSpriteLoop = function() {
@@ -17479,11 +17529,11 @@
               }),
               (HTMLAudioSoundInstance._handleLoop = function() {
                 0 == this._loop &&
-                  ((this._playbackResource.loop = !1),
+                  ((this._playbackResource.loop = false),
                   this._playbackResource.removeEventListener(
                     createjs.HTMLAudioPlugin._AUDIO_SEEKED,
                     this._loopHandler,
-                    !1
+                    false
                   ));
               }),
               (HTMLAudioSoundInstance._updateStartTime = function() {
@@ -17493,12 +17543,12 @@
                     (this._playbackResource.removeEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_ENDED,
                       this._endedHandler,
-                      !1
+                      false
                     ),
                     this._playbackResource.addEventListener(
                       createjs.HTMLAudioPlugin._TIME_UPDATE,
                       this._audioSpriteEndHandler,
-                      !1
+                      false
                     ));
               }),
               (HTMLAudioSoundInstance._updateDuration = function() {
@@ -17508,12 +17558,12 @@
                     (this._playbackResource.removeEventListener(
                       createjs.HTMLAudioPlugin._AUDIO_ENDED,
                       this._endedHandler,
-                      !1
+                      false
                     ),
                     this._playbackResource.addEventListener(
                       createjs.HTMLAudioPlugin._TIME_UPDATE,
                       this._audioSpriteEndHandler,
-                      !1
+                      false
                     ));
               }),
               (createjs.HTMLAudioSoundInstance = createjs.promote(
@@ -17548,8 +17598,8 @@
                   var e = document.createElement('audio');
                   if (null == e.canPlayType) return null;
                   n._capabilities = {
-                    panning: !1,
-                    volume: !0,
+                    panning: false,
+                    volume: true,
                     tracks: -1
                   };
                   for (
@@ -17616,7 +17666,7 @@
               function(e) {
                 e.preventDefault(), y(++c % 2);
               },
-              !1
+              false
             ),
             (h.style.cssText = 'width:80px;opacity:0.9;cursor:pointer');
           var u = document.createElement('div');
@@ -18298,7 +18348,7 @@
               );
             },
             setFromEuler: function(e, t) {
-              if (e instanceof THREE.Euler == !1)
+              if (e instanceof THREE.Euler == false)
                 throw new Error(
                   'THREE.Quaternion: .setFromEuler() now expects a Euler rotation rather than a Vector3 and order.'
                 );
@@ -18339,7 +18389,7 @@
                     (this._y = n * s * o - a * r * l),
                     (this._z = n * r * l + a * s * o),
                     (this._w = n * r * o + a * s * l)),
-                t !== !1 && this.onChangeCallback(),
+                t !== false && this.onChangeCallback(),
                 this
               );
             },
@@ -18915,7 +18965,7 @@
               var e;
               return function(t) {
                 return (
-                  t instanceof THREE.Euler == !1 &&
+                  t instanceof THREE.Euler == false &&
                     THREE.error(
                       'THREE.Vector3: .applyEuler() now expects a Euler rotation rather than a Vector3 and order.'
                     ),
@@ -19847,7 +19897,7 @@
                         t
                     ),
                 (this._order = t),
-                n !== !1 && this.onChangeCallback(),
+                n !== false && this.onChangeCallback(),
                 this
               );
             },
@@ -20115,7 +20165,7 @@
               return function(t) {
                 var n = this;
                 return (
-                  t.updateMatrixWorld(!0),
+                  t.updateMatrixWorld(true),
                   this.makeEmpty(),
                   t.traverse(function(t) {
                     var r = t.geometry;
@@ -20590,7 +20640,7 @@
               };
             })(),
             makeRotationFromEuler: function(e) {
-              e instanceof THREE.Euler == !1 &&
+              e instanceof THREE.Euler == false &&
                 THREE.error(
                   'THREE.Matrix: .makeRotationFromEuler() now expects a Euler rotation rather than a Vector3 and order.'
                 );
@@ -21573,7 +21623,7 @@
             })(),
             isIntersectionPlane: function(e) {
               var t = e.distanceToPoint(this.origin);
-              if (0 === t) return !0;
+              if (0 === t) return true;
               var n = e.normal.dot(this.direction);
               return 0 > n * t;
             },
@@ -21820,9 +21870,9 @@
                 r++
               ) {
                 var o = t[r].distanceToPoint(n);
-                if (i > o) return !1;
+                if (i > o) return false;
               }
-              return !0;
+              return true;
             },
             intersectsBox: (function() {
               var e = new THREE.Vector3(),
@@ -21838,15 +21888,15 @@
                     (t.z = o.normal.z > 0 ? n.max.z : n.min.z);
                   var a = o.distanceToPoint(e),
                     s = o.distanceToPoint(t);
-                  if (0 > a && 0 > s) return !1;
+                  if (0 > a && 0 > s) return false;
                 }
-                return !0;
+                return true;
               };
             })(),
             containsPoint: function(e) {
               for (var t = this.planes, n = 0; 6 > n; n++)
-                if (t[n].distanceToPoint(e) < 0) return !1;
-              return !0;
+                if (t[n].distanceToPoint(e) < 0) return false;
+              return true;
             },
             clone: function() {
               return new THREE.Frustum().copy(this);
@@ -22293,11 +22343,11 @@
             }
           }),
           (THREE.Clock = function(e) {
-            (this.autoStart = void 0 !== e ? e : !0),
+            (this.autoStart = void 0 !== e ? e : true),
               (this.startTime = 0),
               (this.oldTime = 0),
               (this.elapsedTime = 0),
-              (this.running = !1);
+              (this.running = false);
           }),
           (THREE.Clock.prototype = {
             constructor: THREE.Clock,
@@ -22307,10 +22357,10 @@
                   ? self.performance.now()
                   : Date.now()),
                 (this.oldTime = this.startTime),
-                (this.running = !0);
+                (this.running = true);
             },
             stop: function() {
-              this.getElapsedTime(), (this.running = !1);
+              this.getElapsedTime(), (this.running = false);
             },
             getElapsedTime: function() {
               return this.getDelta(), this.elapsedTime;
@@ -22351,7 +22401,7 @@
                 -1 === n[e].indexOf(t) && n[e].push(t);
             },
             hasEventListener: function(e, t) {
-              if (void 0 === this._listeners) return !1;
+              if (void 0 === this._listeners) return false;
               var n = this._listeners;
               return void 0 !== n[e] && -1 !== n[e].indexOf(t);
             },
@@ -22396,9 +22446,9 @@
                 return e.distance - t.distance;
               },
               n = function(e, t, i, r) {
-                if ((e.raycast(t, i), r === !0))
+                if ((e.raycast(t, i), r === true))
                   for (var o = e.children, a = 0, s = o.length; s > a; a++)
-                    n(o[a], t, i, !0);
+                    n(o[a], t, i, true);
               };
             THREE.Raycaster.prototype = {
               constructor: THREE.Raycaster,
@@ -22428,7 +22478,7 @@
               },
               intersectObjects: function(i, r) {
                 var o = [];
-                if (i instanceof Array == !1)
+                if (i instanceof Array == false)
                   return (
                     THREE.warn(
                       'THREE.Raycaster.intersectObjects: objects is not an Array.'
@@ -22455,40 +22505,40 @@
               n = new THREE.Quaternion(),
               r = new THREE.Vector3(1, 1, 1),
               o = function() {
-                n.setFromEuler(t, !1);
+                n.setFromEuler(t, false);
               },
               a = function() {
-                t.setFromQuaternion(n, void 0, !1);
+                t.setFromQuaternion(n, void 0, false);
               };
             t.onChange(o),
               n.onChange(a),
               Object.defineProperties(this, {
                 position: {
-                  enumerable: !0,
+                  enumerable: true,
                   value: e
                 },
                 rotation: {
-                  enumerable: !0,
+                  enumerable: true,
                   value: t
                 },
                 quaternion: {
-                  enumerable: !0,
+                  enumerable: true,
                   value: n
                 },
                 scale: {
-                  enumerable: !0,
+                  enumerable: true,
                   value: r
                 }
               }),
-              (this.rotationAutoUpdate = !0),
+              (this.rotationAutoUpdate = true),
               (this.matrix = new THREE.Matrix4()),
               (this.matrixWorld = new THREE.Matrix4()),
-              (this.matrixAutoUpdate = !0),
-              (this.matrixWorldNeedsUpdate = !1),
-              (this.visible = !0),
-              (this.castShadow = !1),
-              (this.receiveShadow = !1),
-              (this.frustumCulled = !0),
+              (this.matrixAutoUpdate = true),
+              (this.matrixWorldNeedsUpdate = false),
+              (this.visible = true),
+              (this.castShadow = false),
+              (this.receiveShadow = false),
+              (this.frustumCulled = true),
               (this.renderOrder = 0),
               (this.userData = {});
           }),
@@ -22531,7 +22581,7 @@
               this.quaternion.setFromAxisAngle(e, t);
             },
             setRotationFromEuler: function(e) {
-              this.quaternion.setFromEuler(e, !0);
+              this.quaternion.setFromEuler(e, true);
             },
             setRotationFromMatrix: function(e) {
               this.quaternion.setFromRotationMatrix(e);
@@ -22679,7 +22729,7 @@
             getWorldPosition: function(e) {
               var t = e || new THREE.Vector3();
               return (
-                this.updateMatrixWorld(!0),
+                this.updateMatrixWorld(true),
                 t.setFromMatrixPosition(this.matrixWorld)
               );
             },
@@ -22689,7 +22739,7 @@
               return function(n) {
                 var r = n || new THREE.Quaternion();
                 return (
-                  this.updateMatrixWorld(!0),
+                  this.updateMatrixWorld(true),
                   this.matrixWorld.decompose(e, r, t),
                   r
                 );
@@ -22701,7 +22751,7 @@
                 var n = t || new THREE.Euler();
                 return (
                   this.getWorldQuaternion(e),
-                  n.setFromQuaternion(e, this.rotation.order, !1)
+                  n.setFromQuaternion(e, this.rotation.order, false)
                 );
               };
             })(),
@@ -22711,7 +22761,7 @@
               return function(n) {
                 var r = n || new THREE.Vector3();
                 return (
-                  this.updateMatrixWorld(!0),
+                  this.updateMatrixWorld(true),
                   this.matrixWorld.decompose(e, t, r),
                   r
                 );
@@ -22733,7 +22783,7 @@
                 this.children[t].traverse(e);
             },
             traverseVisible: function(e) {
-              if (this.visible !== !1) {
+              if (this.visible !== false) {
                 e(this);
                 for (var t = 0, n = this.children.length; n > t; t++)
                   this.children[t].traverseVisible(e);
@@ -22744,19 +22794,19 @@
             },
             updateMatrix: function() {
               this.matrix.compose(this.position, this.quaternion, this.scale),
-                (this.matrixWorldNeedsUpdate = !0);
+                (this.matrixWorldNeedsUpdate = true);
             },
             updateMatrixWorld: function(e) {
-              this.matrixAutoUpdate === !0 && this.updateMatrix(),
-                (this.matrixWorldNeedsUpdate !== !0 && e !== !0) ||
+              this.matrixAutoUpdate === true && this.updateMatrix(),
+                (this.matrixWorldNeedsUpdate !== true && e !== true) ||
                   (void 0 === this.parent
                     ? this.matrixWorld.copy(this.matrix)
                     : this.matrixWorld.multiplyMatrices(
                         this.parent.matrixWorld,
                         this.matrix
                       ),
-                  (this.matrixWorldNeedsUpdate = !1),
-                  (e = !0));
+                  (this.matrixWorldNeedsUpdate = false),
+                  (e = true));
               for (var t = 0, n = this.children.length; n > t; t++)
                 this.children[t].updateMatrixWorld(e);
             },
@@ -22798,7 +22848,7 @@
                     '' !== e.name && (t.name = e.name),
                     '{}' !== JSON.stringify(e.userData) &&
                       (t.userData = e.userData),
-                    e.visible !== !0 && (t.visible = e.visible),
+                    e.visible !== true && (t.visible = e.visible),
                     e instanceof THREE.PerspectiveCamera
                       ? ((t.fov = e.fov),
                         (t.aspect = e.aspect),
@@ -22853,7 +22903,7 @@
             clone: function(e, t) {
               if (
                 (void 0 === e && (e = new THREE.Object3D()),
-                void 0 === t && (t = !0),
+                void 0 === t && (t = true),
                 (e.name = this.name),
                 e.up.copy(this.up),
                 e.position.copy(this.position),
@@ -22869,7 +22919,7 @@
                 (e.receiveShadow = this.receiveShadow),
                 (e.frustumCulled = this.frustumCulled),
                 (e.userData = JSON.parse(JSON.stringify(this.userData))),
-                t === !0)
+                t === true)
               )
                 for (var n = 0; n < this.children.length; n++) {
                   var r = this.children[n];
@@ -22917,7 +22967,7 @@
             );
           }),
           (THREE.BufferAttribute = function(e, t) {
-            (this.array = e), (this.itemSize = t), (this.needsUpdate = !1);
+            (this.array = e), (this.itemSize = t), (this.needsUpdate = false);
           }),
           (THREE.BufferAttribute.prototype = {
             constructor: THREE.BufferAttribute,
@@ -23083,7 +23133,7 @@
           (THREE.BufferGeometry.prototype = {
             constructor: THREE.BufferGeometry,
             addAttribute: function(e, t) {
-              return t instanceof THREE.BufferAttribute == !1
+              return t instanceof THREE.BufferAttribute == false
                 ? (THREE.warn(
                     'THREE.BufferGeometry: .addAttribute() now expects ( name, attribute ).'
                   ),
@@ -23107,11 +23157,11 @@
             applyMatrix: function(e) {
               var t = this.attributes.position;
               void 0 !== t &&
-                (e.applyToVector3Array(t.array), (t.needsUpdate = !0));
+                (e.applyToVector3Array(t.array), (t.needsUpdate = true));
               var n = this.attributes.normal;
               if (void 0 !== n) {
                 var r = new THREE.Matrix3().getNormalMatrix(e);
-                r.applyToVector3Array(n.array), (n.needsUpdate = !0);
+                r.applyToVector3Array(n.array), (n.needsUpdate = true);
               }
               null !== this.boundingBox && this.computeBoundingBox(),
                 null !== this.boundingSphere && this.computeBoundingSphere();
@@ -23141,7 +23191,7 @@
                 var u = new Float32Array(3 * r.length * 3);
                 this.addAttribute('color', new THREE.BufferAttribute(u, 3));
               }
-              if (s === !0) {
+              if (s === true) {
                 var f = new Float32Array(3 * r.length * 2);
                 this.addAttribute('uv', new THREE.BufferAttribute(f, 2));
               }
@@ -23160,7 +23210,7 @@
                   (c[m + 6] = x.x),
                   (c[m + 7] = x.y),
                   (c[m + 8] = x.z),
-                  l === !0)
+                  l === true)
                 ) {
                   var w = v.vertexNormals[0],
                     _ = v.vertexNormals[1],
@@ -23211,7 +23261,7 @@
                     (u[m + 7] = C.g),
                     (u[m + 8] = C.b);
                 }
-                if (s === !0) {
+                if (s === true) {
                   var A = o[0][d][0],
                     P = o[0][d][1],
                     D = o[0][d][2];
@@ -23359,7 +23409,7 @@
                       (n[r + 6] = f.x),
                       (n[r + 7] = f.y),
                       (n[r + 8] = f.z);
-                this.normalizeNormals(), (e.normal.needsUpdate = !0);
+                this.normalizeNormals(), (e.normal.needsUpdate = true);
               }
             },
             computeTangents: function() {
@@ -23563,7 +23613,7 @@
               );
             },
             merge: function(e, t) {
-              if (e instanceof THREE.BufferGeometry == !1)
+              if (e instanceof THREE.BufferGeometry == false)
                 return void THREE.error(
                   'THREE.BufferGeometry.merge(): geometry not an instance of THREE.BufferGeometry.',
                   e
@@ -23712,16 +23762,16 @@
               (this.lineDistances = []),
               (this.boundingBox = null),
               (this.boundingSphere = null),
-              (this.hasTangents = !1),
-              (this.dynamic = !0),
-              (this.verticesNeedUpdate = !1),
-              (this.elementsNeedUpdate = !1),
-              (this.uvsNeedUpdate = !1),
-              (this.normalsNeedUpdate = !1),
-              (this.tangentsNeedUpdate = !1),
-              (this.colorsNeedUpdate = !1),
-              (this.lineDistancesNeedUpdate = !1),
-              (this.groupsNeedUpdate = !1);
+              (this.hasTangents = false),
+              (this.dynamic = true),
+              (this.verticesNeedUpdate = false),
+              (this.elementsNeedUpdate = false),
+              (this.uvsNeedUpdate = false),
+              (this.normalsNeedUpdate = false),
+              (this.tangentsNeedUpdate = false),
+              (this.colorsNeedUpdate = false),
+              (this.lineDistancesNeedUpdate = false),
+              (this.groupsNeedUpdate = false);
           }),
           (THREE.Geometry.prototype = {
             constructor: THREE.Geometry,
@@ -23744,8 +23794,8 @@
               }
               null !== this.boundingBox && this.computeBoundingBox(),
                 null !== this.boundingSphere && this.computeBoundingSphere(),
-                (this.verticesNeedUpdate = !0),
-                (this.normalsNeedUpdate = !0);
+                (this.verticesNeedUpdate = true),
+                (this.normalsNeedUpdate = true);
             },
             fromBufferGeometry: function(e) {
               for (
@@ -24041,7 +24091,7 @@
                     (A = U.dot(L[s])),
                     (P = 0 > A ? -1 : 1),
                     (l.vertexTangents[a] = new THREE.Vector4(N.x, N.y, N.z, P));
-              this.hasTangents = !0;
+              this.hasTangents = true;
             },
             computeLineDistances: function() {
               for (
@@ -24063,7 +24113,7 @@
                 this.boundingSphere.setFromPoints(this.vertices);
             },
             merge: function(e, t, n) {
-              if (e instanceof THREE.Geometry == !1)
+              if (e instanceof THREE.Geometry == false)
                 return void THREE.error(
                   'THREE.Geometry.merge(): geometry not an instance of THREE.Geometry.',
                   e
@@ -24113,7 +24163,7 @@
               }
             },
             mergeMesh: function(e) {
-              return e instanceof THREE.Mesh == !1
+              return e instanceof THREE.Mesh == false
                 ? void THREE.error(
                     'THREE.Geometry.mergeMesh(): mesh not an instance of THREE.Mesh.',
                     e
@@ -24229,8 +24279,8 @@
                 l++
               ) {
                 var g = this.faces[l],
-                  y = !1,
-                  x = !1,
+                  y = false,
+                  x = false,
                   w = void 0 !== this.faceVertexUvs[0][l],
                   _ = g.normal.length() > 0,
                   b = g.vertexNormals.length > 0,
@@ -24374,7 +24424,7 @@
               (this.updateCubeMap = function(e, t) {
                 var n = this.renderTarget,
                   i = n.generateMipmaps;
-                (n.generateMipmaps = !1),
+                (n.generateMipmaps = false),
                   (n.activeCubeFace = 0),
                   e.render(t, a, n),
                   (n.activeCubeFace = 1),
@@ -24564,20 +24614,20 @@
               this.position.set(0, 1, 0),
               (this.target = new THREE.Object3D()),
               (this.intensity = void 0 !== t ? t : 1),
-              (this.castShadow = !1),
-              (this.onlyShadow = !1),
+              (this.castShadow = false),
+              (this.onlyShadow = false),
               (this.shadowCameraNear = 50),
               (this.shadowCameraFar = 5e3),
               (this.shadowCameraLeft = -500),
               (this.shadowCameraRight = 500),
               (this.shadowCameraTop = 500),
               (this.shadowCameraBottom = -500),
-              (this.shadowCameraVisible = !1),
+              (this.shadowCameraVisible = false),
               (this.shadowBias = 0),
               (this.shadowDarkness = 0.5),
               (this.shadowMapWidth = 512),
               (this.shadowMapHeight = 512),
-              (this.shadowCascade = !1),
+              (this.shadowCascade = false),
               (this.shadowCascadeOffset = new THREE.Vector3(0, 0, -1e3)),
               (this.shadowCascadeCount = 2),
               (this.shadowCascadeBias = [0, 0, 0]),
@@ -24675,12 +24725,12 @@
               (this.angle = void 0 !== r ? r : Math.PI / 3),
               (this.exponent = void 0 !== o ? o : 10),
               (this.decay = void 0 !== a ? a : 1),
-              (this.castShadow = !1),
-              (this.onlyShadow = !1),
+              (this.castShadow = false),
+              (this.onlyShadow = false),
               (this.shadowCameraNear = 50),
               (this.shadowCameraFar = 5e3),
               (this.shadowCameraFov = 50),
-              (this.shadowCameraVisible = !1),
+              (this.shadowCameraVisible = false),
               (this.shadowBias = 0),
               (this.shadowDarkness = 0.5),
               (this.shadowMapWidth = 512),
@@ -24779,9 +24829,9 @@
             needsTangents: function(e) {
               for (var t = 0, n = e.length; n > t; t++) {
                 var r = e[t];
-                if (r instanceof THREE.ShaderMaterial) return !0;
+                if (r instanceof THREE.ShaderMaterial) return true;
               }
-              return !1;
+              return false;
             },
             createMaterial: function(e, t) {
               function n(e) {
@@ -24800,8 +24850,8 @@
                       (d.crossOrigin = a.crossOrigin),
                       d.load(f, function(e) {
                         if (
-                          THREE.Math.isPowerOfTwo(e.width) === !1 ||
-                          THREE.Math.isPowerOfTwo(e.height) === !1
+                          THREE.Math.isPowerOfTwo(e.width) === false ||
+                          THREE.Math.isPowerOfTwo(e.height) === false
                         ) {
                           var t = n(e.width),
                             r = n(e.height),
@@ -24810,7 +24860,7 @@
                           var a = o.getContext('2d');
                           a.drawImage(e, 0, 0, t, r), (u.image = o);
                         } else u.image = e;
-                        u.needsUpdate = !0;
+                        u.needsUpdate = true;
                       })),
                   (u.sourceFile = o),
                   s &&
@@ -24841,7 +24891,7 @@
                   lightMap: null,
                   normalMap: null,
                   bumpMap: null,
-                  wireframe: !1
+                  wireframe: false
                 };
               if (e.shading) {
                 var c = e.shading.toLowerCase();
@@ -24853,7 +24903,7 @@
                 void 0 !== THREE[e.blending] &&
                 (l.blending = THREE[e.blending]),
                 void 0 !== e.transparent && (l.transparent = e.transparent),
-                void 0 !== e.opacity && e.opacity < 1 && (l.transparent = !0),
+                void 0 !== e.opacity && e.opacity < 1 && (l.transparent = true),
                 void 0 !== e.depthTest && (l.depthTest = e.depthTest),
                 void 0 !== e.depthWrite && (l.depthWrite = e.depthWrite),
                 void 0 !== e.visible && (l.visible = e.visible),
@@ -24976,7 +25026,7 @@
                 a = THREE.Cache.get(e);
               if (void 0 !== a) return void (t && t(a));
               var s = new XMLHttpRequest();
-              s.open('GET', e, !0),
+              s.open('GET', e, true),
                 s.addEventListener(
                   'load',
                   function(n) {
@@ -24984,7 +25034,7 @@
                       t && t(this.response),
                       o.manager.itemEnd(e);
                   },
-                  !1
+                  false
                 ),
                 void 0 !== n &&
                   s.addEventListener(
@@ -24992,7 +25042,7 @@
                     function(e) {
                       n(e);
                     },
-                    !1
+                    false
                   ),
                 void 0 !== r &&
                   s.addEventListener(
@@ -25000,7 +25050,7 @@
                     function(e) {
                       r(e);
                     },
-                    !1
+                    false
                   ),
                 void 0 !== this.crossOrigin &&
                   (s.crossOrigin = this.crossOrigin),
@@ -25034,7 +25084,7 @@
                       t && t(this),
                       o.manager.itemEnd(e);
                   },
-                  !1
+                  false
                 ),
                 void 0 !== n &&
                   s.addEventListener(
@@ -25042,7 +25092,7 @@
                     function(e) {
                       n(e);
                     },
-                    !1
+                    false
                   ),
                 void 0 !== r &&
                   s.addEventListener(
@@ -25050,7 +25100,7 @@
                     function(e) {
                       r(e);
                     },
-                    !1
+                    false
                   ),
                 void 0 !== this.crossOrigin &&
                   (s.crossOrigin = this.crossOrigin),
@@ -25064,7 +25114,7 @@
             }
           }),
           (THREE.JSONLoader = function(e) {
-            THREE.Loader.call(this, e), (this.withCredentials = !1);
+            THREE.Loader.call(this, e), (this.withCredentials = false);
           }),
           (THREE.JSONLoader.prototype = Object.create(THREE.Loader.prototype)),
           (THREE.JSONLoader.prototype.constructor = THREE.JSONLoader),
@@ -25125,7 +25175,7 @@
                     void 0 !== o &&
                     (s = a.getResponseHeader('Content-Length'));
             }),
-              a.open('GET', t, !0),
+              a.open('GET', t, true),
               (a.withCredentials = this.withCredentials),
               a.send(null);
           }),
@@ -25715,7 +25765,7 @@
                         a.image
                       );
                   var s = new THREE.Texture(t[a.image]);
-                  (s.needsUpdate = !0),
+                  (s.needsUpdate = true),
                     (s.uuid = a.uuid),
                     void 0 !== a.name && (s.name = a.name),
                     void 0 !== a.repeat &&
@@ -25854,7 +25904,7 @@
                   e,
                   function(e) {
                     var n = new THREE.Texture(e);
-                    (n.needsUpdate = !0), void 0 !== t && t(n);
+                    (n.needsUpdate = true), void 0 !== t && t(n);
                   },
                   n,
                   r
@@ -25908,7 +25958,7 @@
                       void 0 !== n.type && (a.type = n.type),
                       void 0 !== n.mipmaps && (a.mipmaps = n.mipmaps),
                       1 === n.mipmapCount && (a.minFilter = THREE.LinearFilter),
-                      (a.needsUpdate = !0),
+                      (a.needsUpdate = true),
                       t && t(a, n));
                   },
                   n,
@@ -25934,7 +25984,7 @@
                   var l = 0,
                     c = function(n) {
                       s.load(e[n], function(e) {
-                        var s = r._parser(e, !0);
+                        var s = r._parser(e, true);
                         (o[n] = {
                           width: s.width,
                           height: s.height,
@@ -25946,7 +25996,7 @@
                             (1 == s.mipmapCount &&
                               (a.minFilter = THREE.LinearFilter),
                             (a.format = s.format),
-                            (a.needsUpdate = !0),
+                            (a.needsUpdate = true),
                             t && t(a));
                       });
                     },
@@ -25958,7 +26008,7 @@
                   c(h);
               else
                 s.load(e, function(e) {
-                  var n = r._parser(e, !0);
+                  var n = r._parser(e, true);
                   if (n.isCubemap)
                     for (
                       var s = n.mipmaps.length / n.mipmapCount, l = 0;
@@ -25980,7 +26030,7 @@
                       (a.mipmaps = n.mipmaps);
                   1 === n.mipmapCount && (a.minFilter = THREE.LinearFilter),
                     (a.format = n.format),
-                    (a.needsUpdate = !0),
+                    (a.needsUpdate = true),
                     t && t(a);
                 });
               return a;
@@ -25995,7 +26045,7 @@
               (this.type = 'Material'),
               (this.side = THREE.FrontSide),
               (this.opacity = 1),
-              (this.transparent = !1),
+              (this.transparent = false),
               (this.blending = THREE.NormalBlending),
               (this.blendSrc = THREE.SrcAlphaFactor),
               (this.blendDst = THREE.OneMinusSrcAlphaFactor),
@@ -26003,16 +26053,16 @@
               (this.blendSrcAlpha = null),
               (this.blendDstAlpha = null),
               (this.blendEquationAlpha = null),
-              (this.depthTest = !0),
-              (this.depthWrite = !0),
-              (this.colorWrite = !0),
-              (this.polygonOffset = !1),
+              (this.depthTest = true),
+              (this.depthWrite = true),
+              (this.colorWrite = true),
+              (this.polygonOffset = false),
               (this.polygonOffsetFactor = 0),
               (this.polygonOffsetUnits = 0),
               (this.alphaTest = 0),
               (this.overdraw = 0),
-              (this.visible = !0),
-              (this._needsUpdate = !0);
+              (this.visible = true),
+              (this._needsUpdate = true);
           }),
           (THREE.Material.prototype = {
             constructor: THREE.Material,
@@ -26020,7 +26070,7 @@
               return this._needsUpdate;
             },
             set needsUpdate(e) {
-              e === !0 && this.update(), (this._needsUpdate = e);
+              e === true && this.update(), (this._needsUpdate = e);
             },
             setValues: function(e) {
               if (void 0 !== e)
@@ -26108,8 +26158,9 @@
                   : this instanceof THREE.SpriteMaterial &&
                     (e.color = this.color.getHex()),
                 this.opacity < 1 && (e.opacity = this.opacity),
-                this.transparent !== !1 && (e.transparent = this.transparent),
-                this.wireframe !== !1 && (e.wireframe = this.wireframe),
+                this.transparent !== false &&
+                  (e.transparent = this.transparent),
+                this.wireframe !== false && (e.wireframe = this.wireframe),
                 e
               );
             },
@@ -26159,7 +26210,7 @@
               (this.linecap = 'round'),
               (this.linejoin = 'round'),
               (this.vertexColors = THREE.NoColors),
-              (this.fog = !0),
+              (this.fog = true),
               this.setValues(e);
           }),
           (THREE.LineBasicMaterial.prototype = Object.create(
@@ -26188,8 +26239,8 @@
               (this.scale = 1),
               (this.dashSize = 3),
               (this.gapSize = 1),
-              (this.vertexColors = !1),
-              (this.fog = !0),
+              (this.vertexColors = false),
+              (this.fog = true),
               this.setValues(e);
           }),
           (THREE.LineDashedMaterial.prototype = Object.create(
@@ -26223,15 +26274,15 @@
               (this.combine = THREE.MultiplyOperation),
               (this.reflectivity = 1),
               (this.refractionRatio = 0.98),
-              (this.fog = !0),
+              (this.fog = true),
               (this.shading = THREE.SmoothShading),
-              (this.wireframe = !1),
+              (this.wireframe = false),
               (this.wireframeLinewidth = 1),
               (this.wireframeLinecap = 'round'),
               (this.wireframeLinejoin = 'round'),
               (this.vertexColors = THREE.NoColors),
-              (this.skinning = !1),
-              (this.morphTargets = !1),
+              (this.skinning = false),
+              (this.morphTargets = false),
               this.setValues(e);
           }),
           (THREE.MeshBasicMaterial.prototype = Object.create(
@@ -26269,7 +26320,7 @@
               (this.type = 'MeshLambertMaterial'),
               (this.color = new THREE.Color(0xffffff)),
               (this.emissive = new THREE.Color(0)),
-              (this.wrapAround = !1),
+              (this.wrapAround = false),
               (this.wrapRGB = new THREE.Vector3(1, 1, 1)),
               (this.map = null),
               (this.lightMap = null),
@@ -26279,16 +26330,16 @@
               (this.combine = THREE.MultiplyOperation),
               (this.reflectivity = 1),
               (this.refractionRatio = 0.98),
-              (this.fog = !0),
+              (this.fog = true),
               (this.shading = THREE.SmoothShading),
-              (this.wireframe = !1),
+              (this.wireframe = false),
               (this.wireframeLinewidth = 1),
               (this.wireframeLinecap = 'round'),
               (this.wireframeLinejoin = 'round'),
               (this.vertexColors = THREE.NoColors),
-              (this.skinning = !1),
-              (this.morphTargets = !1),
-              (this.morphNormals = !1),
+              (this.skinning = false),
+              (this.morphTargets = false),
+              (this.morphNormals = false),
               this.setValues(e);
           }),
           (THREE.MeshLambertMaterial.prototype = Object.create(
@@ -26332,8 +26383,8 @@
               (this.emissive = new THREE.Color(0)),
               (this.specular = new THREE.Color(1118481)),
               (this.shininess = 30),
-              (this.metal = !1),
-              (this.wrapAround = !1),
+              (this.metal = false),
+              (this.wrapAround = false),
               (this.wrapRGB = new THREE.Vector3(1, 1, 1)),
               (this.map = null),
               (this.lightMap = null),
@@ -26347,16 +26398,16 @@
               (this.combine = THREE.MultiplyOperation),
               (this.reflectivity = 1),
               (this.refractionRatio = 0.98),
-              (this.fog = !0),
+              (this.fog = true),
               (this.shading = THREE.SmoothShading),
-              (this.wireframe = !1),
+              (this.wireframe = false),
               (this.wireframeLinewidth = 1),
               (this.wireframeLinecap = 'round'),
               (this.wireframeLinejoin = 'round'),
               (this.vertexColors = THREE.NoColors),
-              (this.skinning = !1),
-              (this.morphTargets = !1),
-              (this.morphNormals = !1),
+              (this.skinning = false),
+              (this.morphTargets = false),
+              (this.morphNormals = false),
               this.setValues(e);
           }),
           (THREE.MeshPhongMaterial.prototype = Object.create(
@@ -26403,8 +26454,8 @@
           (THREE.MeshDepthMaterial = function(e) {
             THREE.Material.call(this),
               (this.type = 'MeshDepthMaterial'),
-              (this.morphTargets = !1),
-              (this.wireframe = !1),
+              (this.morphTargets = false),
+              (this.wireframe = false),
               (this.wireframeLinewidth = 1),
               this.setValues(e);
           }),
@@ -26425,9 +26476,9 @@
           (THREE.MeshNormalMaterial = function(e) {
             THREE.Material.call(this, e),
               (this.type = 'MeshNormalMaterial'),
-              (this.wireframe = !1),
+              (this.wireframe = false),
               (this.wireframeLinewidth = 1),
-              (this.morphTargets = !1),
+              (this.morphTargets = false),
               this.setValues(e);
           }),
           (THREE.MeshNormalMaterial.prototype = Object.create(
@@ -26487,9 +26538,9 @@
               (this.color = new THREE.Color(0xffffff)),
               (this.map = null),
               (this.size = 1),
-              (this.sizeAttenuation = !0),
+              (this.sizeAttenuation = true),
               (this.vertexColors = THREE.NoColors),
-              (this.fog = !0),
+              (this.fog = true),
               this.setValues(e);
           }),
           (THREE.PointCloudMaterial.prototype = Object.create(
@@ -26538,14 +26589,14 @@
                 'void main() {\n	gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n}'),
               (this.shading = THREE.SmoothShading),
               (this.linewidth = 1),
-              (this.wireframe = !1),
+              (this.wireframe = false),
               (this.wireframeLinewidth = 1),
-              (this.fog = !1),
-              (this.lights = !1),
+              (this.fog = false),
+              (this.lights = false),
               (this.vertexColors = THREE.NoColors),
-              (this.skinning = !1),
-              (this.morphTargets = !1),
-              (this.morphNormals = !1),
+              (this.skinning = false),
+              (this.morphTargets = false),
+              (this.morphNormals = false),
               (this.defaultAttributeValues = {
                 color: [1, 1, 1],
                 uv: [0, 0],
@@ -26598,7 +26649,7 @@
               (this.color = new THREE.Color(0xffffff)),
               (this.map = null),
               (this.rotation = 0),
-              (this.fog = !1),
+              (this.fog = false),
               this.setValues(e);
           }),
           (THREE.SpriteMaterial.prototype = Object.create(
@@ -26636,11 +26687,11 @@
               (this.type = void 0 !== l ? l : THREE.UnsignedByteType),
               (this.offset = new THREE.Vector2(0, 0)),
               (this.repeat = new THREE.Vector2(1, 1)),
-              (this.generateMipmaps = !0),
-              (this.premultiplyAlpha = !1),
-              (this.flipY = !0),
+              (this.generateMipmaps = true),
+              (this.premultiplyAlpha = false),
+              (this.flipY = true),
               (this.unpackAlignment = 4),
-              (this._needsUpdate = !1),
+              (this._needsUpdate = false),
               (this.onUpdate = null);
           }),
           (THREE.Texture.DEFAULT_IMAGE = void 0),
@@ -26651,7 +26702,7 @@
               return this._needsUpdate;
             },
             set needsUpdate(e) {
-              e === !0 && this.update(), (this._needsUpdate = e);
+              e === true && this.update(), (this._needsUpdate = e);
             },
             clone: function(e) {
               return (
@@ -26712,8 +26763,8 @@
                 height: n
               }),
               (this.mipmaps = e),
-              (this.flipY = !1),
-              (this.generateMipmaps = !1);
+              (this.flipY = false),
+              (this.generateMipmaps = false);
           }),
           (THREE.CompressedTexture.prototype = Object.create(
             THREE.Texture.prototype
@@ -26742,11 +26793,11 @@
           }),
           (THREE.VideoTexture = function(e, t, n, r, o, a, s, l, c) {
             THREE.Texture.call(this, e, t, n, r, o, a, s, l, c),
-              (this.generateMipmaps = !1);
+              (this.generateMipmaps = false);
             var h = this,
               u = function() {
                 requestAnimationFrame(u),
-                  e.readyState === e.HAVE_ENOUGH_DATA && (h.needsUpdate = !0);
+                  e.readyState === e.HAVE_ENOUGH_DATA && (h.needsUpdate = true);
               };
             u();
           }),
@@ -26785,7 +26836,7 @@
                 (e.getInverse(this.matrixWorld),
                 t.copy(n.ray).applyMatrix4(e),
                 null === a.boundingBox ||
-                  t.isIntersectionBox(a.boundingBox) !== !1)
+                  t.isIntersectionBox(a.boundingBox) !== false)
               ) {
                 var l = s / ((this.scale.x + this.scale.y + this.scale.z) / 3),
                   c = new THREE.Vector3(),
@@ -26885,7 +26936,7 @@
                 (null === l.boundingSphere && l.computeBoundingSphere(),
                 n.copy(l.boundingSphere),
                 n.applyMatrix4(this.matrixWorld),
-                r.ray.isIntersectionSphere(n) !== !1)
+                r.ray.isIntersectionSphere(n) !== false)
               ) {
                 e.getInverse(this.matrixWorld), t.copy(r.ray).applyMatrix4(e);
                 var c = new THREE.Vector3(),
@@ -27042,11 +27093,11 @@
                 (null === c.boundingSphere && c.computeBoundingSphere(),
                 n.copy(c.boundingSphere),
                 n.applyMatrix4(this.matrixWorld),
-                s.ray.isIntersectionSphere(n) !== !1 &&
+                s.ray.isIntersectionSphere(n) !== false &&
                   (e.getInverse(this.matrixWorld),
                   t.copy(s.ray).applyMatrix4(e),
                   null === c.boundingBox ||
-                    t.isIntersectionBox(c.boundingBox) !== !1))
+                    t.isIntersectionBox(c.boundingBox) !== false))
               )
                 if (c instanceof THREE.BufferGeometry) {
                   var h = this.material;
@@ -27087,7 +27138,7 @@
                           a.fromArray(g, 3 * d),
                           h.side === THREE.BackSide)
                         )
-                          var T = t.intersectTriangle(a, o, r, !0);
+                          var T = t.intersectTriangle(a, o, r, true);
                         else
                           var T = t.intersectTriangle(
                             r,
@@ -27130,7 +27181,7 @@
                         a.fromArray(g, A + 6),
                         h.side === THREE.BackSide)
                       )
-                        var T = t.intersectTriangle(a, o, r, !0);
+                        var T = t.intersectTriangle(a, o, r, true);
                       else
                         var T = t.intersectTriangle(
                           r,
@@ -27164,7 +27215,7 @@
                       f,
                       d,
                       P = this.material instanceof THREE.MeshFaceMaterial,
-                      D = P === !0 ? this.material.materials : null,
+                      D = P === true ? this.material.materials : null,
                       m = s.precision,
                       L = c.vertices,
                       R = 0,
@@ -27173,13 +27224,13 @@
                     R++
                   ) {
                     var N = c.faces[R],
-                      h = P === !0 ? D[N.materialIndex] : this.material;
+                      h = P === true ? D[N.materialIndex] : this.material;
                     if (void 0 !== h) {
                       if (
                         ((u = L[N.a]),
                         (f = L[N.b]),
                         (d = L[N.c]),
-                        h.morphTargets === !0)
+                        h.morphTargets === true)
                       ) {
                         var U = c.morphTargets,
                           F = this.morphTargetInfluences;
@@ -27202,7 +27253,7 @@
                         r.add(u), o.add(f), a.add(d), (u = r), (f = o), (d = a);
                       }
                       if (h.side === THREE.BackSide)
-                        var T = t.intersectTriangle(d, f, u, !0);
+                        var T = t.intersectTriangle(d, f, u, true);
                       else
                         var T = t.intersectTriangle(
                           u,
@@ -27243,7 +27294,7 @@
           (THREE.Bone.prototype.constructor = THREE.Bone),
           (THREE.Skeleton = function(e, t, n) {
             if (
-              ((this.useVertexTexture = void 0 !== n ? n : !0),
+              ((this.useVertexTexture = void 0 !== n ? n : true),
               (this.identityMatrix = new THREE.Matrix4()),
               (e = e || []),
               (this.bones = e.slice(0)),
@@ -27272,8 +27323,8 @@
                 )),
                 (this.boneTexture.minFilter = THREE.NearestFilter),
                 (this.boneTexture.magFilter = THREE.NearestFilter),
-                (this.boneTexture.generateMipmaps = !1),
-                (this.boneTexture.flipY = !1);
+                (this.boneTexture.generateMipmaps = false),
+                (this.boneTexture.flipY = false);
             } else this.boneMatrices = new Float32Array(16 * this.bones.length);
             if (void 0 === t) this.calculateInverses();
             else if (this.bones.length === t.length)
@@ -27316,7 +27367,7 @@
                 e.multiplyMatrices(i, this.boneInverses[t]),
                   e.flattenToArrayOffset(this.boneMatrices, 16 * t);
               }
-              this.useVertexTexture && (this.boneTexture.needsUpdate = !0);
+              this.useVertexTexture && (this.boneTexture.needsUpdate = true);
             };
           })()),
           (THREE.SkinnedMesh = function(e, t, n) {
@@ -27349,7 +27400,7 @@
                   -1 !== a.parent ? r[a.parent].add(r[h]) : this.add(r[h]);
             }
             this.normalizeSkinWeights(),
-              this.updateMatrixWorld(!0),
+              this.updateMatrixWorld(true),
               this.bind(new THREE.Skeleton(r, void 0, n));
           }),
           (THREE.SkinnedMesh.prototype = Object.create(THREE.Mesh.prototype)),
@@ -27357,7 +27408,7 @@
           (THREE.SkinnedMesh.prototype.bind = function(e, t) {
             (this.skeleton = e),
               void 0 === t &&
-                (this.updateMatrixWorld(!0), (t = this.matrixWorld)),
+                (this.updateMatrixWorld(true), (t = this.matrixWorld)),
               this.bindMatrix.copy(t),
               this.bindMatrixInverse.getInverse(t);
           }),
@@ -27373,7 +27424,7 @@
               }
           }),
           (THREE.SkinnedMesh.prototype.updateMatrixWorld = function(e) {
-            THREE.Mesh.prototype.updateMatrixWorld.call(this, !0),
+            THREE.Mesh.prototype.updateMatrixWorld.call(this, true),
               'attached' === this.bindMode
                 ? this.bindMatrixInverse.getInverse(this.matrixWorld)
                 : 'detached' === this.bindMode
@@ -27398,12 +27449,12 @@
             THREE.Mesh.call(this, e, t),
               (this.type = 'MorphAnimMesh'),
               (this.duration = 1e3),
-              (this.mirroredLoop = !1),
+              (this.mirroredLoop = false),
               (this.time = 0),
               (this.lastKeyframe = 0),
               (this.currentKeyframe = 0),
               (this.direction = 1),
-              (this.directionBackwards = !1),
+              (this.directionBackwards = false),
               this.setFrameRange(0, this.geometry.morphTargets.length - 1);
           }),
           (THREE.MorphAnimMesh.prototype = Object.create(THREE.Mesh.prototype)),
@@ -27414,10 +27465,10 @@
               (this.length = this.endKeyframe - this.startKeyframe + 1);
           }),
           (THREE.MorphAnimMesh.prototype.setDirectionForward = function() {
-            (this.direction = 1), (this.directionBackwards = !1);
+            (this.direction = 1), (this.directionBackwards = false);
           }),
           (THREE.MorphAnimMesh.prototype.setDirectionBackward = function() {
-            (this.direction = -1), (this.directionBackwards = !0);
+            (this.direction = -1), (this.directionBackwards = true);
           }),
           (THREE.MorphAnimMesh.prototype.parseAnimations = function() {
             var e = this.geometry;
@@ -27475,9 +27526,9 @@
                   ((this.direction *= -1),
                   this.time > this.duration &&
                     ((this.time = this.duration),
-                    (this.directionBackwards = !0)),
+                    (this.directionBackwards = true)),
                   this.time < 0 &&
-                    ((this.time = 0), (this.directionBackwards = !1)))
+                    ((this.time = 0), (this.directionBackwards = false)))
                 : ((this.time = this.time % this.duration),
                   this.time < 0 && (this.time += this.duration));
             var n =
@@ -27564,15 +27615,15 @@
                 e.setFromMatrixPosition(n.matrixWorld),
                   t.setFromMatrixPosition(this.matrixWorld);
                 var i = e.distanceTo(t);
-                this.objects[0].object.visible = !0;
+                this.objects[0].object.visible = true;
                 for (
                   var r = 1, o = this.objects.length;
                   o > r && i >= this.objects[r].distance;
                   r++
                 )
-                  (this.objects[r - 1].object.visible = !1),
-                    (this.objects[r].object.visible = !0);
-                for (; o > r; r++) this.objects[r].object.visible = !1;
+                  (this.objects[r - 1].object.visible = false),
+                    (this.objects[r].object.visible = true);
+                for (; o > r; r++) this.objects[r].object.visible = false;
               }
             };
           })()),
@@ -27688,7 +27739,7 @@
               (this.type = 'Scene'),
               (this.fog = null),
               (this.overrideMaterial = null),
-              (this.autoUpdate = !0);
+              (this.autoUpdate = true);
           }),
           (THREE.Scene.prototype = Object.create(THREE.Object3D.prototype)),
           (THREE.Scene.prototype.constructor = THREE.Scene),
@@ -28681,7 +28732,7 @@
                 for (var r in n.attributes) {
                   var o = n.attributes[r];
                   if (!o.__webglInitialized || o.createUniqueBuffers) {
-                    o.__webglInitialized = !0;
+                    o.__webglInitialized = true;
                     var a = 1;
                     'v2' === o.type
                       ? (a = 2)
@@ -28694,7 +28745,7 @@
                       (o.array = new Float32Array(i * a)),
                       (o.buffer = gl.createBuffer()),
                       (o.buffer.belongsToAttribute = r),
-                      (o.needsUpdate = !0);
+                      (o.needsUpdate = true);
                   }
                   t.__webglCustomAttributesList.push(o);
                 }
@@ -28764,7 +28815,7 @@
                     v = {};
                   for (var g in m) v[g] = m[g];
                   if (!v.__webglInitialized || v.createUniqueBuffers) {
-                    v.__webglInitialized = !0;
+                    v.__webglInitialized = true;
                     var y = 1;
                     'v2' === v.type
                       ? (y = 2)
@@ -28777,13 +28828,13 @@
                       (v.array = new Float32Array(r * y)),
                       (v.buffer = gl.createBuffer()),
                       (v.buffer.belongsToAttribute = p),
-                      (m.needsUpdate = !0),
+                      (m.needsUpdate = true),
                       (v.__original = m);
                   }
                   e.__webglCustomAttributesList.push(v);
                 }
               }
-              e.__inittedArrays = !0;
+              e.__inittedArrays = true;
             }
             function c(e, t) {
               return e.material instanceof THREE.MeshFaceMaterial
@@ -28792,7 +28843,7 @@
             }
             function h(e) {
               return (
-                e instanceof THREE.MeshPhongMaterial == !1 &&
+                e instanceof THREE.MeshPhongMaterial == false &&
                 e.shading === THREE.FlatShading
               );
             }
@@ -28877,7 +28928,7 @@
                           (a += 4);
                   gl.bindBuffer(gl.ARRAY_BUFFER, d.buffer),
                     gl.bufferData(gl.ARRAY_BUFFER, d.array, t),
-                    (d.needsUpdate = !1);
+                    (d.needsUpdate = false);
                 }
             }
             function f(e, t) {
@@ -28971,7 +29022,7 @@
                           (a += 4);
                     gl.bindBuffer(gl.ARRAY_BUFFER, d.buffer),
                       gl.bufferData(gl.ARRAY_BUFFER, d.array, t),
-                      (d.needsUpdate = !1);
+                      (d.needsUpdate = false);
                   }
             }
             function d(e, t, n, r, o) {
@@ -29219,7 +29270,7 @@
                       ((c = Re[De[a]]),
                       (u = c.vertexNormals),
                       (f = c.normal),
-                      3 === u.length && Y === !1)
+                      3 === u.length && Y === false)
                     )
                       for (F = 0; 3 > F; F++)
                         (H = u[F]),
@@ -29465,7 +29516,14 @@
                     var f = u.itemSize;
                     gl.bindBuffer(gl.ARRAY_BUFFER, u.buffer),
                       et.enableAttribute(h),
-                      gl.vertexAttribPointer(h, f, gl.FLOAT, !1, 0, i * f * 4);
+                      gl.vertexAttribPointer(
+                        h,
+                        f,
+                        gl.FLOAT,
+                        false,
+                        0,
+                        i * f * 4
+                      );
                   } else
                     void 0 !== e.defaultAttributeValues &&
                       (2 === e.defaultAttributeValues[c].length
@@ -29485,11 +29543,25 @@
                       t.__webglMorphTargetsBuffers[n.morphTargetBase]
                     ),
                     et.enableAttribute(i.position),
-                    gl.vertexAttribPointer(i.position, 3, gl.FLOAT, !1, 0, 0))
+                    gl.vertexAttribPointer(
+                      i.position,
+                      3,
+                      gl.FLOAT,
+                      false,
+                      0,
+                      0
+                    ))
                   : i.position >= 0 &&
                     (gl.bindBuffer(gl.ARRAY_BUFFER, t.__webglVertexBuffer),
                     et.enableAttribute(i.position),
-                    gl.vertexAttribPointer(i.position, 3, gl.FLOAT, !1, 0, 0)),
+                    gl.vertexAttribPointer(
+                      i.position,
+                      3,
+                      gl.FLOAT,
+                      false,
+                      0,
+                      0
+                    )),
                 n.morphTargetForcedOrder.length)
               )
                 for (
@@ -29507,7 +29579,7 @@
                         t.__webglMorphTargetsBuffers[a[o]]
                       ),
                       et.enableAttribute(r),
-                      gl.vertexAttribPointer(r, 3, gl.FLOAT, !1, 0, 0)),
+                      gl.vertexAttribPointer(r, 3, gl.FLOAT, false, 0, 0)),
                     (r = i['morphNormal' + o]),
                     r >= 0 &&
                       e.morphNormals &&
@@ -29516,7 +29588,7 @@
                         t.__webglMorphNormalsBuffers[a[o]]
                       ),
                       et.enableAttribute(r),
-                      gl.vertexAttribPointer(r, 3, gl.FLOAT, !1, 0, 0)),
+                      gl.vertexAttribPointer(r, 3, gl.FLOAT, false, 0, 0)),
                     (n.__webglMorphTargetInfluences[o] = s[a[o]]),
                     o++;
               else {
@@ -29547,7 +29619,7 @@
                           t.__webglMorphTargetsBuffers[p]
                         ),
                         et.enableAttribute(r),
-                        gl.vertexAttribPointer(r, 3, gl.FLOAT, !1, 0, 0)),
+                        gl.vertexAttribPointer(r, 3, gl.FLOAT, false, 0, 0)),
                       (r = i['morphNormal' + o]),
                       r >= 0 &&
                         e.morphNormals &&
@@ -29556,7 +29628,7 @@
                           t.__webglMorphNormalsBuffers[p]
                         ),
                         et.enableAttribute(r),
-                        gl.vertexAttribPointer(r, 3, gl.FLOAT, !1, 0, 0)),
+                        gl.vertexAttribPointer(r, 3, gl.FLOAT, false, 0, 0)),
                       (n.__webglMorphTargetInfluences[o] = s[p]);
                   } else n.__webglMorphTargetInfluences[o] = 0;
               }
@@ -29586,7 +29658,7 @@
               return t[0] - e[0];
             }
             function x(e) {
-              if (e.visible !== !1) {
+              if (e.visible !== false) {
                 if (e instanceof THREE.Scene || e instanceof THREE.Group);
                 else if ((M(e), e instanceof THREE.Light)) Me.push(e);
                 else if (e instanceof THREE.Sprite) Pe.push(e);
@@ -29595,13 +29667,14 @@
                   var t = Se[e.id];
                   if (
                     t &&
-                    (e.frustumCulled === !1 || Xe.intersectsObject(e) === !0)
+                    (e.frustumCulled === false ||
+                      Xe.intersectsObject(e) === true)
                   )
                     for (var n = 0, r = t.length; r > n; n++) {
                       var o = t[n];
                       E(o),
-                        (o.render = !0),
-                        Re.sortObjects === !0 &&
+                        (o.render = true),
+                        Re.sortObjects === true &&
                           (Ke.setFromMatrixPosition(e.matrixWorld),
                           Ke.applyProjection(qe),
                           (o.z = Ke.z));
@@ -29664,7 +29737,7 @@
             }
             function M(e) {
               void 0 === e.__webglInit &&
-                ((e.__webglInit = !0),
+                ((e.__webglInit = true),
                 (e._modelViewMatrix = new THREE.Matrix4()),
                 (e._normalMatrix = new THREE.Matrix3()),
                 e.addEventListener('removed', _t));
@@ -29672,7 +29745,7 @@
               if (
                 (void 0 === r ||
                   (void 0 === r.__webglInit &&
-                    ((r.__webglInit = !0),
+                    ((r.__webglInit = true),
                     r.addEventListener('dispose', bt),
                     r instanceof THREE.BufferGeometry
                       ? Re.info.memory.geometries++
@@ -29682,18 +29755,18 @@
                       ? void 0 === r.__webglVertexBuffer &&
                         (n(r),
                         s(r, e),
-                        (r.verticesNeedUpdate = !0),
-                        (r.colorsNeedUpdate = !0),
-                        (r.lineDistancesNeedUpdate = !0))
+                        (r.verticesNeedUpdate = true),
+                        (r.colorsNeedUpdate = true),
+                        (r.lineDistancesNeedUpdate = true))
                       : e instanceof THREE.PointCloud &&
                         void 0 === r.__webglVertexBuffer &&
                         (t(r),
                         a(r, e),
-                        (r.verticesNeedUpdate = !0),
-                        (r.colorsNeedUpdate = !0)))),
+                        (r.verticesNeedUpdate = true),
+                        (r.colorsNeedUpdate = true)))),
                 void 0 === e.__webglActive)
               )
-                if (((e.__webglActive = !0), e instanceof THREE.Mesh)) {
+                if (((e.__webglActive = true), e instanceof THREE.Mesh)) {
                   if (r instanceof THREE.BufferGeometry) C(Se, r, e);
                   else if (r instanceof THREE.Geometry)
                     for (var o = Lt[r.id], l = 0, c = o.length; c > l; l++)
@@ -29760,28 +29833,28 @@
             }
             function T(e, t) {
               var n = e.material,
-                o = !1;
-              (void 0 !== Lt[t.id] && t.groupsNeedUpdate !== !0) ||
+                o = false;
+              (void 0 !== Lt[t.id] && t.groupsNeedUpdate !== true) ||
                 (delete Se[e.id],
                 (Lt[t.id] = S(t, n instanceof THREE.MeshFaceMaterial)),
-                (t.groupsNeedUpdate = !1));
+                (t.groupsNeedUpdate = false));
               for (var a = Lt[t.id], s = 0, c = a.length; c > s; s++) {
                 var h = a[s];
                 void 0 === h.__webglVertexBuffer
                   ? (r(h),
                     l(h, e),
-                    (t.verticesNeedUpdate = !0),
-                    (t.morphTargetsNeedUpdate = !0),
-                    (t.elementsNeedUpdate = !0),
-                    (t.uvsNeedUpdate = !0),
-                    (t.normalsNeedUpdate = !0),
-                    (t.tangentsNeedUpdate = !0),
-                    (t.colorsNeedUpdate = !0),
-                    (o = !0))
-                  : (o = !1),
+                    (t.verticesNeedUpdate = true),
+                    (t.morphTargetsNeedUpdate = true),
+                    (t.elementsNeedUpdate = true),
+                    (t.uvsNeedUpdate = true),
+                    (t.normalsNeedUpdate = true),
+                    (t.tangentsNeedUpdate = true),
+                    (t.colorsNeedUpdate = true),
+                    (o = true))
+                  : (o = false),
                   (o || void 0 === e.__webglActive) && C(Se, h, e);
               }
-              e.__webglActive = !0;
+              e.__webglActive = true;
             }
             function C(e, t, n) {
               var i = n.id;
@@ -29828,8 +29901,8 @@
                           ? gl.DYNAMIC_DRAW
                           : gl.STATIC_DRAW
                       ),
-                      (l.needsUpdate = !1))
-                    : l.needsUpdate === !0 &&
+                      (l.needsUpdate = false))
+                    : l.needsUpdate === true &&
                       (gl.bindBuffer(h, l.buffer),
                       void 0 === l.updateRange || -1 === l.updateRange.count
                         ? gl.bufferSubData(h, 0, l.array)
@@ -29846,10 +29919,10 @@
                             )
                           ),
                           (l.updateRange.count = 0)),
-                      (l.needsUpdate = !1));
+                      (l.needsUpdate = false));
                 }
               else if (e instanceof THREE.Mesh) {
-                t.groupsNeedUpdate === !0 && T(e, t);
+                t.groupsNeedUpdate === true && T(e, t);
                 for (var p = Lt[t.id], o = 0, m = p.length; m > o; o++) {
                   var v = p[o],
                     g = c(e, v),
@@ -29864,13 +29937,13 @@
                     y) &&
                     d(v, e, gl.DYNAMIC_DRAW, !t.dynamic, g);
                 }
-                (t.verticesNeedUpdate = !1),
-                  (t.morphTargetsNeedUpdate = !1),
-                  (t.elementsNeedUpdate = !1),
-                  (t.uvsNeedUpdate = !1),
-                  (t.normalsNeedUpdate = !1),
-                  (t.colorsNeedUpdate = !1),
-                  (t.tangentsNeedUpdate = !1),
+                (t.verticesNeedUpdate = false),
+                  (t.morphTargetsNeedUpdate = false),
+                  (t.elementsNeedUpdate = false),
+                  (t.uvsNeedUpdate = false),
+                  (t.normalsNeedUpdate = false),
+                  (t.colorsNeedUpdate = false),
+                  (t.tangentsNeedUpdate = false),
                   g.attributes && L(g);
               } else if (e instanceof THREE.Line) {
                 var g = c(e, t),
@@ -29880,27 +29953,27 @@
                   t.lineDistancesNeedUpdate ||
                   y) &&
                   f(t, gl.DYNAMIC_DRAW),
-                  (t.verticesNeedUpdate = !1),
-                  (t.colorsNeedUpdate = !1),
-                  (t.lineDistancesNeedUpdate = !1),
+                  (t.verticesNeedUpdate = false),
+                  (t.colorsNeedUpdate = false),
+                  (t.lineDistancesNeedUpdate = false),
                   g.attributes && L(g);
               } else if (e instanceof THREE.PointCloud) {
                 var g = c(e, t),
                   y = g.attributes && D(g);
                 (t.verticesNeedUpdate || t.colorsNeedUpdate || y) &&
                   u(t, gl.DYNAMIC_DRAW, e),
-                  (t.verticesNeedUpdate = !1),
-                  (t.colorsNeedUpdate = !1),
+                  (t.verticesNeedUpdate = false),
+                  (t.colorsNeedUpdate = false),
                   g.attributes && L(g);
               }
             }
             function D(e) {
               for (var t in e.attributes)
-                if (e.attributes[t].needsUpdate) return !0;
-              return !1;
+                if (e.attributes[t].needsUpdate) return true;
+              return false;
             }
             function L(e) {
-              for (var t in e.attributes) e.attributes[t].needsUpdate = !1;
+              for (var t in e.attributes) e.attributes[t].needsUpdate = false;
             }
             function R(e) {
               e instanceof THREE.Mesh ||
@@ -30026,7 +30099,7 @@
               }
             }
             function U(e) {
-              e.transparent === !0
+              e.transparent === true
                 ? et.setBlending(
                     e.blending,
                     e.blendEquation,
@@ -30049,15 +30122,15 @@
             function F(e, t, n, r, o) {
               (Ie = 0),
                 r.needsUpdate &&
-                  (r.program && Dt(r), N(r, t, n, o), (r.needsUpdate = !1)),
+                  (r.program && Dt(r), N(r, t, n, o), (r.needsUpdate = false)),
                 r.morphTargets &&
                   (o.__webglMorphTargetInfluences ||
                     (o.__webglMorphTargetInfluences = new Float32Array(
                       Re.maxMorphTargets
                     )));
-              var a = !1,
-                s = !1,
-                l = !1,
+              var a = false,
+                s = false,
+                l = false,
                 c = r.program,
                 h = c.uniforms,
                 u = r.__webglShader.uniforms;
@@ -30065,14 +30138,15 @@
                 (c.id !== Ne &&
                   (gl.useProgram(c.program),
                   (Ne = c.id),
-                  (a = !0),
-                  (s = !0),
-                  (l = !0)),
-                r.id !== Fe && (-1 === Fe && (l = !0), (Fe = r.id), (s = !0)),
+                  (a = true),
+                  (s = true),
+                  (l = true)),
+                r.id !== Fe &&
+                  (-1 === Fe && (l = true), (Fe = r.id), (s = true)),
                 (a || e !== He) &&
                   (gl.uniformMatrix4fv(
                     h.projectionMatrix,
-                    !1,
+                    false,
                     e.projectionMatrix.elements
                   ),
                   _e &&
@@ -30095,7 +30169,7 @@
                     null !== h.viewMatrix &&
                     gl.uniformMatrix4fv(
                       h.viewMatrix,
-                      !1,
+                      false,
                       e.matrixWorldInverse.elements
                     )),
                 r.skinning)
@@ -30105,14 +30179,14 @@
                     null !== h.bindMatrix &&
                     gl.uniformMatrix4fv(
                       h.bindMatrix,
-                      !1,
+                      false,
                       o.bindMatrix.elements
                     ),
                   o.bindMatrixInverse &&
                     null !== h.bindMatrixInverse &&
                     gl.uniformMatrix4fv(
                       h.bindMatrixInverse,
-                      !1,
+                      false,
                       o.bindMatrixInverse.elements
                     ),
                   ht && o.skeleton && o.skeleton.useVertexTexture)
@@ -30138,7 +30212,7 @@
                     null !== h.boneGlobalMatrices &&
                     gl.uniformMatrix4fv(
                       h.boneGlobalMatrices,
-                      !1,
+                      false,
                       o.skeleton.boneMatrices
                     );
               return (
@@ -30147,8 +30221,8 @@
                   (r instanceof THREE.MeshPhongMaterial ||
                     r instanceof THREE.MeshLambertMaterial ||
                     r.lights) &&
-                    ($e && ((l = !0), Z(t), ($e = !1)),
-                    l ? (G(u, Je), W(u, !0)) : W(u, !1)),
+                    ($e && ((l = true), Z(t), ($e = false)),
+                    l ? (G(u, Je), W(u, true)) : W(u, false)),
                   (r instanceof THREE.MeshBasicMaterial ||
                     r instanceof THREE.MeshLambertMaterial ||
                     r instanceof THREE.MeshPhongMaterial) &&
@@ -30175,7 +30249,7 @@
                 null !== h.modelMatrix &&
                   gl.uniformMatrix4fv(
                     h.modelMatrix,
-                    !1,
+                    false,
                     o.matrixWorld.elements
                   ),
                 c
@@ -30313,13 +30387,13 @@
             function q(e, t) {
               gl.uniformMatrix4fv(
                 e.modelViewMatrix,
-                !1,
+                false,
                 t._modelViewMatrix.elements
               ),
                 e.normalMatrix &&
                   gl.uniformMatrix3fv(
                     e.normalMatrix,
-                    !1,
+                    false,
                     t._normalMatrix.elements
                   );
             }
@@ -30340,7 +30414,7 @@
             function Y(e) {
               for (var t, n, r, o = 0, a = e.length; a > o; o++) {
                 var s = e[o][0];
-                if (s.needsUpdate !== !1) {
+                if (s.needsUpdate !== false) {
                   var l = s.type,
                     c = s.value,
                     h = e[o][1];
@@ -30379,10 +30453,10 @@
                       gl.uniform4fv(h, c);
                       break;
                     case 'Matrix3fv':
-                      gl.uniformMatrix3fv(h, !1, c);
+                      gl.uniformMatrix3fv(h, false, c);
                       break;
                     case 'Matrix4fv':
-                      gl.uniformMatrix4fv(h, !1, c);
+                      gl.uniformMatrix4fv(h, false, c);
                       break;
                     case 'i':
                       gl.uniform1i(h, c);
@@ -30445,24 +30519,24 @@
                       gl.uniform4fv(h, s._array);
                       break;
                     case 'm3':
-                      gl.uniformMatrix3fv(h, !1, c.elements);
+                      gl.uniformMatrix3fv(h, false, c.elements);
                       break;
                     case 'm3v':
                       void 0 === s._array &&
                         (s._array = new Float32Array(9 * c.length));
                       for (var u = 0, f = c.length; f > u; u++)
                         c[u].flattenToArrayOffset(s._array, 9 * u);
-                      gl.uniformMatrix3fv(h, !1, s._array);
+                      gl.uniformMatrix3fv(h, false, s._array);
                       break;
                     case 'm4':
-                      gl.uniformMatrix4fv(h, !1, c.elements);
+                      gl.uniformMatrix4fv(h, false, c.elements);
                       break;
                     case 'm4v':
                       void 0 === s._array &&
                         (s._array = new Float32Array(16 * c.length));
                       for (var u = 0, f = c.length; f > u; u++)
                         c[u].flattenToArrayOffset(s._array, 16 * u);
-                      gl.uniformMatrix4fv(h, !1, s._array);
+                      gl.uniformMatrix4fv(h, false, s._array);
                       break;
                     case 't':
                       if (((t = c), (n = K()), gl.uniform1i(h, n), !t))
@@ -30788,7 +30862,7 @@
                   e.generateMipmaps &&
                     l &&
                     gl.generateMipmap(gl.TEXTURE_CUBE_MAP),
-                    (e.needsUpdate = !1),
+                    (e.needsUpdate = false),
                     e.onUpdate && e.onUpdate();
                 } else
                   gl.activeTexture(gl.TEXTURE0 + t),
@@ -30977,7 +31051,7 @@
               ) {
                 var l = e[a];
                 l.onlyShadow ||
-                  l.visible === !1 ||
+                  l.visible === false ||
                   (l instanceof THREE.DirectionalLight && t++,
                   l instanceof THREE.PointLight && n++,
                   l instanceof THREE.SpotLight && r++,
@@ -31009,19 +31083,20 @@
               fe = void 0 !== e.context ? e.context : null,
               de = 1,
               pe = void 0 !== e.precision ? e.precision : 'highp',
-              me = void 0 !== e.alpha ? e.alpha : !1,
-              ve = void 0 !== e.depth ? e.depth : !0,
-              ge = void 0 !== e.stencil ? e.stencil : !0,
-              ye = void 0 !== e.antialias ? e.antialias : !1,
-              xe = void 0 !== e.premultipliedAlpha ? e.premultipliedAlpha : !0,
+              me = void 0 !== e.alpha ? e.alpha : false,
+              ve = void 0 !== e.depth ? e.depth : true,
+              ge = void 0 !== e.stencil ? e.stencil : true,
+              ye = void 0 !== e.antialias ? e.antialias : false,
+              xe =
+                void 0 !== e.premultipliedAlpha ? e.premultipliedAlpha : true,
               we =
                 void 0 !== e.preserveDrawingBuffer
                   ? e.preserveDrawingBuffer
-                  : !1,
+                  : false,
               _e =
                 void 0 !== e.logarithmicDepthBuffer
                   ? e.logarithmicDepthBuffer
-                  : !1,
+                  : false,
               be = new THREE.Color(0),
               Ee = 0,
               Me = [],
@@ -31033,22 +31108,22 @@
               De = [];
             (this.domElement = ue),
               (this.context = null),
-              (this.autoClear = !0),
-              (this.autoClearColor = !0),
-              (this.autoClearDepth = !0),
-              (this.autoClearStencil = !0),
-              (this.sortObjects = !0),
+              (this.autoClear = true),
+              (this.autoClearColor = true),
+              (this.autoClearDepth = true),
+              (this.autoClearStencil = true),
+              (this.sortObjects = true),
               (this.gammaFactor = 2),
-              (this.gammaInput = !1),
-              (this.gammaOutput = !1),
-              (this.shadowMapEnabled = !1),
+              (this.gammaInput = false),
+              (this.gammaOutput = false),
+              (this.shadowMapEnabled = false),
               (this.shadowMapType = THREE.PCFShadowMap),
               (this.shadowMapCullFace = THREE.CullFaceFront),
-              (this.shadowMapDebug = !1),
-              (this.shadowMapCascade = !1),
+              (this.shadowMapDebug = false),
+              (this.shadowMapCascade = false),
               (this.maxMorphTargets = 8),
               (this.maxMorphNormals = 4),
-              (this.autoScaleCubemaps = !0),
+              (this.autoScaleCubemaps = true),
               (this.info = {
                 memory: {
                   programs: 0,
@@ -31081,7 +31156,7 @@
               qe = new THREE.Matrix4(),
               Ke = new THREE.Vector3(),
               Ye = new THREE.Vector3(),
-              $e = !0,
+              $e = true,
               Je = {
                 ambient: [0, 0, 0],
                 directional: {
@@ -31137,7 +31212,7 @@
                 function(e) {
                   e.preventDefault(), rt(), it(), (Se = {});
                 },
-                !1
+                false
               );
             } catch (Qe) {
               THREE.error('THREE.WebGLRenderer: ' + Qe);
@@ -31159,7 +31234,7 @@
               tt.get('OES_standard_derivatives'),
               _e && tt.get('EXT_frag_depth');
             var nt = function(e, t, n, i) {
-                xe === !0 && ((e *= i), (t *= i), (n *= i)),
+                xe === true && ((e *= i), (t *= i), (n *= i)),
                   gl.clearColor(e, t, n, i);
               },
               it = function() {
@@ -31182,7 +31257,7 @@
                   (He = null),
                   (ke = ''),
                   (Fe = -1),
-                  ($e = !0),
+                  ($e = true),
                   et.reset();
               };
             it(), (this.context = gl), (this.state = et);
@@ -31296,7 +31371,7 @@
               (this.setSize = function(e, t, n) {
                 (ue.width = e * de),
                   (ue.height = t * de),
-                  n !== !1 &&
+                  n !== false &&
                     ((ue.style.width = e + 'px'), (ue.style.height = t + 'px')),
                   this.setViewport(0, 0, e, t);
               }),
@@ -31467,13 +31542,13 @@
                   var n,
                     i,
                     r,
-                    o = !1;
+                    o = false;
                   for (n = 0, i = Oe.length; i > n; n++)
                     if (((r = Oe[n]), r.program === t)) {
-                      r.usedTimes--, 0 === r.usedTimes && (o = !0);
+                      r.usedTimes--, 0 === r.usedTimes && (o = true);
                       break;
                     }
-                  if (o === !0) {
+                  if (o === true) {
                     var a = [];
                     for (n = 0, i = Oe.length; i > n; n++)
                       (r = Oe[n]), r.program !== t && a.push(r);
@@ -31508,7 +31583,7 @@
                     t.attributes.position,
                     3,
                     gl.FLOAT,
-                    !1,
+                    false,
                     0,
                     0
                   )),
@@ -31516,7 +31591,7 @@
               ) {
                 if (
                   (gl.bindBuffer(gl.ARRAY_BUFFER, e.__webglNormalBuffer),
-                  n instanceof THREE.MeshPhongMaterial == !1 &&
+                  n instanceof THREE.MeshPhongMaterial == false &&
                     n.shading === THREE.FlatShading)
                 ) {
                   var r,
@@ -31564,7 +31639,7 @@
                     t.attributes.normal,
                     3,
                     gl.FLOAT,
-                    !1,
+                    false,
                     0,
                     0
                   );
@@ -31574,7 +31649,14 @@
                 (gl.bindBuffer(gl.ARRAY_BUFFER, e.__webglUvBuffer),
                 gl.bufferData(gl.ARRAY_BUFFER, e.uvArray, gl.DYNAMIC_DRAW),
                 et.enableAttribute(t.attributes.uv),
-                gl.vertexAttribPointer(t.attributes.uv, 2, gl.FLOAT, !1, 0, 0)),
+                gl.vertexAttribPointer(
+                  t.attributes.uv,
+                  2,
+                  gl.FLOAT,
+                  false,
+                  0,
+                  0
+                )),
                 e.hasColors &&
                   n.vertexColors !== THREE.NoColors &&
                   (gl.bindBuffer(gl.ARRAY_BUFFER, e.__webglColorBuffer),
@@ -31584,7 +31666,7 @@
                     t.attributes.color,
                     3,
                     gl.FLOAT,
-                    !1,
+                    false,
                     0,
                     0
                   )),
@@ -31593,18 +31675,18 @@
                 (e.count = 0);
             }),
               (this.renderBufferDirect = function(e, t, n, r, o, a) {
-                if (r.visible !== !1) {
+                if (r.visible !== false) {
                   P(a);
                   var s = F(e, t, n, r, a),
-                    l = !1,
+                    l = false,
                     c = r.wireframe ? 1 : 0,
                     h = 'direct_' + o.id + '_' + s.id + '_' + c;
                   if (
-                    (h !== ke && ((ke = h), (l = !0)),
+                    (h !== ke && ((ke = h), (l = true)),
                     l && et.initAttributes(),
                     a instanceof THREE.Mesh)
                   ) {
-                    var u = r.wireframe === !0 ? gl.LINES : gl.TRIANGLES,
+                    var u = r.wireframe === true ? gl.LINES : gl.TRIANGLES,
                       f = o.attributes.index;
                     if (f) {
                       var d, m;
@@ -31622,7 +31704,7 @@
                           (Re.info.render.vertices += f.array.length),
                           (Re.info.render.faces += f.array.length / 3);
                       else {
-                        l = !0;
+                        l = true;
                         for (var g = 0, y = v.length; y > g; g++) {
                           var x = v[g].index;
                           l &&
@@ -31662,7 +31744,7 @@
                           Re.info.render.calls++,
                           (Re.info.render.points += f.array.length);
                       else {
-                        v.length > 1 && (l = !0);
+                        v.length > 1 && (l = true);
                         for (var g = 0, y = v.length; y > g; g++) {
                           var x = v[g].index;
                           l &&
@@ -31706,7 +31788,7 @@
                           Re.info.render.calls++,
                           (Re.info.render.vertices += f.array.length);
                       else {
-                        v.length > 1 && (l = !0);
+                        v.length > 1 && (l = true);
                         for (var g = 0, y = v.length; y > g; g++) {
                           var x = v[g].index;
                           l &&
@@ -31735,15 +31817,15 @@
                 }
               }),
               (this.renderBuffer = function(e, t, n, r, o, a) {
-                if (r.visible !== !1) {
+                if (r.visible !== false) {
                   P(a);
                   var s = F(e, t, n, r, a),
                     l = s.attributes,
-                    c = !1,
+                    c = false,
                     h = r.wireframe ? 1 : 0,
                     u = o.id + '_' + s.id + '_' + h;
                   if (
-                    (u !== ke && ((ke = u), (c = !0)),
+                    (u !== ke && ((ke = u), (c = true)),
                     c && et.initAttributes(),
                     !r.morphTargets && l.position >= 0
                       ? c &&
@@ -31753,7 +31835,7 @@
                           l.position,
                           3,
                           gl.FLOAT,
-                          !1,
+                          false,
                           0,
                           0
                         ))
@@ -31774,7 +31856,7 @@
                             l[p.buffer.belongsToAttribute],
                             p.size,
                             gl.FLOAT,
-                            !1,
+                            false,
                             0,
                             0
                           ));
@@ -31788,7 +31870,7 @@
                             l.color,
                             3,
                             gl.FLOAT,
-                            !1,
+                            false,
                             0,
                             0
                           ))
@@ -31804,7 +31886,7 @@
                           l.normal,
                           3,
                           gl.FLOAT,
-                          !1,
+                          false,
                           0,
                           0
                         )),
@@ -31815,7 +31897,7 @@
                           l.tangent,
                           4,
                           gl.FLOAT,
-                          !1,
+                          false,
                           0,
                           0
                         )),
@@ -31823,7 +31905,14 @@
                         (a.geometry.faceVertexUvs[0]
                           ? (gl.bindBuffer(gl.ARRAY_BUFFER, o.__webglUVBuffer),
                             et.enableAttribute(l.uv),
-                            gl.vertexAttribPointer(l.uv, 2, gl.FLOAT, !1, 0, 0))
+                            gl.vertexAttribPointer(
+                              l.uv,
+                              2,
+                              gl.FLOAT,
+                              false,
+                              0,
+                              0
+                            ))
                           : void 0 !== r.defaultAttributeValues &&
                             gl.vertexAttrib2fv(
                               l.uv,
@@ -31837,7 +31926,7 @@
                               l.uv2,
                               2,
                               gl.FLOAT,
-                              !1,
+                              false,
                               0,
                               0
                             ))
@@ -31858,7 +31947,7 @@
                           l.skinIndex,
                           4,
                           gl.FLOAT,
-                          !1,
+                          false,
                           0,
                           0
                         ),
@@ -31871,7 +31960,7 @@
                           l.skinWeight,
                           4,
                           gl.FLOAT,
-                          !1,
+                          false,
                           0,
                           0
                         )),
@@ -31885,7 +31974,7 @@
                           l.lineDistance,
                           1,
                           gl.FLOAT,
-                          !1,
+                          false,
                           0,
                           0
                         ));
@@ -31931,7 +32020,7 @@
                 }
               }),
               (this.render = function(e, t, n, r) {
-                if (t instanceof THREE.Camera == !1)
+                if (t instanceof THREE.Camera == false)
                   return void THREE.error(
                     'THREE.WebGLRenderer.render: camera is not an instance of THREE.Camera.'
                   );
@@ -31939,8 +32028,8 @@
                 (ke = ''),
                   (Fe = -1),
                   (He = null),
-                  ($e = !0),
-                  e.autoUpdate === !0 && e.updateMatrixWorld(),
+                  ($e = true),
+                  e.autoUpdate === true && e.updateMatrixWorld(),
                   void 0 === t.parent && t.updateMatrixWorld(),
                   e.traverse(function(e) {
                     e instanceof THREE.SkinnedMesh && e.skeleton.update();
@@ -31954,7 +32043,7 @@
                   (Pe.length = 0),
                   (De.length = 0),
                   x(e),
-                  Re.sortObjects === !0 && (Ce.sort(v), Ae.sort(g)),
+                  Re.sortObjects === true && (Ce.sort(v), Ae.sort(g)),
                   yt.render(e, t),
                   (Re.info.render.calls = 0),
                   (Re.info.render.vertices = 0),
@@ -31991,9 +32080,9 @@
                     n.minFilter !== THREE.NearestFilter &&
                     n.minFilter !== THREE.LinearFilter &&
                     oe(n),
-                  et.setDepthTest(!0),
-                  et.setDepthWrite(!0),
-                  et.setColorWrite(!0);
+                  et.setDepthTest(true),
+                  et.setDepthWrite(true),
+                  et.setColorWrite(true);
               }),
               (this.renderImmediateObject = function(e, t, n, i, r) {
                 var o = F(e, t, n, i, r);
@@ -32036,7 +32125,7 @@
               }),
               (this.uploadTexture = function(e) {
                 void 0 === e.__webglInit &&
-                  ((e.__webglInit = !0),
+                  ((e.__webglInit = true),
                   e.addEventListener('dispose', Et),
                   (e.__webglTexture = gl.createTexture()),
                   Re.info.memory.textures++),
@@ -32072,7 +32161,7 @@
                           o,
                           a.data
                         );
-                    e.generateMipmaps = !1;
+                    e.generateMipmaps = false;
                   } else
                     gl.texImage2D(
                       gl.TEXTURE_2D,
@@ -32117,10 +32206,10 @@
                 else if (s.length > 0 && n) {
                   for (var l = 0, c = s.length; c > l; l++)
                     (a = s[l]), gl.texImage2D(gl.TEXTURE_2D, l, r, r, o, a);
-                  e.generateMipmaps = !1;
+                  e.generateMipmaps = false;
                 } else gl.texImage2D(gl.TEXTURE_2D, 0, r, r, o, e.image);
                 e.generateMipmaps && n && gl.generateMipmap(gl.TEXTURE_2D),
-                  (e.needsUpdate = !1),
+                  (e.needsUpdate = false),
                   e.onUpdate && e.onUpdate();
               }),
               (this.setTexture = function(e, t) {
@@ -32132,8 +32221,8 @@
               (this.setRenderTarget = function(e) {
                 var t = e instanceof THREE.WebGLRenderTargetCube;
                 if (e && void 0 === e.__webglFramebuffer) {
-                  void 0 === e.depthBuffer && (e.depthBuffer = !0),
-                    void 0 === e.stencilBuffer && (e.stencilBuffer = !0),
+                  void 0 === e.depthBuffer && (e.depthBuffer = true),
+                    void 0 === e.stencilBuffer && (e.stencilBuffer = true),
                     e.addEventListener('dispose', Mt),
                     (e.__webglTexture = gl.createTexture()),
                     Re.info.memory.textures++;
@@ -32239,10 +32328,10 @@
                     return void console.error(
                       'THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not in RGBA format. readPixels can read only RGBA format.'
                     );
-                  var s = !1;
+                  var s = false;
                   e.__webglFramebuffer !== Ue &&
                     (gl.bindFramebuffer(gl.FRAMEBUFFER, e.__webglFramebuffer),
-                    (s = !0)),
+                    (s = true)),
                     gl.checkFramebufferStatus(gl.FRAMEBUFFER) ===
                     gl.FRAMEBUFFER_COMPLETE
                       ? gl.readPixels(t, n, r, o, gl.RGBA, gl.UNSIGNED_BYTE, a)
@@ -32293,10 +32382,10 @@
               (this.format = void 0 !== n.format ? n.format : THREE.RGBAFormat),
               (this.type = void 0 !== n.type ? n.type : THREE.UnsignedByteType),
               (this.depthBuffer =
-                void 0 !== n.depthBuffer ? n.depthBuffer : !0),
+                void 0 !== n.depthBuffer ? n.depthBuffer : true),
               (this.stencilBuffer =
-                void 0 !== n.stencilBuffer ? n.stencilBuffer : !0),
-              (this.generateMipmaps = !0),
+                void 0 !== n.stencilBuffer ? n.stencilBuffer : true),
+              (this.generateMipmaps = true),
               (this.shareDepthFrom =
                 void 0 !== n.shareDepthFrom ? n.shareDepthFrom : null);
           }),
@@ -32386,7 +32475,7 @@
                   i = [];
                 for (var r in e)
                   (t = e[r]),
-                    t !== !1 && ((n = '#define ' + r + ' ' + t), i.push(n));
+                    t !== false && ((n = '#define ' + r + ' ' + t), i.push(n));
                 return i.join('\n');
               },
               n = function(e, t, n) {
@@ -32412,7 +32501,7 @@
                 p = s.__webglShader.vertexShader,
                 m = s.__webglShader.fragmentShader,
                 v = s.index0AttributeName;
-              void 0 === v && l.morphTargets === !0 && (v = 'position');
+              void 0 === v && l.morphTargets === true && (v = 'position');
               var g = 'SHADOWMAP_TYPE_BASIC';
               l.shadowMapType === THREE.PCFShadowMap
                 ? (g = 'SHADOWMAP_TYPE_PCF')
@@ -32580,7 +32669,7 @@
                 void 0 !== v && h.bindAttribLocation(S, 0, v),
                 h.linkProgram(S);
               var A = h.getProgramInfoLog(S);
-              h.getProgramParameter(S, h.LINK_STATUS) === !1 &&
+              h.getProgramParameter(S, h.LINK_STATUS) === false &&
                 THREE.error(
                   'THREE.WebGLProgram: shader error: ' + h.getError(),
                   'gl.VALIDATE_STATUS',
@@ -32651,7 +32740,7 @@
               return (
                 t.shaderSource(o, r),
                 t.compileShader(o),
-                t.getShaderParameter(o, t.COMPILE_STATUS) === !1 &&
+                t.getShaderParameter(o, t.COMPILE_STATUS) === false &&
                   THREE.error("THREE.WebGLShader: Shader couldn't compile."),
                 '' !== t.getShaderInfoLog(o) &&
                   THREE.warn(
@@ -33037,11 +33126,11 @@
                   gl.uniform1i(l.occlusionMap, 0),
                   gl.uniform1i(l.map, 1),
                   gl.bindBuffer(gl.ARRAY_BUFFER, r),
-                  gl.vertexAttribPointer(s.vertex, 2, gl.FLOAT, !1, 16, 0),
-                  gl.vertexAttribPointer(s.uv, 2, gl.FLOAT, !1, 16, 8),
+                  gl.vertexAttribPointer(s.vertex, 2, gl.FLOAT, false, 16, 0),
+                  gl.vertexAttribPointer(s.uv, 2, gl.FLOAT, false, 16, 8),
                   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, o),
                   gl.disable(gl.CULL_FACE),
-                  gl.depthMask(!1);
+                  gl.depthMask(false);
                 for (var S = 0, T = t.length; T > S; S++) {
                   (_ = 16 / v), b.set(_ * y, _);
                   var C = t[S];
@@ -33128,7 +33217,7 @@
                 }
                 gl.enable(gl.CULL_FACE),
                   gl.enable(gl.DEPTH_TEST),
-                  gl.depthMask(!0),
+                  gl.depthMask(true),
                   e.resetGLState();
               }
             };
@@ -33140,7 +33229,7 @@
                 if (
                   r &&
                   t.castShadow &&
-                  (t.frustumCulled === !1 || m.intersectsObject(t) === !0)
+                  (t.frustumCulled === false || m.intersectsObject(t) === true)
                 )
                   for (var a = 0, s = r.length; s > a; a++) {
                     var l = r[a];
@@ -33156,9 +33245,9 @@
             }
             function a(e, t) {
               var n = new THREE.DirectionalLight();
-              (n.isVirtual = !0),
-                (n.onlyShadow = !0),
-                (n.castShadow = !0),
+              (n.isVirtual = true),
+                (n.onlyShadow = true),
+                (n.castShadow = true),
                 (n.shadowCameraNear = e.shadowCameraNear),
                 (n.shadowCameraFar = e.shadowCameraFar),
                 (n.shadowCameraLeft = e.shadowCameraLeft),
@@ -33262,27 +33351,27 @@
                 uniforms: b,
                 vertexShader: _.vertexShader,
                 fragmentShader: _.fragmentShader,
-                morphTargets: !0
+                morphTargets: true
               })),
               (f = new THREE.ShaderMaterial({
                 uniforms: b,
                 vertexShader: _.vertexShader,
                 fragmentShader: _.fragmentShader,
-                skinning: !0
+                skinning: true
               })),
               (d = new THREE.ShaderMaterial({
                 uniforms: b,
                 vertexShader: _.vertexShader,
                 fragmentShader: _.fragmentShader,
-                morphTargets: !0,
-                skinning: !0
+                morphTargets: true,
+                skinning: true
               })),
-              (h._shadowPass = !0),
-              (u._shadowPass = !0),
-              (f._shadowPass = !0),
-              (d._shadowPass = !0),
+              (h._shadowPass = true),
+              (u._shadowPass = true),
+              (f._shadowPass = true),
+              (d._shadowPass = true),
               (this.render = function(n, g) {
-                if (e.shadowMapEnabled !== !1) {
+                if (e.shadowMapEnabled !== false) {
                   var y,
                     _,
                     b,
@@ -33307,7 +33396,7 @@
                       e.shadowMapCullFace === THREE.CullFaceFront
                         ? p.cullFace(p.FRONT)
                         : p.cullFace(p.BACK),
-                      e.state.setDepthTest(!0),
+                      e.state.setDepthTest(true),
                       y = 0,
                       _ = t.length;
                     _ > y;
@@ -33381,7 +33470,7 @@
                         );
                       }
                       n.add(R.shadowCamera),
-                        n.autoUpdate === !0 && n.updateMatrixWorld();
+                        n.autoUpdate === true && n.updateMatrixWorld();
                     }
                     R.shadowCameraVisible &&
                       !R.cameraHelper &&
@@ -33619,7 +33708,7 @@
                 (f.fillStyle = 'white'),
                   f.fillRect(0, 0, 8, 8),
                   (h = new THREE.Texture(r)),
-                  (h.needsUpdate = !0);
+                  (h.needsUpdate = true);
               };
             this.render = function(n, v) {
               if (0 !== t.length) {
@@ -33630,12 +33719,12 @@
                   u.disable(u.CULL_FACE),
                   u.enable(u.BLEND),
                   u.bindBuffer(u.ARRAY_BUFFER, o),
-                  u.vertexAttribPointer(l.position, 2, u.FLOAT, !1, 16, 0),
-                  u.vertexAttribPointer(l.uv, 2, u.FLOAT, !1, 16, 8),
+                  u.vertexAttribPointer(l.position, 2, u.FLOAT, false, 16, 0),
+                  u.vertexAttribPointer(l.uv, 2, u.FLOAT, false, 16, 8),
                   u.bindBuffer(u.ELEMENT_ARRAY_BUFFER, a),
                   u.uniformMatrix4fv(
                     c.projectionMatrix,
-                    !1,
+                    false,
                     v.projectionMatrix.elements
                   ),
                   u.activeTexture(u.TEXTURE0),
@@ -33672,7 +33761,7 @@
                   u.uniform1f(c.alphaTest, M.alphaTest),
                     u.uniformMatrix4fv(
                       c.modelViewMatrix,
-                      !1,
+                      false,
                       b._modelViewMatrix.elements
                     ),
                     b.matrixWorld.decompose(f, d, p),
@@ -33742,7 +33831,7 @@
                 o.load(
                   e,
                   function(e) {
-                    (a.image = e), (a.needsUpdate = !0), n && n(a);
+                    (a.image = e), (a.needsUpdate = true), n && n(a);
                   },
                   void 0,
                   function(e) {
@@ -33758,7 +33847,7 @@
                 a = new THREE.ImageLoader();
               a.crossOrigin = this.crossOrigin;
               var s = new THREE.CubeTexture(o, t);
-              s.flipY = !1;
+              s.flipY = false;
               for (
                 var l = 0,
                   c = function(t) {
@@ -33767,7 +33856,7 @@
                       function(e) {
                         (s.images[t] = e),
                           (l += 1),
-                          6 === l && ((s.needsUpdate = !0), n && n(s));
+                          6 === l && ((s.needsUpdate = true), n && n(s));
                       },
                       void 0,
                       r
@@ -33865,7 +33954,7 @@
               )
                 (o[3 * c] = a), (o[3 * c + 1] = s), (o[3 * c + 2] = l);
               var h = new THREE.DataTexture(o, e, t, THREE.RGBFormat);
-              return (h.needsUpdate = !0), h;
+              return (h.needsUpdate = true), h;
             }
           }),
           (THREE.SceneUtils = {
@@ -34117,7 +34206,7 @@
                   (d = e[a[r]].y),
                   t > (h - l) * (d - c) - (u - c) * (f - l))
                 )
-                  return !1;
+                  return false;
                 var v, g, y, x, w, _, b, E, M, S, T, C, A, P, D;
                 for (
                   v = f - h,
@@ -34149,8 +34238,8 @@
                       (P = y * C - x * T),
                       D >= -t && P >= -t && A >= -t))
                   )
-                    return !1;
-                return !0;
+                    return false;
+                return true;
               };
             return (e.Triangulate = n), (e.Triangulate.area = r), e;
           })(THREE.FontUtils),
@@ -34169,9 +34258,9 @@
               this.gain.connect(this.context.destination),
               (this.panner = this.context.createPanner()),
               this.panner.connect(this.gain),
-              (this.autoplay = !1),
+              (this.autoplay = false),
               (this.startTime = 0),
-              (this.isPlaying = !1);
+              (this.isPlaying = false);
           }),
           (THREE.Audio.prototype = Object.create(THREE.Object3D.prototype)),
           (THREE.Audio.prototype.constructor = THREE.Audio),
@@ -34179,7 +34268,7 @@
             var t = this,
               n = new XMLHttpRequest();
             return (
-              n.open('GET', e, !0),
+              n.open('GET', e, true),
               (n.responseType = 'arraybuffer'),
               (n.onload = function(e) {
                 t.context.decodeAudioData(this.response, function(e) {
@@ -34191,7 +34280,7 @@
             );
           }),
           (THREE.Audio.prototype.play = function() {
-            if (this.isPlaying === !0)
+            if (this.isPlaying === true)
               return void THREE.warn('THREE.Audio: Audio is already playing.');
             var e = this.context.createBufferSource();
             (e.buffer = this.source.buffer),
@@ -34199,7 +34288,7 @@
               (e.onended = this.source.onended),
               e.connect(this.panner),
               e.start(0, this.startTime),
-              (this.isPlaying = !0),
+              (this.isPlaying = true),
               (this.source = e);
           }),
           (THREE.Audio.prototype.pause = function() {
@@ -34209,7 +34298,7 @@
             this.source.stop(), (this.startTime = 0);
           }),
           (THREE.Audio.prototype.onEnded = function() {
-            this.isPlaying = !1;
+            this.isPlaying = false;
           }),
           (THREE.Audio.prototype.setLoop = function(e) {
             this.source.loop = e;
@@ -34301,7 +34390,7 @@
                 !this.needsUpdate)
             )
               return this.cacheArcLengths;
-            this.needsUpdate = !1;
+            this.needsUpdate = false;
             var t,
               n,
               i = [],
@@ -34315,7 +34404,7 @@
             return (this.cacheArcLengths = i), i;
           }),
           (THREE.Curve.prototype.updateArcLengths = function() {
-            (this.needsUpdate = !0), this.getLengths();
+            (this.needsUpdate = true), this.getLengths();
           }),
           (THREE.Curve.prototype.getUtoTmapping = function(e, t) {
             var n,
@@ -34401,7 +34490,7 @@
             );
           }),
           (THREE.CurvePath = function() {
-            (this.curves = []), (this.bends = []), (this.autoClose = !1);
+            (this.curves = []), (this.bends = []), (this.autoClose = false);
           }),
           (THREE.CurvePath.prototype = Object.create(THREE.Curve.prototype)),
           (THREE.CurvePath.prototype.constructor = THREE.CurvePath),
@@ -34487,11 +34576,11 @@
             return f && ((d.maxZ = n), (d.minZ = a)), d;
           }),
           (THREE.CurvePath.prototype.createPointsGeometry = function(e) {
-            var t = this.getPoints(e, !0);
+            var t = this.getPoints(e, true);
             return this.createGeometry(t);
           }),
           (THREE.CurvePath.prototype.createSpacedPointsGeometry = function(e) {
-            var t = this.getSpacedPoints(e, !0);
+            var t = this.getSpacedPoints(e, true);
             return this.createGeometry(t);
           }),
           (THREE.CurvePath.prototype.createGeometry = function(e) {
@@ -34567,8 +34656,8 @@
                       this.matrix.decompose(e, t, n),
                       this.matrixWorld.compose(r, t, a))
                     : this.matrixWorld.copy(this.matrix),
-                  (this.matrixWorldNeedsUpdate = !1),
-                  (i = !0));
+                  (this.matrixWorldNeedsUpdate = false),
+                  (i = true));
               for (var s = 0, l = this.children.length; l > s; s++)
                 this.children[s].updateMatrixWorld(i);
             };
@@ -34855,7 +34944,7 @@
             }
             function o(e, t) {
               for (
-                var n = 1e-10, i = t.length, r = !1, o = i - 1, a = 0;
+                var n = 1e-10, i = t.length, r = false, o = i - 1, a = 0;
                 i > a;
                 o = a++
               ) {
@@ -34870,24 +34959,24 @@
                   )
                     continue;
                   if (e.y == s.y) {
-                    if (e.x == s.x) return !0;
+                    if (e.x == s.x) return true;
                   } else {
                     var u = h * (e.x - s.x) - c * (e.y - s.y);
-                    if (0 == u) return !0;
+                    if (0 == u) return true;
                     if (0 > u) continue;
                     r = !r;
                   }
                 } else {
                   if (e.y != s.y) continue;
                   if ((l.x <= e.x && e.x <= s.x) || (s.x <= e.x && e.x <= l.x))
-                    return !0;
+                    return true;
                 }
               }
               return r;
             }
             var a = n(this.actions);
             if (0 == a.length) return [];
-            if (t === !0) return r(a);
+            if (t === true) return r(a);
             var s,
               l,
               c,
@@ -34931,11 +35020,11 @@
                     });
             if (!p[0]) return r(a);
             if (p.length > 1) {
-              for (var x = !1, w = [], _ = 0, b = p.length; b > _; _++)
+              for (var x = false, w = [], _ = 0, b = p.length; b > _; _++)
                 d[_] = [];
               for (var _ = 0, b = p.length; b > _; _++)
                 for (var E = m[_], M = 0; M < E.length; M++) {
-                  for (var S = E[M], T = !0, C = 0; C < p.length; C++)
+                  for (var S = E[M], T = true, C = 0; C < p.length; C++)
                     o(S.p, p[C].p) &&
                       (_ != C &&
                         w.push({
@@ -34943,7 +35032,7 @@
                           tos: C,
                           hole: M
                         }),
-                      T ? ((T = !1), d[C].push(S)) : (x = !0));
+                      T ? ((T = false), d[C].push(S)) : (x = true));
                   T && d[_].push(S);
                 }
               w.length > 0 && (x || (m = d));
@@ -35112,7 +35201,7 @@
                   var r = e + 1;
                   r > n && (r = 0);
                   var a = o(y[e], y[i], y[r], s[t]);
-                  if (!a) return !1;
+                  if (!a) return false;
                   var l = s.length - 1,
                     c = t - 1;
                   0 > c && (c = l);
@@ -35125,11 +35214,11 @@
                     if (
                       ((i = n + 1),
                       (i %= y.length),
-                      (o = r(e, t, y[n], y[i], !0)),
+                      (o = r(e, t, y[n], y[i], true)),
                       o.length > 0)
                     )
-                      return !0;
-                  return !1;
+                      return true;
+                  return false;
                 }
                 function a(e, n) {
                   var i, o, a, s, l;
@@ -35138,11 +35227,11 @@
                       if (
                         ((s = a + 1),
                         (s %= o.length),
-                        (l = r(e, n, o[a], o[s], !0)),
+                        (l = r(e, n, o[a], o[s], true)),
                         l.length > 0)
                       )
-                        return !0;
-                  return !1;
+                        return true;
+                  return false;
                 }
                 for (
                   var s,
@@ -35199,7 +35288,7 @@
                             break;
                           }
                         if (l >= 0) break;
-                        w[d] = !0;
+                        w[d] = true;
                       }
                     if (l >= 0) break;
                   }
@@ -35227,7 +35316,7 @@
                     THREE.warn('THREE.Shape: Duplicate point', u),
                   (d[u] = s);
               var g = a(e, t),
-                y = THREE.FontUtils.Triangulate(g, !1);
+                y = THREE.FontUtils.Triangulate(g, false);
               for (s = 0, l = y.length; l > s; s++)
                 for (h = y[s], c = 0; 3 > c; c++)
                   (u = h[c].x + ':' + h[c].y),
@@ -35409,7 +35498,7 @@
             0 > t && (t += 2 * Math.PI), t > 2 * Math.PI && (t -= 2 * Math.PI);
             var n;
             n =
-              this.aClockwise === !0
+              this.aClockwise === true
                 ? this.aEndAngle + (1 - e) * (2 * Math.PI - t)
                 : this.aStartAngle + e * t;
             var r = new THREE.Vector2();
@@ -35564,7 +35653,7 @@
             },
             animations: [],
             init: function(e) {
-              if (e.initialized === !0) return e;
+              if (e.initialized === true) return e;
               for (var t = 0; t < e.hierarchy.length; t++) {
                 for (var n = 0; n < e.hierarchy[t].keys.length; n++)
                   if (
@@ -35618,7 +35707,7 @@
                 for (var n = 0; n < e.hierarchy[t].keys.length; n++)
                   e.hierarchy[t].keys[n].index = n;
               }
-              return (e.initialized = !0), e;
+              return (e.initialized = true), e;
             },
             parse: function(e) {
               var t = function(e, n) {
@@ -35653,8 +35742,8 @@
               (this.hierarchy = THREE.AnimationHandler.parse(e)),
               (this.currentTime = 0),
               (this.timeScale = 1),
-              (this.isPlaying = !1),
-              (this.loop = !0),
+              (this.isPlaying = false),
+              (this.loop = true),
               (this.weight = 0),
               (this.interpolationType = THREE.AnimationHandler.LINEAR);
           }),
@@ -35664,12 +35753,12 @@
             play: function(e, t) {
               (this.currentTime = void 0 !== e ? e : 0),
                 (this.weight = void 0 !== t ? t : 1),
-                (this.isPlaying = !0),
+                (this.isPlaying = true),
                 this.reset(),
                 THREE.AnimationHandler.play(this);
             },
             stop: function() {
-              (this.isPlaying = !1), THREE.AnimationHandler.stop(this);
+              (this.isPlaying = false), THREE.AnimationHandler.stop(this);
             },
             reset: function() {
               for (var e = 0, t = this.hierarchy.length; t > e; e++) {
@@ -35775,7 +35864,7 @@
                 };
               return function(a) {
                 if (
-                  this.isPlaying !== !1 &&
+                  this.isPlaying !== false &&
                   (this.resetBlendWeights(),
                   (this.currentTime += a * this.timeScale),
                   0 !== this.weight)
@@ -35892,7 +35981,7 @@
                         h.scale.lerp(n, w), (f.scaleWeight += this.weight);
                       }
                     }
-                  return !0;
+                  return true;
                 }
               };
             })(),
@@ -35937,9 +36026,9 @@
               (this.hierarchy = THREE.AnimationHandler.parse(this.root)),
               (this.currentTime = 0),
               (this.timeScale = 0.001),
-              (this.isPlaying = !1),
-              (this.isPaused = !0),
-              (this.loop = !0);
+              (this.isPlaying = false),
+              (this.isPaused = true),
+              (this.loop = true);
             for (var n = 0, r = this.hierarchy.length; r > n; n++) {
               var o = this.data.hierarchy[n].keys,
                 a = this.data.hierarchy[n].sids,
@@ -35950,9 +36039,9 @@
                     h = this.getNextKeyWith(c, n, 0);
                   h && h.apply(c);
                 }
-                (s.matrixAutoUpdate = !1),
+                (s.matrixAutoUpdate = false),
                   this.data.hierarchy[n].node.updateMatrix(),
-                  (s.matrixWorldNeedsUpdate = !0);
+                  (s.matrixWorldNeedsUpdate = true);
               }
             }
           }),
@@ -35961,9 +36050,9 @@
             play: function(e) {
               if (
                 ((this.currentTime = void 0 !== e ? e : 0),
-                this.isPlaying === !1)
+                this.isPlaying === false)
               ) {
-                this.isPlaying = !0;
+                this.isPlaying = true;
                 var t,
                   n,
                   r,
@@ -35988,11 +36077,11 @@
                 }
                 this.update(0);
               }
-              (this.isPaused = !1), THREE.AnimationHandler.play(this);
+              (this.isPaused = false), THREE.AnimationHandler.play(this);
             },
             stop: function() {
-              (this.isPlaying = !1),
-                (this.isPaused = !1),
+              (this.isPlaying = false),
+                (this.isPaused = false),
                 THREE.AnimationHandler.stop(this);
               for (var e = 0; e < this.data.hierarchy.length; e++) {
                 var t = this.hierarchy[e],
@@ -36004,10 +36093,10 @@
               }
             },
             update: function(e) {
-              if (this.isPlaying !== !1) {
+              if (this.isPlaying !== false) {
                 this.currentTime += e * this.timeScale;
                 var t = this.data.length;
-                this.loop === !0 &&
+                this.loop === true &&
                   this.currentTime > t &&
                   (this.currentTime %= t),
                   (this.currentTime = Math.min(this.currentTime, t));
@@ -36028,7 +36117,7 @@
                       ? l.interpolate(c, this.currentTime)
                       : l.interpolate(c, c.time),
                       this.data.hierarchy[n].node.updateMatrix(),
-                      (r.matrixWorldNeedsUpdate = !0);
+                      (r.matrixWorldNeedsUpdate = true);
                   }
                 }
               }
@@ -36051,23 +36140,23 @@
               (this.frames = e.morphTargetInfluences.length),
               (this.currentTime = 0),
               (this.duration = 1e3),
-              (this.loop = !0),
+              (this.loop = true),
               (this.lastFrame = 0),
               (this.currentFrame = 0),
-              (this.isPlaying = !1);
+              (this.isPlaying = false);
           }),
           (THREE.MorphAnimation.prototype = {
             constructor: THREE.MorphAnimation,
             play: function() {
-              this.isPlaying = !0;
+              this.isPlaying = true;
             },
             pause: function() {
-              this.isPlaying = !1;
+              this.isPlaying = false;
             },
             update: function(e) {
-              if (this.isPlaying !== !1) {
+              if (this.isPlaying !== false) {
                 (this.currentTime += e),
-                  this.loop === !0 &&
+                  this.loop === true &&
                     this.currentTime > this.duration &&
                     (this.currentTime %= this.duration),
                   (this.currentTime = Math.min(
@@ -36238,7 +36327,7 @@
               (n = void 0 !== n ? n : 100),
               (r = r || 8),
               (o = o || 1),
-              (a = void 0 !== a ? a : !1),
+              (a = void 0 !== a ? a : false),
               (s = void 0 !== s ? s : 0),
               (l = void 0 !== l ? l : 2 * Math.PI);
             var c,
@@ -36298,7 +36387,7 @@
                   ),
                   this.faceVertexUvs[0].push([R.clone(), O, N.clone()]);
               }
-            if (a === !1 && e > 0)
+            if (a === false && e > 0)
               for (
                 this.vertices.push(new THREE.Vector3(0, u, 0)), c = 0;
                 r > c;
@@ -36316,7 +36405,7 @@
                 this.faces.push(new THREE.Face3(E, M, S, [C, A, P])),
                   this.faceVertexUvs[0].push([L, R, O]);
               }
-            if (a === !1 && t > 0)
+            if (a === false && t > 0)
               for (
                 this.vertices.push(new THREE.Vector3(0, -u, 0)), c = 0;
                 r > c;
@@ -36394,12 +36483,12 @@
                 if (2 >= _) return new THREE.Vector2(r, o);
                 s = Math.sqrt(_ / 2);
               } else {
-                var b = !1;
+                var b = false;
                 l > a
-                  ? h > a && (b = !0)
+                  ? h > a && (b = true)
                   : -a > l
-                  ? -a > h && (b = !0)
-                  : Math.sign(c) == Math.sign(u) && (b = !0),
+                  ? -a > h && (b = true)
+                  : Math.sign(c) == Math.sign(u) && (b = true),
                   b
                     ? ((r = -c), (o = l), (s = Math.sqrt(f)))
                     : ((r = l), (o = c), (s = Math.sqrt(f / 2)));
@@ -36473,11 +36562,11 @@
               g = void 0 !== t.bevelThickness ? t.bevelThickness : 6,
               y = void 0 !== t.bevelSize ? t.bevelSize : g - 2,
               x = void 0 !== t.bevelSegments ? t.bevelSegments : 3,
-              w = void 0 !== t.bevelEnabled ? t.bevelEnabled : !0,
+              w = void 0 !== t.bevelEnabled ? t.bevelEnabled : true,
               _ = void 0 !== t.curveSegments ? t.curveSegments : 12,
               b = void 0 !== t.steps ? t.steps : 1,
               E = t.extrudePath,
-              M = !1,
+              M = false,
               S = t.material,
               T = t.extrudeMaterial,
               C =
@@ -36486,12 +36575,12 @@
                   : THREE.ExtrudeGeometry.WorldUVGenerator;
             E &&
               ((u = E.getSpacedPoints(b)),
-              (M = !0),
-              (w = !1),
+              (M = true),
+              (w = false),
               (f =
                 void 0 !== t.frames
                   ? t.frames
-                  : new THREE.TubeGeometry.FrenetFrames(E, b, !1)),
+                  : new THREE.TubeGeometry.FrenetFrames(E, b, false)),
               (d = new THREE.Vector3()),
               (p = new THREE.Vector3()),
               (m = new THREE.Vector3())),
@@ -36509,7 +36598,7 @@
               for (N = N.reverse(), P = 0, D = U.length; D > P; P++)
                 (A = U[P]),
                   THREE.Shape.Utils.isClockWise(A) && (U[P] = A.reverse());
-              F = !1;
+              F = false;
             }
             var k = THREE.Shape.Utils.triangulateShape(N, U),
               H = N;
@@ -36643,7 +36732,7 @@
           (THREE.ShapeGeometry = function(e, t) {
             THREE.Geometry.call(this),
               (this.type = 'ShapeGeometry'),
-              e instanceof Array == !1 && (e = [e]),
+              e instanceof Array == false && (e = [e]),
               this.addShapeList(e, t),
               this.computeFaceNormals();
           }),
@@ -36675,7 +36764,7 @@
               for (u = u.reverse(), n = 0, r = f.length; r > n; n++)
                 (o = f[n]),
                   THREE.Shape.Utils.isClockWise(o) && (f[n] = o.reverse());
-              d = !1;
+              d = false;
             }
             var p = THREE.Shape.Utils.triangulateShape(u, f);
             for (n = 0, r = f.length; r > n; n++) (o = f[n]), (u = u.concat(o));
@@ -37000,7 +37089,7 @@
             (t.amount = void 0 !== t.height ? t.height : 50),
               void 0 === t.bevelThickness && (t.bevelThickness = 10),
               void 0 === t.bevelSize && (t.bevelSize = 8),
-              void 0 === t.bevelEnabled && (t.bevelEnabled = !1),
+              void 0 === t.bevelEnabled && (t.bevelEnabled = false),
               THREE.ExtrudeGeometry.call(this, n, t),
               (this.type = 'TextGeometry');
           }),
@@ -37179,7 +37268,7 @@
               (t = t || 64),
               (n = n || 1),
               (r = r || 8),
-              (o = o || !1),
+              (o = o || false),
               (a = a || THREE.TubeGeometry.NoTaper);
             var l,
               c,
@@ -37921,7 +38010,7 @@
                       color: a
                     })
                   )),
-                  (this.line.matrixAutoUpdate = !1),
+                  (this.line.matrixAutoUpdate = false),
                   this.add(this.line),
                   (this.cone = new THREE.Mesh(
                     t,
@@ -37929,7 +38018,7 @@
                       color: a
                     })
                   )),
-                  (this.cone.matrixAutoUpdate = !1),
+                  (this.cone.matrixAutoUpdate = false),
                   this.add(this.cone),
                   this.setDirection(n),
                   this.setLength(o, s, l);
@@ -38061,10 +38150,10 @@
               (r[69] = i.x),
               (r[70] = n.y),
               (r[71] = n.z),
-              (this.geometry.attributes.position.needsUpdate = !0),
+              (this.geometry.attributes.position.needsUpdate = true),
               this.geometry.computeBoundingSphere(),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1);
+              (this.matrixAutoUpdate = false);
           }),
           (THREE.BoundingBoxHelper = function(e, t) {
             var n = void 0 !== t ? t : 8947848;
@@ -38075,7 +38164,7 @@
                 new THREE.BoxGeometry(1, 1, 1),
                 new THREE.MeshBasicMaterial({
                   color: n,
-                  wireframe: !0
+                  wireframe: true
                 })
               );
           }),
@@ -38138,7 +38227,7 @@
               THREE.Line.call(this, r, o, THREE.LinePieces),
               (this.camera = e),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               (this.pointMap = a),
               this.update();
           }),
@@ -38182,7 +38271,7 @@
                 o('cn2', n, 0, -1),
                 o('cn3', 0, -i, -1),
                 o('cn4', 0, i, -1),
-                (e.verticesNeedUpdate = !0);
+                (e.verticesNeedUpdate = true);
             };
           })()),
           (THREE.DirectionalLightHelper = function(e, t) {
@@ -38190,7 +38279,7 @@
               (this.light = e),
               this.light.updateMatrixWorld(),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               (t = t || 1);
             var n = new THREE.Geometry();
             n.vertices.push(
@@ -38201,7 +38290,7 @@
               new THREE.Vector3(-t, t, 0)
             );
             var r = new THREE.LineBasicMaterial({
-              fog: !1
+              fog: false
             });
             r.color.copy(this.light.color).multiplyScalar(this.light.intensity),
               (this.lightPlane = new THREE.Line(n, r)),
@@ -38209,7 +38298,7 @@
               (n = new THREE.Geometry()),
               n.vertices.push(new THREE.Vector3(), new THREE.Vector3()),
               (r = new THREE.LineBasicMaterial({
-                fog: !1
+                fog: false
               })),
               r.color
                 .copy(this.light.color)
@@ -38242,7 +38331,7 @@
                   .copy(this.light.color)
                   .multiplyScalar(this.light.intensity),
                 this.targetLine.geometry.vertices[1].copy(n),
-                (this.targetLine.geometry.verticesNeedUpdate = !0),
+                (this.targetLine.geometry.verticesNeedUpdate = true),
                 this.targetLine.material.color.copy(
                   this.lightPlane.material.color
                 );
@@ -38311,7 +38400,7 @@
                 THREE.LinePieces
               ),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1);
+              (this.matrixAutoUpdate = false);
           }),
           (THREE.EdgesHelper.prototype = Object.create(THREE.Line.prototype)),
           (THREE.EdgesHelper.prototype.constructor = THREE.EdgesHelper),
@@ -38337,7 +38426,7 @@
               }),
               THREE.LinePieces
             ),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               (this.normalMatrix = new THREE.Matrix3()),
               this.update();
           }),
@@ -38352,7 +38441,7 @@
               n = t.geometry.vertices,
               i = t.geometry.faces,
               r = t.matrixWorld;
-            t.updateMatrixWorld(!0), this.normalMatrix.getNormalMatrix(r);
+            t.updateMatrixWorld(true), this.normalMatrix.getNormalMatrix(r);
             for (var o = 0, a = 0, s = i.length; s > o; o++, a += 2) {
               var l = i[o];
               e[a]
@@ -38368,7 +38457,7 @@
                   .multiplyScalar(this.size)
                   .add(e[a]);
             }
-            return (this.geometry.verticesNeedUpdate = !0), this;
+            return (this.geometry.verticesNeedUpdate = true), this;
           }),
           (THREE.GridHelper = function(e, t) {
             var n = new THREE.Geometry(),
@@ -38394,14 +38483,14 @@
           (THREE.GridHelper.prototype.setColors = function(e, t) {
             this.color1.set(e),
               this.color2.set(t),
-              (this.geometry.colorsNeedUpdate = !0);
+              (this.geometry.colorsNeedUpdate = true);
           }),
           (THREE.HemisphereLightHelper = function(e, t) {
             THREE.Object3D.call(this),
               (this.light = e),
               this.light.updateMatrixWorld(),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               (this.colors = [new THREE.Color(), new THREE.Color()]);
             var n = new THREE.SphereGeometry(t, 4, 2);
             n.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
@@ -38409,7 +38498,7 @@
               n.faces[r].color = this.colors[4 > r ? 0 : 1];
             var a = new THREE.MeshBasicMaterial({
               vertexColors: THREE.FaceColors,
-              wireframe: !0
+              wireframe: true
             });
             (this.lightSphere = new THREE.Mesh(n, a)),
               this.add(this.lightSphere),
@@ -38436,20 +38525,20 @@
                 this.lightSphere.lookAt(
                   e.setFromMatrixPosition(this.light.matrixWorld).negate()
                 ),
-                (this.lightSphere.geometry.colorsNeedUpdate = !0);
+                (this.lightSphere.geometry.colorsNeedUpdate = true);
             };
           })()),
           (THREE.PointLightHelper = function(e, t) {
             (this.light = e), this.light.updateMatrixWorld();
             var n = new THREE.SphereGeometry(t, 4, 2),
               r = new THREE.MeshBasicMaterial({
-                wireframe: !0,
-                fog: !1
+                wireframe: true,
+                fog: false
               });
             r.color.copy(this.light.color).multiplyScalar(this.light.intensity),
               THREE.Mesh.call(this, n, r),
               (this.matrix = this.light.matrixWorld),
-              (this.matrixAutoUpdate = !1);
+              (this.matrixAutoUpdate = false);
           }),
           (THREE.PointLightHelper.prototype = Object.create(
             THREE.Mesh.prototype
@@ -38480,14 +38569,14 @@
             }
             var o = new THREE.LineBasicMaterial({
               vertexColors: THREE.VertexColors,
-              depthTest: !1,
-              depthWrite: !1,
-              transparent: !0
+              depthTest: false,
+              depthWrite: false,
+              transparent: true
             });
             THREE.Line.call(this, t, o, THREE.LinePieces),
               (this.root = e),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               this.update();
           }),
           (THREE.SkeletonHelper.prototype = Object.create(
@@ -38519,20 +38608,20 @@
                 e.vertices[r + 1].setFromMatrixPosition(n),
                 (r += 2));
             }
-            (e.verticesNeedUpdate = !0), e.computeBoundingSphere();
+            (e.verticesNeedUpdate = true), e.computeBoundingSphere();
           }),
           (THREE.SpotLightHelper = function(e) {
             THREE.Object3D.call(this),
               (this.light = e),
               this.light.updateMatrixWorld(),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1);
-            var t = new THREE.CylinderGeometry(0, 1, 1, 8, 1, !0);
+              (this.matrixAutoUpdate = false);
+            var t = new THREE.CylinderGeometry(0, 1, 1, 8, 1, true);
             t.applyMatrix(new THREE.Matrix4().makeTranslation(0, -0.5, 0)),
               t.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
             var n = new THREE.MeshBasicMaterial({
-              wireframe: !0,
-              fog: !1
+              wireframe: true,
+              fog: false
             });
             (this.cone = new THREE.Mesh(t, n)),
               this.add(this.cone),
@@ -38583,7 +38672,7 @@
               }),
               THREE.LinePieces
             ),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               (this.normalMatrix = new THREE.Matrix3()),
               this.update();
           }),
@@ -38596,7 +38685,7 @@
             var t = new THREE.Vector3();
             return function(e) {
               var n = ['a', 'b', 'c', 'd'];
-              this.object.updateMatrixWorld(!0),
+              this.object.updateMatrixWorld(true),
                 this.normalMatrix.getNormalMatrix(this.object.matrixWorld);
               for (
                 var i = this.geometry.vertices,
@@ -38628,7 +38717,7 @@
                     i[s].copy(t),
                     (s += 1);
                 }
-              return (this.geometry.verticesNeedUpdate = !0), this;
+              return (this.geometry.verticesNeedUpdate = true), this;
             };
           })()),
           (THREE.VertexTangentsHelper = function(e, t, n, r) {
@@ -38655,7 +38744,7 @@
               }),
               THREE.LinePieces
             ),
-              (this.matrixAutoUpdate = !1),
+              (this.matrixAutoUpdate = false),
               this.update();
           }),
           (THREE.VertexTangentsHelper.prototype = Object.create(
@@ -38667,7 +38756,7 @@
             var t = new THREE.Vector3();
             return function(e) {
               var n = ['a', 'b', 'c', 'd'];
-              this.object.updateMatrixWorld(!0);
+              this.object.updateMatrixWorld(true);
               for (
                 var i = this.geometry.vertices,
                   r = this.object.geometry.vertices,
@@ -38697,7 +38786,7 @@
                     i[s].copy(t),
                     (s += 1);
                 }
-              return (this.geometry.verticesNeedUpdate = !0), this;
+              return (this.geometry.verticesNeedUpdate = true), this;
             };
           })()),
           (THREE.WireframeHelper = function(e, t) {
@@ -38726,7 +38815,7 @@
                   void 0 === o[g] &&
                     ((f[2 * u] = r[0]),
                     (f[2 * u + 1] = r[1]),
-                    (o[g] = !0),
+                    (o[g] = true),
                     u++);
                 }
               for (
@@ -38776,7 +38865,7 @@
                       void 0 === o[g] &&
                         ((f[2 * u] = r[0]),
                         (f[2 * u + 1] = r[1]),
-                        (o[g] = !0),
+                        (o[g] = true),
                         u++);
                     }
                 for (
@@ -38825,7 +38914,7 @@
               THREE.LinePieces
             ),
               (this.matrix = e.matrixWorld),
-              (this.matrixAutoUpdate = !1);
+              (this.matrixAutoUpdate = false);
           }),
           (THREE.WireframeHelper.prototype = Object.create(
             THREE.Line.prototype
@@ -38868,12 +38957,12 @@
               duration: (n - t) / i,
               lastFrame: 0,
               currentFrame: 0,
-              active: !1,
+              active: false,
               time: 0,
               direction: 1,
               weight: 1,
-              directionBackwards: !1,
-              mirroredLoop: !1
+              directionBackwards: false,
+              mirroredLoop: false
             };
             (this.animationsMap[e] = r), this.animationsList.push(r);
           }),
@@ -38913,13 +39002,13 @@
             e
           ) {
             var t = this.animationsMap[e];
-            t && ((t.direction = 1), (t.directionBackwards = !1));
+            t && ((t.direction = 1), (t.directionBackwards = false));
           }),
           (THREE.MorphBlendMesh.prototype.setAnimationDirectionBackward = function(
             e
           ) {
             var t = this.animationsMap[e];
-            t && ((t.direction = -1), (t.directionBackwards = !0));
+            t && ((t.direction = -1), (t.directionBackwards = true));
           }),
           (THREE.MorphBlendMesh.prototype.setAnimationFPS = function(e, t) {
             var n = this.animationsMap[e];
@@ -38953,7 +39042,7 @@
           (THREE.MorphBlendMesh.prototype.playAnimation = function(e) {
             var t = this.animationsMap[e];
             t
-              ? ((t.time = 0), (t.active = !0))
+              ? ((t.time = 0), (t.active = true))
               : THREE.warn(
                   'THREE.MorphBlendMesh: animation[' +
                     e +
@@ -38962,7 +39051,7 @@
           }),
           (THREE.MorphBlendMesh.prototype.stopAnimation = function(e) {
             var t = this.animationsMap[e];
-            t && (t.active = !1);
+            t && (t.active = false);
           }),
           (THREE.MorphBlendMesh.prototype.update = function(e) {
             for (var t = 0, n = this.animationsList.length; n > t; t++) {
@@ -38974,8 +39063,9 @@
                     ? (r.time > r.duration || r.time < 0) &&
                       ((r.direction *= -1),
                       r.time > r.duration &&
-                        ((r.time = r.duration), (r.directionBackwards = !0)),
-                      r.time < 0 && ((r.time = 0), (r.directionBackwards = !1)))
+                        ((r.time = r.duration), (r.directionBackwards = true)),
+                      r.time < 0 &&
+                        ((r.time = 0), (r.directionBackwards = false)))
                     : ((r.time = r.time % r.duration),
                       r.time < 0 && (r.time += r.duration));
                 var a =
@@ -39049,7 +39139,7 @@
                       e.push(t);
                     }),
                     (t = [])),
-                  !0
+                  true
                 );
               }
             };
@@ -39065,16 +39155,16 @@
                 (o = {}),
                 (a = 1e3),
                 (s = 0),
-                (l = !1),
-                (c = !1),
-                (h = !1),
+                (l = false),
+                (c = false),
+                (h = false),
                 (u = 0),
                 (f = null),
                 (d = TWEEN.Easing.Linear.None),
                 (p = TWEEN.Interpolation.Linear),
                 (m = []),
                 (v = null),
-                (g = !1),
+                (g = false),
                 (y = null),
                 (x = null),
                 (w = null),
@@ -39086,8 +39176,8 @@
               }),
               (this.start = function(e) {
                 TWEEN.add(this),
-                  (c = !0),
-                  (g = !1),
+                  (c = true),
+                  (g = false),
                   (f =
                     void 0 !== e
                       ? e
@@ -39103,7 +39193,7 @@
               (this.stop = function() {
                 return c
                   ? (TWEEN.remove(this),
-                    (c = !1),
+                    (c = false),
                     null !== w && w.call(t),
                     this.stopChainedTweens(),
                     this)
@@ -39144,9 +39234,9 @@
               }),
               (this.update = function(e) {
                 var o;
-                if (f > e) return !0;
-                if (!c) return !1;
-                g === !1 && (null !== v && v.call(t), (g = !0));
+                if (f > e) return true;
+                if (!c) return false;
+                g === false && (null !== v && v.call(t), (g = true));
                 var s = (e - f) / a;
                 (s = s > 1 ? 1 : s), (n = s);
                 var l = d(s);
@@ -39158,9 +39248,9 @@
                 if ((null !== y && y.call(t, l), 1 == s)) {
                   null !== x && x.call(t);
                   for (var p = 0, w = m.length; w > p; p++) m[p].start(e);
-                  return !1;
+                  return false;
                 }
-                return !0;
+                return true;
               }),
               (this.getProgress = function() {
                 return n;
@@ -39541,7 +39631,7 @@
                       ? e.onLeaveTab()
                       : setTimeout(e.onFocusTab.bind(e), 50);
                   },
-                  !1
+                  false
                 );
             }
           });
@@ -39589,7 +39679,7 @@
               this.onPropertyChange('envMap', function(e) {
                 e && (this.uniforms.envMap.value = e);
               }),
-              (this.fog = parameters.fog || !0),
+              (this.fog = parameters.fog || true),
               (this.opacity = parameters.opacity || 1),
               (this.color = new THREE.Color(
                 void 0 !== parameters.color ? parameters.color : 0xffffff
@@ -39667,14 +39757,14 @@
                 fragmentShader: r,
                 uniforms: THREE.UniformsUtils.clone(a.uniforms),
                 defines: {
-                  USE_AOMAP: !1,
-                  LIGHTMAP_ENABLED: !1,
-                  SKINNED: !1,
+                  USE_AOMAP: false,
+                  LIGHTMAP_ENABLED: false,
+                  SKINNED: false,
                   USE_EMISSIVEMAP: void 0 !== e.emissiveMap,
                   USE_REFLECTIONMASK: void 0 !== e.reflectionMask,
                   USE_PAINTMASK: void 0 !== e.paintMask,
                   USE_EMISSIVECOLOR: void 0 !== e.emissiveColor,
-                  TRANSPARENT_MODE: !1
+                  TRANSPARENT_MODE: false
                 }
               },
               e
@@ -39696,7 +39786,7 @@
                 this.uniforms.envMapOffset.value = e;
               }),
               this.onPropertyChange('transparentMode', function(e) {
-                (this.defines.TRANSPARENT_MODE = e), (this.needsUpdate = !0);
+                (this.defines.TRANSPARENT_MODE = e), (this.needsUpdate = true);
               }),
               (this.color2 = new THREE.Color(e.color2 || 0xffffff)),
               (this.carLength = e.carLength || 5),
@@ -39924,7 +40014,7 @@
                 fragmentShader: r,
                 uniforms: THREE.UniformsUtils.clone(a.uniforms),
                 defines: {
-                  TRANSPARENT_MODE: !1
+                  TRANSPARENT_MODE: false
                 }
               },
               e
@@ -39940,7 +40030,7 @@
                 this.uniforms.flipEnvMap.value = e;
               }),
               this.onPropertyChange('transparentMode', function(e) {
-                (this.defines.TRANSPARENT_MODE = e), (this.needsUpdate = !0);
+                (this.defines.TRANSPARENT_MODE = e), (this.needsUpdate = true);
               }),
               (this.envMap = e.envMap || null),
               (this.envMapOffset = e.envMapOffset || 0),
@@ -40027,7 +40117,7 @@
                 fragmentShader: fragmentShader,
                 uniforms: THREE.UniformsUtils.clone(GroundMaterial.uniforms),
                 defines: {
-                  USE_AOMAP: !1,
+                  USE_AOMAP: false,
                   LIGHTMAP_ENABLED: void 0 !== parameters.lightMap
                 }
               },
@@ -40158,9 +40248,9 @@
                 fragmentShader: fragmentShader,
                 uniforms: THREE.UniformsUtils.clone(a.uniforms),
                 defines: {
-                  USE_AOMAP: !1,
-                  LIGHTMAP_ENABLED: !1,
-                  SKINNED: !1
+                  USE_AOMAP: false,
+                  LIGHTMAP_ENABLED: false,
+                  SKINNED: false
                 }
               },
               e
@@ -40198,14 +40288,14 @@
               this.onPropertyChange('reflectivity', function(e) {
                 this.uniforms.reflectivity.value = e;
               }),
-              (this.fog = e.fog || !0),
+              (this.fog = e.fog || true),
               (this.opacity = 1),
               (this.color = new THREE.Color(e.color || 0xffffff)),
               (this.map = e.map || null),
               (this.emissive = new THREE.Color(e.emissive || 0)),
               (this.lightMap = e.lightMap || null),
               (this.lightVariance = 0),
-              (this.skinning = e.skinning || !1),
+              (this.skinning = e.skinning || false),
               (this.envMap = e.envMap || null),
               (this.reflectivity = e.reflectivity || 0.15);
           };
@@ -40501,9 +40591,9 @@
               (this.color = new THREE.Color(0xffffff)),
               (this.map = null),
               (this.size = 1),
-              (this.sizeAttenuation = !0),
+              (this.sizeAttenuation = true),
               (this.vertexColors = THREE.NoColors),
-              (this.fog = !0),
+              (this.fog = true),
               this.setValues(e),
               (this.side = THREE.DoubleSide),
               this.onPropertyChange('color', function(e) {
@@ -40521,7 +40611,7 @@
               this.onPropertyChange('size', function(e) {
                 this.uniforms.size.value = e;
               }),
-              (this.fog = e.fog || !1),
+              (this.fog = e.fog || false),
               (this.opacity = e.opacity || 1),
               (this.color = new THREE.Color(e.color || 0xffffff)),
               (this.map = e.map || null),
@@ -40612,9 +40702,9 @@
                 fragmentShader: fragmentShader,
                 uniforms: THREE.UniformsUtils.clone(interiorBack.uniforms),
                 defines: {
-                  USE_AOMAP: !1,
-                  LIGHTMAP_ENABLED: !1,
-                  SKINNED: !1,
+                  USE_AOMAP: false,
+                  LIGHTMAP_ENABLED: false,
+                  SKINNED: false,
                   USE_EMISSIVEMAP: void 0 !== e.emissiveMap,
                   USE_REFLECTIONMASK: void 0 !== e.reflectionMask,
                   USE_EMISSIVECOLOR: void 0 !== e.emissiveColor
@@ -40679,13 +40769,13 @@
               this.onPropertyChange('reflectionMask', function(e) {
                 e && (this.uniforms.reflectionMask.value = e);
               }),
-              (this.fog = e.fog || !0),
+              (this.fog = e.fog || true),
               (this.opacity = 1),
               (this.color = new THREE.Color(e.color || 0xffffff)),
               (this.map = e.map || null),
               (this.emissive = new THREE.Color(e.emissive || 0)),
               (this.lightMap = e.lightMap || null),
-              (this.skinning = e.skinning || !1),
+              (this.skinning = e.skinning || false),
               (this.envMap = e.envMap || null),
               (this.reflectivity = e.reflectivity || 1),
               (this.shininess = e.shininess || 30),
@@ -40979,14 +41069,14 @@
                 fragmentShader: fragmentShader,
                 uniforms: THREE.UniformsUtils.clone(s.uniforms),
                 defines: {
-                  USE_AOMAP: !1,
-                  LIGHTMAP_ENABLED: !1,
-                  SKINNED: !1,
+                  USE_AOMAP: false,
+                  LIGHTMAP_ENABLED: false,
+                  SKINNED: false,
                   USE_EMISSIVEMAP: void 0 !== e.emissiveMap,
                   USE_REFLECTIONMASK: void 0 !== e.reflectionMask,
                   USE_PAINTMASK: void 0 !== e.paintMask,
                   USE_EMISSIVECOLOR: void 0 !== e.emissiveColor,
-                  TRANSPARENT_MODE: !1
+                  TRANSPARENT_MODE: false
                 }
               },
               e
@@ -41411,7 +41501,7 @@
           o = function(e) {
             THREE.Object3D.call(this);
             var t = Loader.getMeshData(e.animation).geometry,
-              n = Loader.parseBones(t, !0),
+              n = Loader.parseBones(t, true),
               o = (this.animation = new r({
                 node: n,
                 data: t.animation,
@@ -41426,11 +41516,11 @@
                   e.add(Loader.createDebugCube(0.02));
                 });
             }
-            (o.loop = e.loop || !1),
+            (o.loop = e.loop || false),
               o.play(0),
               o.update(0),
               o.stop(),
-              (o.started = !1);
+              (o.started = false);
           };
         o.inherit(THREE.Object3D, {
           addToBone: function(e, t) {
@@ -41615,8 +41705,8 @@
                   paintMask: a,
                   reflectionMask: s,
                   envMapOffset: 0,
-                  transparent: !1,
-                  flipN: !1
+                  transparent: false,
+                  flipN: false
                 }),
                 bodyFlip: new c({
                   map: t,
@@ -41634,14 +41724,14 @@
                   paintMask: a,
                   reflectionMask: s,
                   envMapOffset: 0,
-                  transparent: !1,
-                  flipN: !0
+                  transparent: false,
+                  flipN: true
                 }),
                 glass: new u({
                   color: 0,
                   map: t,
                   envMap: this.cubeMapLightSharp,
-                  transparent: !0,
+                  transparent: true,
                   combine: THREE.AddOperation,
                   reflectivity: 0.35,
                   envMapOffset: 0,
@@ -41651,9 +41741,9 @@
                 shadow: new THREE.MeshBasicMaterial({
                   color: 0xffffff,
                   map: e,
-                  transparent: !0,
+                  transparent: true,
                   opacity: 1,
-                  depthWrite: !1
+                  depthWrite: false
                 }),
                 rearlight: new c({
                   map: t,
@@ -41668,11 +41758,11 @@
                   envMapOffset: 0
                 }),
                 frontPlate: new THREE.MeshBasicMaterial({
-                  transparent: !0,
+                  transparent: true,
                   map: l
                 }),
                 rearPlate: new THREE.MeshBasicMaterial({
-                  transparent: !0,
+                  transparent: true,
                   map: h
                 }),
                 debug: new THREE.MeshBasicMaterial({
@@ -41695,7 +41785,7 @@
                 colorChange: new TWEEN.Tween(),
                 glassOpacity: new TWEEN.Tween()
               }),
-              (this.rolling = !1),
+              (this.rolling = false),
               (this.speed = 0);
           };
         f.inherit(THREE.Object3D, {
@@ -41706,8 +41796,8 @@
           },
           initExterior: function() {
             (this.exterior = new CustomMesh('exterior')),
-              (this.exterior.castShadow = !0),
-              (this.exterior.receiveShadow = !0),
+              (this.exterior.castShadow = true),
+              (this.exterior.receiveShadow = true),
               this.body.add(this.exterior),
               this.exterior.setMaterial('JFC_Body', this.materials.body),
               this.exterior.setMaterial(
@@ -41770,7 +41860,7 @@
               combine: THREE.MixOperation,
               reflectivity: 0.15,
               paintMask: p,
-              transparent: !0
+              transparent: true
             })),
               (this.materials.interiorBack = new interiorBack({
                 map: t,
@@ -41846,15 +41936,15 @@
             this.boneStructure.animation.playSequence('out');
           },
           startRolling: function() {
-            (this.rolling = !0),
+            (this.rolling = true),
               this.wheels.forEach(function(e) {
-                e.rotating = !0;
+                e.rotating = true;
               });
           },
           stopRolling: function() {
-            (this.rolling = !1),
+            (this.rolling = false),
               this.wheels.forEach(function(e) {
-                e.rotating = !1;
+                e.rotating = false;
               });
           },
           toggleRolling: function() {
@@ -41900,8 +41990,8 @@
               t = new THREE.SpriteMaterial({
                 map: Loader.getTexture('car/flare.png'),
                 blending: THREE.AdditiveBlending,
-                depthTest: !1,
-                transparent: !0,
+                depthTest: false,
+                transparent: true,
                 opacity: 0
               }),
               n = 2,
@@ -41917,7 +42007,7 @@
               (o.orientation = new THREE.Vector3(-0.75, 0, 1)),
               (this.rightFlare = o),
               e.add(o),
-              (this.lightsEnabled = !1),
+              (this.lightsEnabled = false),
               (e.rotation.x = Math.PI / 2),
               this.body.add(e),
               (this.flares = [r, o]);
@@ -41925,12 +42015,12 @@
           enableHeadlights: function() {
             (this.leftFlare.material.opacity = 0.9),
               (this.rightFlare.material.opacity = 0.9),
-              (this.lightsEnabled = !0);
+              (this.lightsEnabled = true);
           },
           disableHeadlights: function() {
             (this.leftFlare.material.opacity = 0),
               (this.rightFlare.material.opacity = 0),
-              (this.lightsEnabled = !1);
+              (this.lightsEnabled = false);
           },
           updateFlares: function(e) {
             this.flares.forEach(function(t) {
@@ -42017,10 +42107,10 @@
                 this.wheels.forEach(function(e) {
                   e.setEnvMap(this.cubeMapDarkSharp);
                 }, this)),
-              (this.materials.body.needsUpdate = !0),
-              (this.materials.bodyFlip.needsUpdate = !0),
-              (this.materials.glass.needsUpdate = !0),
-              (this.materials.rearlight.needsUpdate = !0);
+              (this.materials.body.needsUpdate = true),
+              (this.materials.bodyFlip.needsUpdate = true),
+              (this.materials.glass.needsUpdate = true),
+              (this.materials.rearlight.needsUpdate = true);
           },
           setGlassOpacity: function(e) {
             this.tweens.glassOpacity
@@ -42038,21 +42128,21 @@
             this.materials.glass.side === THREE.FrontSide
               ? (this.materials.glass.side = THREE.DoubleSide)
               : (this.materials.glass.side = THREE.FrontSide),
-              (this.materials.glass.needsUpdate = !0);
+              (this.materials.glass.needsUpdate = true);
           },
           enableTransparentMode: function() {
-            (this.materials.body.transparent = !0),
-              (this.materials.body.transparentMode = !0),
-              (this.materials.bodyFlip.transparent = !0),
-              (this.materials.bodyFlip.transparentMode = !0),
-              (this.materials.glass.transparentMode = !0);
+            (this.materials.body.transparent = true),
+              (this.materials.body.transparentMode = true),
+              (this.materials.bodyFlip.transparent = true),
+              (this.materials.bodyFlip.transparentMode = true),
+              (this.materials.glass.transparentMode = true);
           },
           disableTransparentMode: function() {
-            (this.materials.body.transparent = !1),
-              (this.materials.body.transparentMode = !1),
-              (this.materials.bodyFlip.transparent = !1),
-              (this.materials.bodyFlip.transparentMode = !1),
-              (this.materials.glass.transparentMode = !1);
+            (this.materials.body.transparent = false),
+              (this.materials.body.transparentMode = false),
+              (this.materials.bodyFlip.transparent = false),
+              (this.materials.bodyFlip.transparentMode = false),
+              (this.materials.glass.transparentMode = false);
           },
           update: function(e, t) {
             this.updateFlares(t),
@@ -42091,19 +42181,19 @@
                 far: 100
               })),
               n = Loader.getMeshData(e.animation).geometry,
-              o = Loader.parseBones(n, !0);
+              o = Loader.parseBones(n, true);
             this.add(t),
               this.add(o),
               e.helper && this.add(new THREE.CameraHelper(t)),
               (this.camera = t),
               (this.bone = o.getObjectByName(e.boneName)),
               (this.animation = new THREE.Animation(o, n.animation)),
-              (this.animation.loop = void 0 !== e.loop ? e.loop : !0),
+              (this.animation.loop = void 0 !== e.loop ? e.loop : true),
               (this.animation.duration = this.animation.data.length),
-              (this.reverse = !1),
-              (this.enabled = !1),
-              (this.started = !1),
-              (this.camera.matrixAutoUpdate = !1),
+              (this.reverse = false),
+              (this.enabled = false),
+              (this.started = false),
+              (this.camera.matrixAutoUpdate = false),
               (this.camera.matrix = this.bone.matrixWorld);
           };
         o.inherit(THREE.Object3D, {
@@ -42115,10 +42205,10 @@
                   this.animation.play(
                     this.reverse ? this.animation.duration : 0
                   ),
-                  (this.started = !0)),
+                  (this.started = true)),
                 this.animation.update(e.delta),
-                this.updateMatrixWorld(!0),
-                this.camera.updateMatrixWorld(!0),
+                this.updateMatrixWorld(true),
+                this.camera.updateMatrixWorld(true),
                 this.started &&
                   !this.animation.isPlaying &&
                   ((this.animation.currentTime = 0),
@@ -42136,10 +42226,10 @@
               i = this.started,
               r = this.animation.isPlaying;
             return (
-              (this.enabled = !0),
-              (this.started = !1),
+              (this.enabled = true),
+              (this.started = false),
               (this.reverse = e),
-              (this.animation.isPlaying = !1),
+              (this.animation.isPlaying = false),
               this.update({
                 delta: 0
               }),
@@ -42185,18 +42275,18 @@
                 far: 100
               })),
               n = Loader.getMeshData(e.animation).geometry,
-              o = Loader.parseBones(n, !0);
+              o = Loader.parseBones(n, true);
             this.add(t),
               this.add(o),
               e.helper && this.add(new THREE.CameraHelper(t)),
               (this.camera = t),
               (this.bone = o.getObjectByName(e.boneName)),
               (this.animation = new THREE.Animation(o, n.animation)),
-              (this.animation.loop = void 0 !== e.loop ? e.loop : !0),
+              (this.animation.loop = void 0 !== e.loop ? e.loop : true),
               (this.animation.duration = this.animation.data.length),
-              (this.enabled = !1),
-              (this.started = !1),
-              (this.camera.matrixAutoUpdate = !1),
+              (this.enabled = false),
+              (this.started = false),
+              (this.camera.matrixAutoUpdate = false),
               (this.camera.matrix = this.bone.matrixWorld),
               this.initSequences();
           };
@@ -42226,15 +42316,15 @@
             if (this.enabled) {
               this.started ||
                 this.animation.isPlaying ||
-                (this.animation.play(t.start), (this.started = !0));
+                (this.animation.play(t.start), (this.started = true));
               var n = this.animation.currentTime - t.end;
               n > 0 &&
                 ((t = this.nextSequence()),
                 (this.animation.currentTime = t.start),
                 this.animation.reset()),
                 this.animation.update(e.delta),
-                this.updateMatrixWorld(!0),
-                this.camera.updateMatrixWorld(!0);
+                this.updateMatrixWorld(true),
+                this.camera.updateMatrixWorld(true);
             } else this.animation.isPlaying && this.animation.stop();
           },
           toggle: function() {
@@ -42276,14 +42366,14 @@
           initFrontGlow: function() {
             (this.frontGlowMaterial = new THREE.MeshBasicMaterial({
               map: Loader.getTexture('env/c-glow.png'),
-              transparent: !0,
+              transparent: true,
               color: 0xffffff,
-              depthTest: !1,
+              depthTest: false,
               side: THREE.DoubleSide
             })),
               (this.frontGlow = new THREE.Object3D()),
               this.add(this.frontGlow),
-              (this.frontGlow.visible = !1);
+              (this.frontGlow.visible = false);
             var e = new THREE.Mesh(
               new THREE.PlaneBufferGeometry(1, 1, 1, 1),
               this.frontGlowMaterial
@@ -42297,10 +42387,10 @@
               this.frontGlow.add(t);
           },
           showFrontGlow: function() {
-            this.frontGlow.visible = !0;
+            this.frontGlow.visible = true;
           },
           hideFrontGlow: function() {
-            this.frontGlow.visible = !1;
+            this.frontGlow.visible = false;
           },
           enableHeadlights: function() {
             i.prototype.enableHeadlights.call(this), this.headlights.enable();
@@ -42398,7 +42488,7 @@
               this.initVignetting(),
               this.initLensFlare(),
               this.initCarHotspots(),
-              (this.wheelEditMode = !1),
+              (this.wheelEditMode = false),
               this.lights.forEach(function(light) {
                 light.updateMatrixWorld(true);
               }),
@@ -42409,7 +42499,7 @@
           };
         h.inherit(CustomScene, {
           playIntro: function() {
-            (this.introMode = !0),
+            (this.introMode = true),
               Loader.delay(
                 1e3,
                 function() {
@@ -42435,20 +42525,20 @@
                 function() {
                   this.rotateCamera().done(
                     function() {
-                      this.introMode = !1;
+                      this.introMode = false;
                     }.bind(this)
                   );
                 },
                 this
               ),
-              (this.introPlayed = !0);
+              (this.introPlayed = true);
           },
           initRearGlow: function() {
             var e = Loader.getTexture('env/rearglow.png'),
               t = new THREE.PlaneBufferGeometry(5.5, 5.5, 1, 1),
               n = new THREE.MeshBasicMaterial({
                 map: e,
-                transparent: !0,
+                transparent: true,
                 opacity: 0
               });
             (this.rearGlow = new THREE.Mesh(t, n)),
@@ -42489,7 +42579,7 @@
                 )
                 .onComplete(
                   function() {
-                    (this.controls.autoRotate = !0),
+                    (this.controls.autoRotate = true),
                       this.showHotspots('exterior'),
                       this.dispatchEvent({
                         type: 'showHud'
@@ -42627,7 +42717,7 @@
                   }.bind(this)
                 ),
                 this.lensFlare.show(),
-                (this.glow.visible = !1))
+                (this.glow.visible = false))
               : 'night' === e &&
                 (Loader.tween(n, o).onUpdate(
                   function(e) {
@@ -42635,7 +42725,7 @@
                   }.bind(this)
                 ),
                 this.lensFlare.hide(),
-                (this.glow.visible = !0)),
+                (this.glow.visible = true)),
               this.tunnel.setMode(e, t);
           },
           showColorPicker: function() {
@@ -42743,8 +42833,8 @@
           o = function(e) {
             r.call(this, {
               animation: 'door',
-              loop: !1,
-              debug: !1
+              loop: false,
+              debug: false
             });
             var t = new CustomMesh('door', function(e) {
               var t = e.geometry;
@@ -42832,7 +42922,7 @@
                 intensity: new TWEEN.Tween(),
                 color: new TWEEN.Tween()
               }),
-              (this.moving = !1),
+              (this.moving = false),
               (this.speed = 0);
           };
         Ground.inherit(THREE.Object3D, {
@@ -42975,7 +43065,7 @@
               glassMaterial = new THREE.MeshLambertMaterial({
                 color: 0xffffff,
                 envMap: this.envMap,
-                transparent: !0,
+                transparent: true,
                 combine: THREE.AddOperation,
                 reflectivity: 1,
                 opacity: 0.15
@@ -43015,8 +43105,8 @@
             THREE.Sprite.call(
               this,
               new THREE.SpriteMaterial({
-                depthTest: !1,
-                transparent: !0,
+                depthTest: false,
+                transparent: true,
                 opacity: 0.9,
                 map: Loader.getTexture('car/hotspot.png')
               })
@@ -43056,7 +43146,7 @@
                 .easing(TWEEN.Easing.Linear.None)
                 .onComplete(
                   function() {
-                    this.pickable = !0;
+                    this.pickable = true;
                   }.bind(this)
                 )
                 .start();
@@ -43073,7 +43163,7 @@
               .easing(TWEEN.Easing.Linear.None)
               .onComplete(
                 function() {
-                  this.pickable = !1;
+                  this.pickable = false;
                 }.bind(this)
               )
               .start();
@@ -43213,7 +43303,7 @@
     56: [
       function(e, t, n) {
         var Loader = e('21'),
-          InteriorControls = e('19'),
+          CustomControls = e('19'),
           ObjectPicker = e('18'),
           Audios = e('16'),
           CustomCamera = e('43'),
@@ -43227,7 +43317,7 @@
               THREE.Scene.call(this),
                 (this.objects = []),
                 (this.materials = []),
-                (this.exteriorView = !0),
+                (this.exteriorView = true),
                 (this.carSpeed = 0),
                 (this.tweens = {
                   acceleration: new TWEEN.Tween(),
@@ -43309,8 +43399,8 @@
               t = new THREE.SpriteMaterial({
                 color: 0xffffff,
                 map: e,
-                transparent: !0,
-                depthTest: !1
+                transparent: true,
+                depthTest: false
               });
             (this.glow = new THREE.Sprite(t)),
               this.glow.position.set(0, 10, 0),
@@ -43325,7 +43415,7 @@
                 target: new THREE.Vector3(0, 0.5, 0)
               },
               enter: this.transitionCamera.getInitialState(),
-              exit: this.transitionCamera.getInitialState(!0)
+              exit: this.transitionCamera.getInitialState(true)
             };
           },
           refreshCustomMaterials: function() {
@@ -43370,7 +43460,7 @@
             };
           })(),
           initControls: function() {
-            (this.exteriorControls = new InteriorControls({
+            (this.exteriorControls = new CustomControls({
               camera: this.camera,
               origin: new THREE.Vector3(0, 0.5, 0),
               clampY: Math.PI / 2
@@ -43408,7 +43498,7 @@
               name: 'auto',
               animation: 'camera_auto',
               boneName: 'Camera_Bone_01',
-              helper: !1
+              helper: false
             })),
               this.add(this.autoCamera);
           },
@@ -43417,18 +43507,18 @@
               name: 'transition',
               animation: 'camera_transition',
               boneName: 'Camera_Bone_01',
-              loop: !1,
-              helper: !1
+              loop: false,
+              helper: false
             })),
               this.add(this.transitionCamera),
               this.transitionCamera.addEventListener(
                 'stop',
                 function(e) {
-                  (this.transitionCamera.enabled = !1),
+                  (this.transitionCamera.enabled = false),
                     this.resetInteriorCamera(0),
-                    this.enteringCar && (this.enteringCar = !1),
+                    this.enteringCar && (this.enteringCar = false),
                     this.exitingCar &&
-                      ((this.exteriorView = !0),
+                      ((this.exteriorView = true),
                       this.orbitToState('enter', 0),
                       setTimeout(
                         function() {
@@ -43437,7 +43527,7 @@
                           }).done(
                             function() {
                               this.showHotspots('exterior'),
-                                (this.exitingCar = !1);
+                                (this.exitingCar = false);
                             }.bind(this)
                           );
                         }.bind(this),
@@ -43453,13 +43543,13 @@
               fov: 45
             }));
             this.add(e),
-              (this.interiorControls = new InteriorControls({
+              (this.interiorControls = new CustomControls({
                 camera: e,
                 distance: 0.01,
                 damp: 2,
-                zoom: !1,
-                reverse: !0,
-                fixedDistance: !0
+                zoom: false,
+                reverse: true,
+                fixedDistance: true
               }));
           },
           resetInteriorCamera: function(e) {
@@ -43483,9 +43573,9 @@
           },
           updateControls: function(e) {
             if (this.controls) {
-              if (this.autoOrbit) return void (this.controls.enabled = !1);
-              this.interiorControls && (this.interiorControls.enabled = !1),
-                (this.exteriorControls.enabled = !1),
+              if (this.autoOrbit) return void (this.controls.enabled = false);
+              this.interiorControls && (this.interiorControls.enabled = false),
+                (this.exteriorControls.enabled = false),
                 this.camera === this.interiorCamera
                   ? (this.controls = this.interiorControls)
                   : (this.controls = this.exteriorControls),
@@ -43559,7 +43649,7 @@
             'day' === this.mode ? this.setMode('night') : this.setMode('day');
           },
           enterCar: function() {
-            (this.enteringCar = !0),
+            (this.enteringCar = true),
               this.dispatchEvent({
                 type: 'showInterior'
               }),
@@ -43568,11 +43658,11 @@
                 easing: TWEEN.Easing.Linear.None
               }).done(
                 function() {
-                  (this.exteriorView = !1),
+                  (this.exteriorView = false),
                     this.car.flipGlassSide(),
-                    (this.transitionCamera.started = !1),
-                    (this.transitionCamera.enabled = !0),
-                    (this.transitionCamera.reverse = !1),
+                    (this.transitionCamera.started = false),
+                    (this.transitionCamera.enabled = true),
+                    (this.transitionCamera.reverse = false),
                     this.tweenFov();
                 }.bind(this)
               ),
@@ -43602,19 +43692,19 @@
               );
           },
           exitCar: function() {
-            (this.exitingCar = !0),
+            (this.exitingCar = true),
               this.dispatchEvent({
                 type: 'hideInterior'
               }),
               this.resetInteriorCamera(1e3).done(
                 function() {
                   Audios.openDoor(),
-                    (this.transitionCamera.started = !1),
-                    (this.transitionCamera.enabled = !0),
-                    (this.transitionCamera.reverse = !0),
+                    (this.transitionCamera.started = false),
+                    (this.transitionCamera.enabled = true),
+                    (this.transitionCamera.reverse = true),
                     this.tweenFov(),
                     this.hideHotspots('interior'),
-                    this.car.animateDoor(!0).done(
+                    this.car.animateDoor(true).done(
                       function() {
                         this.car.flipGlassSide();
                       }.bind(this)
@@ -43660,7 +43750,7 @@
               .start();
           },
           startCar: function() {
-            (this.ground.moving = !0),
+            (this.ground.moving = true),
               this.car.startRolling(),
               this.tweens.acceleration
                 .reset(this)
@@ -43695,7 +43785,7 @@
               })
               .onComplete(
                 function() {
-                  (this.ground.moving = !1), this.car.stopRolling();
+                  (this.ground.moving = false), this.car.stopRolling();
                 }.bind(this)
               )
               .start();
@@ -43738,7 +43828,7 @@
           r = function(e) {
             var t = Loader.getMeshData(e);
             THREE.SkinnedMesh.call(this, t.geometry, t.material),
-              (this.material.skinning = !0);
+              (this.material.skinning = true);
           };
         r.inherit(THREE.SkinnedMesh, {
           getMaterial: function(e) {
@@ -43810,7 +43900,7 @@
             'day' === e
               ? ((this.mesh.material.map = this.mapDiffuseDay),
                 this.mesh.material.color.setHex(0xffffff),
-                (this.mesh.material.needsUpdate = !0),
+                (this.mesh.material.needsUpdate = true),
                 Loader.tween(n, r).onUpdate(
                   function(e) {
                     this.mesh.material.baseColor.lerp(this.baseColorDay, e),
@@ -43820,7 +43910,7 @@
               : 'night' === e
               ? ((this.mesh.material.map = this.mapDiffuseNight),
                 this.mesh.material.color.setHex(0xffffff),
-                (this.mesh.material.needsUpdate = !0),
+                (this.mesh.material.needsUpdate = true),
                 Loader.tween(n, r).onUpdate(
                   function(e) {
                     this.mesh.material.baseColor.lerp(this.baseColorNight, e),
@@ -43854,14 +43944,14 @@
               t = new THREE.PlaneGeometry(1, 1, 1),
               n = new vignettingMaterial({
                 map: vignettingTexture,
-                transparent: !0,
-                depthWrite: !1
+                transparent: true,
+                depthWrite: false
               });
             t.vertices[0].set(-1, 1, 0),
               t.vertices[1].set(1, 1, 0),
               t.vertices[2].set(-1, -1, 0),
               t.vertices[3].set(1, -1, 0),
-              (t.verticesNeedUpdate = !0),
+              (t.verticesNeedUpdate = true),
               THREE.Mesh.call(this, t, n),
               (this.material = n),
               (this.tweens = {
@@ -43918,7 +44008,7 @@
               this.rim.add(this.currentRim),
               this.screw.add(this.models.screw),
               this.logo.add(this.models.logo),
-              (this.rotating = !1),
+              (this.rotating = false),
               (this.speed = 0),
               (this.tweens = {
                 coverOpacity: new TWEEN.Tween()
@@ -43961,7 +44051,7 @@
               }),
               cover: new THREE.MeshBasicMaterial({
                 color: 0,
-                transparent: !0
+                transparent: true
               })
             }),
               (this.models = {
@@ -43992,7 +44082,7 @@
               new THREE.PlaneBufferGeometry(0.9, 1.5, 1, 1),
               new THREE.MeshBasicMaterial({
                 map: e,
-                transparent: !0
+                transparent: true
               })
             )),
               (this.shadow.position.y -= 0.38),
@@ -44003,7 +44093,7 @@
           },
           setEnvMap: function(e) {
             (this.materials.rim.envMap = e),
-              (this.materials.rim.needsUpdate = !0);
+              (this.materials.rim.needsUpdate = true);
           },
           initBones: function() {
             (this.tire = new THREE.Object3D()),
@@ -44178,7 +44268,7 @@
                         attributes.vertex,
                         2,
                         gl.FLOAT,
-                        !1,
+                        false,
                         16,
                         0
                       ),
@@ -44186,7 +44276,7 @@
                         attributes.uv,
                         2,
                         gl.FLOAT,
-                        !1,
+                        false,
                         16,
                         8
                       ),
@@ -44195,7 +44285,7 @@
                         geometry.elementBuffer
                       ),
                       gl.disable(gl.CULL_FACE),
-                      gl.depthMask(!1);
+                      gl.depthMask(false);
                     var x, w, lensFlaresLength, lensFlare, E;
                     for (x = 0; lensflaresLength > x; x++)
                       if (
@@ -44264,7 +44354,7 @@
                               ));
                     gl.enable(gl.CULL_FACE),
                       gl.enable(gl.DEPTH_TEST),
-                      gl.depthMask(!0);
+                      gl.depthMask(true);
                   }
                 }
               }),
@@ -44359,7 +44449,7 @@
                 (this.$viewButton = $('.js-view-toggle')),
                 (this.$compare = this.$('.js-compare')),
                 (this.savedCarCount = 0),
-                (this.carStarted = !1),
+                (this.carStarted = false),
                 (!Config.AUDIO || (Config.AUDIO && window.isMobile)) &&
                   setTimeout(
                     function() {
@@ -44391,10 +44481,10 @@
               this.$cameraButton.toggleClass('disabled'),
                 this.trigger('toggleStartStop'),
                 this.carStarted
-                  ? ((this.carStarted = !1),
+                  ? ((this.carStarted = false),
                     this.$el.removeClass('driving'),
                     this.trigger('stopCar'))
-                  : ((this.carStarted = !0),
+                  : ((this.carStarted = true),
                     this.$el.addClass('driving'),
                     this.trigger('startCar'));
             },

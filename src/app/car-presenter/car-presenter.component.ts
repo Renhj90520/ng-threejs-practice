@@ -1,13 +1,7 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  HostListener,
-  ElementRef
-} from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import * as THREE from 'three';
 import Ground from './ground';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import CustomControls from './custom-controls';
 @Component({
   selector: 'app-car-presenter',
   templateUrl: './car-presenter.component.html',
@@ -19,10 +13,19 @@ export class CarPresenterComponent implements OnInit {
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   orbitCamera: THREE.PerspectiveCamera;
+  interiorCamera: THREE.PerspectiveCamera;
+  autoCamera: THREE.PerspectiveCamera;
+  transitionCamera: THREE.PerspectiveCamera;
   width;
   height;
   ground: Ground;
-  exteriorControls: OrbitControls;
+  interiorControls: CustomControls;
+  exteriorControls: CustomControls;
+  controls: CustomControls;
+
+  autoOrbit = false;
+  multisenseMode = false;
+  introMode = false;
 
   constructor() {}
 
@@ -33,17 +36,23 @@ export class CarPresenterComponent implements OnInit {
     this.initControls();
     this.update();
   }
-  initControls() {}
+  initControls() {
+    this.exteriorControls = new CustomControls({
+      camera: this.camera,
+      origin: new THREE.Vector3(0, 0.5, 0),
+      clampY: Math.PI / 2,
+      domElement: this.renderer.domElement
+    });
+    this.exteriorControls.setRotation(new THREE.Vector2(0, Math.PI / 4));
+    this.exteriorControls.setTargetRotation(
+      new THREE.Vector2(Math.PI / 3, Math.PI / 2.2)
+    );
+    this.controls = this.exteriorControls;
+  }
   initGround() {
     this.ground = new Ground();
     this.ground.setMode('day');
     this.scene.add(this.ground);
-    setTimeout(() => {
-      this.ground.setMode('night');
-    }, 10000);
-    setTimeout(() => {
-      this.ground.setMode('day');
-    }, 20000);
   }
   initLights() {
     const skyColor = 0xf0f2ef;
@@ -86,8 +95,30 @@ export class CarPresenterComponent implements OnInit {
 
   update() {
     this.renderer.render(this.scene, this.camera);
-
+    this.updateControls();
     requestAnimationFrame(this.update.bind(this));
+  }
+  updateControls() {
+    if (this.controls) {
+      if (this.autoOrbit) {
+        this.controls.enabled = false;
+        return;
+      }
+      if (this.interiorControls) {
+        this.interiorControls.enabled = false;
+      }
+      this.exteriorControls.enabled = false;
+      if (this.camera === this.interiorCamera) {
+        this.controls = this.interiorControls;
+      } else {
+        this.controls = this.exteriorControls;
+      }
+
+      // this.autoCamera.enabled ||
+      // this.transitionCamera.enabled ||
+      this.controls.enabled = !(this.multisenseMode || this.introMode);
+      this.controls.update();
+    }
   }
   @HostListener('window:resize')
   resize() {
