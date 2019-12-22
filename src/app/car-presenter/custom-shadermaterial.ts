@@ -3,16 +3,16 @@ import * as _ from 'lodash';
 class CustomShaderMaterial extends THREE.ShaderMaterial {
   constructor(parameters?) {
     super(parameters);
-    this.setParameters(parameters);
+    // this.setParameters(parameters);
   }
 
   protected setParameters(parameters: any) {
-    _.each(parameters, parameter => {
-      const param = parameters[parameter];
-      if (param) {
-        this[parameter] = param;
+    for (const key in parameters) {
+      const parameter = parameters[key];
+      if (parameter) {
+        this[key] = parameter;
       }
-    });
+    }
   }
 
   onPropertyChange(propertyName, callback) {
@@ -94,7 +94,7 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
       fragmentShader: this.fragmentShader,
       uniforms: this.uniforms
     });
-    this.setParameters(parameters);
+    // this.setParameters(parameters);
     this.onPropertyChange('color', val => {
       this.uniforms.diffuse.value = val;
     });
@@ -123,10 +123,10 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
       parameters.opacity === undefined || parameters.opacity === null
         ? 1
         : parameters.opacity;
-
-    this.color = new THREE.Color(
-      parameters.color !== undefined ? parameters.color : 0xffffff
-    );
+    this.color =
+      parameters.color !== undefined
+        ? parameters.color
+        : new THREE.Color(0xffffff);
     this.map = parameters.map || null;
     this.envMap = parameters.envMap || null;
     this.combine = parameters.combine || null;

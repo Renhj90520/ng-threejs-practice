@@ -15,6 +15,7 @@ export default class Ground extends THREE.Object3D {
     const texture = loader.load(
       '/assets/carpresenter/textures/env/TARMAC2.jpg'
     );
+
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(10, 10);
     texture.anisotropy = 16;
@@ -29,7 +30,7 @@ export default class Ground extends THREE.Object3D {
     geometry.faceVertexUvs[1] = geometry.faceVertexUvs[0];
 
     const groundMaterial = new GroundMaterial({
-      color: 0xcccccc,
+      color: new THREE.Color(0xcccccc),
       map: texture,
       lightMap: lightMapTexture,
       lightMapOpacity: 0,
@@ -38,15 +39,27 @@ export default class Ground extends THREE.Object3D {
       colorStep3: new THREE.Color(0xdfe9ea),
       lightIntensity: 1
     });
+    groundMaterial.needsUpdate = true;
 
     this.map = texture;
     this.mesh = new THREE.Mesh(geometry, groundMaterial);
     this.mesh.rotation.x = -Math.PI / 2;
     this.position.y -= 0.22;
+    console.log(this.mesh);
     this.add(this.mesh);
   }
 
-  update(e) {}
+  update(e) {
+    console.log(e);
+    (this.mesh.material as GroundMaterial).update(
+      e,
+      this.map.offset,
+      this.map.repeat
+    );
+    if (this.moving) {
+      this.map.offset.y -= this.speed * e.delta;
+    }
+  }
   updateSkyColor(color) {
     (this.mesh.material as any).colorStep3 = color;
   }
@@ -65,6 +78,7 @@ export default class Ground extends THREE.Object3D {
           material.colorStep2.lerp(new THREE.Color(0xcecdcb), progress);
           material.colorStep3.lerp(new THREE.Color(0xdce0e1), progress);
           material.color.lerp(this.dayDiffuse, progress);
+          console.log(material.uniforms);
         }
       }).play();
     } else if (mode === 'night') {

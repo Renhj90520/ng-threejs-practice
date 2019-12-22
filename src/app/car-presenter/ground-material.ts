@@ -70,11 +70,14 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
         float depth = gl_FragCoord.z / gl_FragCoord.w;
         float fogFactor = clamp((depth - fogNear) / (fogFar - fogNear), 0.0, 1.0);
 
-        gl_FragColor = mix(gl_FragColor, vec4(fogColor, gl_FragCoord.w), fogFactor);
+        gl_FragColor = mix(gl_FragColor, vec4(fogColor, gl_FragColor.w), fogFactor);
 
         float m = smoothstep(4.0, 9.0, vDistance);
         vec3 color = mix(gl_FragColor.rgb, colorStep1, m);
         gl_FragColor = vec4(color, 1.0);
+        m = smoothstep(15., 25., vDistance);
+        color = mix(gl_FragColor.rgb, colorStep2, m);
+        gl_FragColor = vec4(color, 1.);
         m = smoothstep(22.0, 25.0, max(vWorldPos.z - (vWorldPos.x * .45), abs(vWorldPos.x * .75)));
         color = mix(gl_FragColor.rgb, colorStep3, m);
         gl_FragColor = vec4(color, 1.);
@@ -114,12 +117,12 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
         uniforms: this.uniforms,
         defines: {
           USE_AOMAP: false,
-          USE_MAP: true,
           LIGHTMAP_ENABLED: parameters.lightMap !== undefined
         }
       },
       parameters
     );
+    // super(parameters);
     this.setParameters(parameters);
 
     this.onPropertyChange('colorStep1', val => {

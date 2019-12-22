@@ -41,7 +41,7 @@
         function i() {
           r(
             function() {
-              return new o({
+              return new Page({
                 scene: new Stage(),
                 width: window.innerWidth,
                 height: window.innerHeight,
@@ -67,7 +67,7 @@
           );
         }
         var r = e('28'),
-          o = e('10'),
+          Page = e('10'),
           Stage = e('48');
         window.isPhonegap
           ? document.addEventListener('deviceready', i, false)
@@ -12961,7 +12961,7 @@
           Loader = e('21'),
           LensFlarePlugin = e('61'),
           Audios = e('16'),
-          h = function(e) {
+          BasePage = function(e) {
             (this.scene = e.scene),
               (this.renderer = new THREE.WebGLRenderer({
                 antialias: true,
@@ -12978,7 +12978,7 @@
                 .resize(resize.bind(this))
                 .on('keyup', keyup.bind(this));
           };
-        (h.prototype = {
+        (BasePage.prototype = {
           start: function(e) {
             var width = e.width(),
               height = e.height();
@@ -13069,7 +13069,7 @@
             TWEEN.Easing.Quadratic.InOut;
           }
         }),
-          (t.exports = h);
+          (t.exports = BasePage);
       },
       {
         16: 16,
@@ -13104,12 +13104,12 @@
     ],
     10: [
       function(e, t, n) {
-        var i = e('8'),
+        var BasePage = e('8'),
           Audios = e('16');
         e('12');
         var MainPage = e('65'),
-          a = function(e) {
-            i.call(this, e),
+          Page = function(e) {
+            BasePage.call(this, e),
               (this.tweens = {
                 clearColor: new TWEEN.Tween()
               }),
@@ -13117,9 +13117,9 @@
               this.scene.controls.enablePinch(),
               this.handleSceneEvents();
           };
-        a.inherit(i, {
+        Page.inherit(BasePage, {
           start: function() {
-            i.prototype.start.apply(this, arguments),
+            BasePage.prototype.start.apply(this, arguments),
               this.initMainView(),
               window.isMobile ||
                 _.defer(function() {
@@ -13268,11 +13268,11 @@
               this.view.showConfigurator();
           },
           update: function() {
-            i.prototype.update.call(this),
+            BasePage.prototype.update.call(this),
               this.renderer.setClearColor(this.scene.skyColor);
           }
         }),
-          (t.exports = a);
+          (t.exports = Page);
       },
       {
         12: 12,
@@ -13939,7 +13939,7 @@
     ],
     17: [
       function(e, t, n) {
-        var i = [
+        var COLORS = [
           12633286,
           9869980,
           6250851,
@@ -13950,7 +13950,7 @@
           3617584,
           1970978
         ];
-        t.exports = i;
+        t.exports = COLORS;
       },
       {}
     ],
@@ -14642,28 +14642,44 @@
               n
             );
           }),
-          (Loader.parseBones = function(e, t) {
-            var n,
-              i = [];
-            if (e && void 0 !== e.bones) {
-              for (var r, o, a, s, l, c = 0, h = e.bones.length; h > c; ++c)
-                (o = e.bones[c]),
-                  (a = o.pos),
-                  (s = o.rotq),
-                  (l = o.scl),
-                  (r = t ? new THREE.Object3D() : new THREE.Bone(this)),
-                  i.push(r),
-                  (r.name = o.name),
-                  r.position.set(a[0], a[1], a[2]),
-                  r.quaternion.set(s[0], s[1], s[2], s[3]),
-                  void 0 !== l
-                    ? r.scale.set(l[0], l[1], l[2])
-                    : r.scale.set(1, 1, 1);
-              for (var c = 0, h = e.bones.length; h > c; ++c)
-                (o = e.bones[c]),
-                  -1 !== o.parent ? i[o.parent].add(i[c]) : (n = i[c]);
+          (Loader.parseBones = function(geometry, t) {
+            var root,
+              objs = [];
+            if (geometry && void 0 !== geometry.bones) {
+              for (
+                var obj,
+                  bone,
+                  pos,
+                  rotq,
+                  scl,
+                  idx = 0,
+                  bonesLength = geometry.bones.length;
+                bonesLength > idx;
+                ++idx
+              )
+                (bone = geometry.bones[idx]),
+                  (pos = bone.pos),
+                  (rotq = bone.rotq),
+                  (scl = bone.scl),
+                  (obj = t ? new THREE.Object3D() : new THREE.Bone(this)),
+                  objs.push(obj),
+                  (obj.name = bone.name),
+                  obj.position.set(pos[0], pos[1], pos[2]),
+                  obj.quaternion.set(rotq[0], rotq[1], rotq[2], rotq[3]),
+                  void 0 !== scl
+                    ? obj.scale.set(scl[0], scl[1], scl[2])
+                    : obj.scale.set(1, 1, 1);
+              for (
+                var idx = 0, bonesLength = geometry.bones.length;
+                bonesLength > idx;
+                ++idx
+              )
+                (bone = geometry.bones[idx]),
+                  -1 !== bone.parent
+                    ? objs[bone.parent].add(objs[idx])
+                    : (root = objs[idx]);
             }
-            return n;
+            return root;
           }),
           (Loader.createDebugCube = function(e) {
             var t = new THREE.BoxGeometry(e, e, e),
@@ -41290,21 +41306,21 @@
     ],
     40: [
       function(e, t, n) {
-        var i =
+        var vertexShader =
             'varying vec3 vWorldPos;\n\n#ifdef USE_MAP\n  varying vec2 vUv;\n  uniform vec4 offsetRepeat;\n#endif\n\nvoid main() {\n  #ifdef USE_MAP\n    vUv = uv * offsetRepeat.zw + offsetRepeat.xy;\n  #endif\n\n  vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;\n\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}',
-          r =
+          fragmentShader =
             'varying vec3 vWorldPos;\nuniform vec3 glowPosition;\nuniform vec3 baseColor;\nuniform vec3 glowColor;\nuniform vec3 bgColor;\nuniform float gradientHeight;\nuniform float brightness;\n\n#ifdef USE_MAP\n  varying vec2 vUv;\n\n  uniform sampler2D map;\n#endif\n\nuniform vec3 fogColor;\n\nuniform vec3 diffuse;\nuniform float opacity;\n\nuniform float fogNear;\nuniform float fogFar;\n\nvoid main() {\n  gl_FragColor = vec4(diffuse * brightness, opacity);\n\n  #ifdef USE_MAP\n    gl_FragColor = gl_FragColor * texture2D(map, vUv);\n  #endif\n\n  #ifdef ALPHATEST\n    if ( gl_FragColor.a < ALPHATEST ) discard;\n  #endif\n\n  float depth = gl_FragCoord.z / gl_FragCoord.w;\n  float fogFactor = clamp((depth - fogNear) / (fogFar - fogNear), 0.0, 1.0);\n\n  gl_FragColor = mix(gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor);\n\n  // vertical gradient\n  float m = 1.0 - (smoothstep(0.0, gradientHeight, vWorldPos.y));\n  gl_FragColor.rgb = mix(gl_FragColor.rgb, baseColor, m * brightness);\n\n  // white light\n  float d = distance(vWorldPos, glowPosition);\n  m = 1.0 - (smoothstep(10.0, 15.0, d));\n  gl_FragColor.rgb = mix(gl_FragColor.rgb, glowColor, m * brightness);\n\n  // gray gradient\n  m = smoothstep(5.0, 20.0, vWorldPos.z - (vWorldPos.x * 0.3));\n  gl_FragColor.rgb = mix(gl_FragColor.rgb, baseColor, m * brightness);\n\n  // fade to bgColor\n  m = smoothstep(23.0, 25.0, vWorldPos.z - (vWorldPos.x * 0.45));\n  gl_FragColor.rgb = mix(gl_FragColor.rgb, bgColor, m * brightness);\n\n  // fade to white\n  m = smoothstep(30.0, 35.0, abs(vWorldPos.x));\n  gl_FragColor.rgb = mix(gl_FragColor.rgb, bgColor, m * brightness);\n\n}',
           BasicCustomShaderMaterial = e('30'),
-          a = function(e) {
-            (e = _.extend(
+          TunnelMaterial = function(parameters) {
+            (parameters = _.extend(
               {
-                vertexShader: i,
-                fragmentShader: r,
-                uniforms: THREE.UniformsUtils.clone(a.uniforms)
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                uniforms: THREE.UniformsUtils.clone(TunnelMaterial.uniforms)
               },
-              e
+              parameters
             )),
-              BasicCustomShaderMaterial.call(this, e),
+              BasicCustomShaderMaterial.call(this, parameters),
               this.onPropertyChange('glowPosition', function(e) {
                 this.uniforms.glowPosition.value = e;
               }),
@@ -41324,21 +41340,27 @@
                 this.uniforms.brightness.value = e;
               }),
               (this.bgColor = new THREE.Color(
-                void 0 !== e.bgColor ? e.bgColor : 0xeeeeee
+                void 0 !== parameters.bgColor ? parameters.bgColor : 0xeeeeee
               )),
               (this.baseColor = new THREE.Color(
-                void 0 !== e.baseColor ? e.baseColor : 0xffffff
+                void 0 !== parameters.baseColor
+                  ? parameters.baseColor
+                  : 0xffffff
               )),
               (this.glowColor = new THREE.Color(
-                void 0 !== e.glowColor ? e.glowColor : 0xffffff
+                void 0 !== parameters.glowColor
+                  ? parameters.glowColor
+                  : 0xffffff
               )),
               (this.gradientHeight =
-                void 0 !== e.gradientHeight ? e.gradientHeight : 5),
+                void 0 !== parameters.gradientHeight
+                  ? parameters.gradientHeight
+                  : 5),
               (this.glowPosition =
-                e.glowPosition || new THREE.Vector3(5, 5, 5)),
-              (this.brightness = e.brightness || 1);
+                parameters.glowPosition || new THREE.Vector3(5, 5, 5)),
+              (this.brightness = parameters.brightness || 1);
           };
-        (a.uniforms = {
+        (TunnelMaterial.uniforms = {
           diffuse: {
             type: 'c',
             value: new THREE.Color(0xeeeeee)
@@ -41400,9 +41422,9 @@
             value: 1
           }
         }),
-          a.inherit(BasicCustomShaderMaterial, {
+          TunnelMaterial.inherit(BasicCustomShaderMaterial, {
             clone: function(e) {
-              var t = e || new a();
+              var t = e || new TunnelMaterial();
               return (
                 Material.prototype.clone.call(this, e),
                 (t.map = this.map),
@@ -41411,7 +41433,7 @@
               );
             }
           }),
-          (t.exports = a);
+          (t.exports = TunnelMaterial);
       },
       {
         30: 30
@@ -41612,7 +41634,7 @@
     44: [
       function(e, t, n) {
         var Loader = e('21'),
-          r = e('17'),
+          COLORS = e('17'),
           CustomMesh = e('55'),
           a = (e('57'), e('53')),
           Wheel = (e('43'), e('42'), e('60')),
@@ -41691,8 +41713,8 @@
               (this.materials = {
                 body: new c({
                   map: t,
-                  color: r[2],
-                  color2: r[3],
+                  color: COLORS[2],
+                  color2: COLORS[3],
                   envMap: this.cubeMapLightSoft,
                   combine: THREE.MixOperation,
                   reflectivity: 0.15,
@@ -41710,8 +41732,8 @@
                 }),
                 bodyFlip: new c({
                   map: t,
-                  color: r[2],
-                  color2: r[3],
+                  color: COLORS[2],
+                  color2: COLORS[3],
                   envMap: this.cubeMapLightSoft,
                   combine: THREE.MixOperation,
                   reflectivity: 0.15,
@@ -41747,8 +41769,8 @@
                 }),
                 rearlight: new c({
                   map: t,
-                  color: r[2],
-                  color2: r[3],
+                  color: COLORS[2],
+                  color2: COLORS[3],
                   envMap: this.cubeMapLightSharp,
                   combine: THREE.AddOperation,
                   reflectivity: 0.3,
@@ -41847,8 +41869,8 @@
               );
             (this.materials.interiorFront = new c({
               map: e,
-              color: r[2],
-              color2: r[3],
+              color: COLORS[2],
+              color2: COLORS[3],
               normalMap: n,
               emissiveMap: s,
               emissiveColor: 1700,
@@ -42064,9 +42086,9 @@
             return this.door.animate(e);
           },
           setColor: function(e) {
-            this.materials.body.color2.setHex(r[e]),
-              this.materials.bodyFlip.color2.setHex(r[e]),
-              (this.materials.interiorFront.color = new THREE.Color(r[e])),
+            this.materials.body.color2.setHex(COLORS[e]),
+              this.materials.bodyFlip.color2.setHex(COLORS[e]),
+              (this.materials.interiorFront.color = new THREE.Color(COLORS[e])),
               Loader.tween(750, TWEEN.Easing.Sinusoidal.InOut)
                 .onUpdate(
                   function(e) {
@@ -42257,7 +42279,7 @@
       function(e, t, n) {
         var Loader = e('21'),
           CustomCamera = e('43'),
-          o = [
+          timeSteps = [
             [5, 97],
             [105, 245],
             [255, 450],
@@ -42267,21 +42289,21 @@
             [875, 1130],
             [1135, 1225]
           ],
-          a = function(e) {
+          AutoCamrera = function(e) {
             THREE.Object3D.call(this);
-            var t = (this.cinematicCamera = new CustomCamera({
+            var cinematicCamera = (this.cinematicCamera = new CustomCamera({
                 name: e.name,
                 near: 0.001,
                 far: 100
               })),
-              n = Loader.getMeshData(e.animation).geometry,
-              o = Loader.parseBones(n, true);
-            this.add(t),
-              this.add(o),
-              e.helper && this.add(new THREE.CameraHelper(t)),
-              (this.camera = t),
-              (this.bone = o.getObjectByName(e.boneName)),
-              (this.animation = new THREE.Animation(o, n.animation)),
+              geometry = Loader.getMeshData(e.animation).geometry,
+              bones = Loader.parseBones(geometry, true);
+            this.add(cinematicCamera),
+              this.add(bones),
+              e.helper && this.add(new THREE.CameraHelper(cinematicCamera)),
+              (this.camera = cinematicCamera),
+              (this.bone = bones.getObjectByName(e.boneName)),
+              (this.animation = new THREE.Animation(bones, geometry.animation)),
               (this.animation.loop = void 0 !== e.loop ? e.loop : true),
               (this.animation.duration = this.animation.data.length),
               (this.enabled = false),
@@ -42290,9 +42312,9 @@
               (this.camera.matrix = this.bone.matrixWorld),
               this.initSequences();
           };
-        a.inherit(THREE.Object3D, {
+        AutoCamrera.inherit(THREE.Object3D, {
           initSequences: function() {
-            (this.sequences = o.map(function(e) {
+            (this.sequences = timeSteps.map(function(e) {
               var t = {};
               return (
                 (t.start = e[0] / this.animation.data.fps),
@@ -42331,7 +42353,7 @@
             this.enabled = !this.enabled;
           }
         }),
-          (t.exports = a);
+          (t.exports = AutoCamrera);
       },
       {
         21: 21,
@@ -42344,7 +42366,7 @@
         var i = e('44'),
           r = e('52'),
           Loader = (e('55'), e('21')),
-          a = (e('36'), e('17')),
+          COLORS = (e('36'), e('17')),
           s = 7.5,
           l = function(e) {
             i.call(this, e);
@@ -42422,10 +42444,10 @@
                 (this.materials.interiorBack.emissiveIntensity = 0));
           },
           setColor: function(e) {
-            this.materials.body.color2.setHex(a[e]),
-              this.materials.bodyFlip.color2.setHex(a[e]),
-              (this.particlesMaterial.color = new THREE.Color(a[e])),
-              (this.materials.interiorFront.color = new THREE.Color(a[e])),
+            this.materials.body.color2.setHex(COLORS[e]),
+              this.materials.bodyFlip.color2.setHex(COLORS[e]),
+              (this.particlesMaterial.color = new THREE.Color(COLORS[e])),
+              (this.materials.interiorFront.color = new THREE.Color(COLORS[e])),
               Loader.delay(
                 500,
                 function() {
@@ -42474,10 +42496,10 @@
           Loader = e('21'),
           Audios = e('16'),
           Car = e('47'),
-          Environment = (e('55'), e('58')),
+          Tunnel = (e('55'), e('58')),
           Vignetting = e('59'),
           WebGLLensFlare = e('54'),
-          h = function() {
+          Stage = function() {
             CustomScene.call(this, {
               car: new Car()
             }),
@@ -42497,7 +42519,7 @@
               (this.controls.distance = 10),
               this.setMode('pitchblack');
           };
-        h.inherit(CustomScene, {
+        Stage.inherit(CustomScene, {
           playIntro: function() {
             (this.introMode = true),
               Loader.delay(
@@ -42649,7 +42671,7 @@
             CustomScene.prototype.initGlow.call(this), (this.glowIntensity = 0);
           },
           initTunnel: function() {
-            (this.tunnel = new Environment({
+            (this.tunnel = new Tunnel({
               skyColor: this.skyColor
             })),
               this.add(this.tunnel);
@@ -42812,7 +42834,7 @@
               this.introPlayed || this.playIntro();
           }
         }),
-          (t.exports = h);
+          (t.exports = Stage);
       },
       {
         16: 16,
@@ -43307,7 +43329,7 @@
           ObjectPicker = e('18'),
           Audios = e('16'),
           CustomCamera = e('43'),
-          transitionCamera = e('45'),
+          TransitionCamera = e('45'),
           AutoCamera = e('46'),
           Helpers = e('50'),
           Ground = (e('44'), e('51')),
@@ -43503,7 +43525,7 @@
               this.add(this.autoCamera);
           },
           initTransitionCamera: function() {
-            (this.transitionCamera = new transitionCamera({
+            (this.transitionCamera = new TransitionCamera({
               name: 'transition',
               animation: 'camera_transition',
               boneName: 'Camera_Bone_01',
@@ -43858,7 +43880,7 @@
         var Loader = e('21'),
           CustomMesh = e('55'),
           o = e('40'),
-          Environment = function(e) {
+          Tunnel = function(e) {
             THREE.Object3D.call(this),
               (this.mapDiffuseDay = Loader.getTexture('env/pattern.png')),
               (this.mapDiffuseDay.wrapS = this.mapDiffuseDay.wrapT =
@@ -43893,7 +43915,7 @@
                 brightness: new TWEEN.Tween()
               });
           };
-        Environment.inherit(THREE.Object3D, {
+        Tunnel.inherit(THREE.Object3D, {
           setMode: function(e, t) {
             var n = void 0 !== t ? t : 350,
               r = TWEEN.Easing.Quadratic.InOut;
@@ -43927,7 +43949,7 @@
             this.mesh.material.bgColor = e;
           }
         }),
-          (t.exports = Environment);
+          (t.exports = Tunnel);
       },
       {
         21: 21,

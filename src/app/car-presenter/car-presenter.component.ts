@@ -26,15 +26,21 @@ export class CarPresenterComponent implements OnInit {
   autoOrbit = false;
   multisenseMode = false;
   introMode = false;
+  objects = [];
 
   constructor() {}
 
   ngOnInit() {
     this.initTHREE();
+    this.initAutoCamera();
     this.initLights();
     this.initGround();
     this.initControls();
     this.update();
+  }
+  initAutoCamera() {
+    this.autoCamera=new THREE.PerspectiveCamera(30,this.width/this.height,.001,100)
+    this.autoCamera.name='auto'
   }
   initControls() {
     this.exteriorControls = new CustomControls({
@@ -53,6 +59,7 @@ export class CarPresenterComponent implements OnInit {
     this.ground = new Ground();
     this.ground.setMode('day');
     this.scene.add(this.ground);
+    this.objects.push(this.ground);
   }
   initLights() {
     const skyColor = 0xf0f2ef;
@@ -95,6 +102,9 @@ export class CarPresenterComponent implements OnInit {
 
   update() {
     this.renderer.render(this.scene, this.camera);
+    this.objects.forEach(obj => {
+      obj.update();
+    });
     this.updateControls();
     requestAnimationFrame(this.update.bind(this));
   }
