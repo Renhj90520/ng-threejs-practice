@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import Tunnel from './tunnel';
-import { TweenLite, Power2 } from 'gsap';
+import { TweenLite, Power2, Linear } from 'gsap';
 import Vignetting from './vignetting';
 import CustomControls from './custom-controls';
 import LensFlare from './lensflare';
@@ -15,6 +15,7 @@ export default class Stage extends THREE.Object3D {
   exteriorControls: CustomControls;
   renderer: any;
   lensFlare: LensFlare;
+  rearGlow: THREE.Mesh;
 
   constructor(camera, renderer) {
     super();
@@ -28,6 +29,24 @@ export default class Stage extends THREE.Object3D {
     this.initVignetting();
     this.initLensFlare();
     this.refreshCustomMaterials();
+
+    this.initRearGlow();
+  }
+
+  initRearGlow() {
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(
+      '/assets/carpresenter/textures/env/rearglow.png'
+    );
+    const geometry = new THREE.PlaneBufferGeometry(5.5, 5.5, 1, 1);
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 0
+    });
+    this.rearGlow = new THREE.Mesh(geometry, material);
+    this.rearGlow.position.set(0, 0.5, -2);
+    this.add(this.rearGlow);
   }
   initLensFlare() {
     const loader = new THREE.TextureLoader();
@@ -138,5 +157,31 @@ export default class Stage extends THREE.Object3D {
       this.lensFlare.scaleFactor =
         1 - THREE.Math.smootherstep(rotationX, n, 0.6);
     }
+
+    this.lensFlare.scaleFactor *=
+      1 - THREE.Math.smoothstep(rotationY, 1.53, 1.57);
+    // if (!this.autoCamera.enabled && this.exteriorView) {
+    //   this.lensFlare.scaleFactor = 0;
+    // }
+  }
+
+  rotateRearGlow() {
+    TweenLite.to(this.rearGlow.rotation, 5000, { z: 0.15 }).play();
+  }
+
+  fadeInRearGlow() {
+    TweenLite.to(this.rearGlow.material, 1000, {
+      opacity: 0.8,
+      ease: Power2.easeInOut
+    }).play();
+  }
+  fadeOutRearGlow() {
+    TweenLite.to(this.rearGlow.material, 1000, {
+      opacity: 0,
+      ease: Linear.easeNone,
+      onComplete: () => {
+        this.remove(this.rearGlow);
+      }
+    }).play();
   }
 }
