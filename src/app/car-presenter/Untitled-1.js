@@ -42814,15 +42814,19 @@
             };
           })(),
           updateLensFlare: function() {
-            var e = this.controls.rotation.x,
-              t = this.controls.rotation.y,
+            var rotationX = this.controls.rotation.x,
+              rotationY = this.controls.rotation.y,
               n = 0.48;
-            n > e
-              ? (this.lensFlare.scaleFactor = THREE.Math.smoothstep(e, 0.12, n))
+            n > rotationX
+              ? (this.lensFlare.scaleFactor = THREE.Math.smoothstep(
+                  rotationX,
+                  0.12,
+                  n
+                ))
               : (this.lensFlare.scaleFactor =
-                  1 - THREE.Math.smoothstep(e, n, 0.6)),
+                  1 - THREE.Math.smoothstep(rotationX, n, 0.6)),
               (this.lensFlare.scaleFactor *=
-                1 - THREE.Math.smoothstep(t, 1.53, 1.57)),
+                1 - THREE.Math.smoothstep(rotationY, 1.53, 1.57)),
               (!this.autoCamera.enabled && this.exteriorView) ||
                 (this.lensFlare.scaleFactor = 0);
           },

@@ -3,6 +3,7 @@ import Tunnel from './tunnel';
 import { TweenLite, Power2 } from 'gsap';
 import Vignetting from './vignetting';
 import CustomControls from './custom-controls';
+import LensFlare from './lensflare';
 
 export default class Stage extends THREE.Object3D {
   skyColor: THREE.Color;
@@ -13,6 +14,7 @@ export default class Stage extends THREE.Object3D {
   vignetting: Vignetting;
   exteriorControls: CustomControls;
   renderer: any;
+  lensFlare: LensFlare;
 
   constructor(camera, renderer) {
     super();
@@ -28,7 +30,20 @@ export default class Stage extends THREE.Object3D {
     this.refreshCustomMaterials();
   }
   initLensFlare() {
-    
+    const loader = new THREE.TextureLoader();
+    const haloStarBlur = loader.load(
+      '/assets/carpresenter/textures/lensflare/Halo_Star_Blur.png'
+    );
+    const lensflareAlpha = loader.load(
+      '/assets/carpresenter/textures/lensflare/lensflare3_alpha.png'
+    );
+    const pentagon = loader.load(
+      '/assets/carpresenter/textures/lensflare/Flare_Pentagone.png'
+    );
+
+    this.lensFlare = new LensFlare(haloStarBlur, lensflareAlpha, pentagon);
+    this.lensFlare.position.set(-14, 3.5, -12);
+    this.add(this.lensFlare);
   }
   initControls() {
     this.exteriorControls = new CustomControls({
@@ -65,7 +80,7 @@ export default class Stage extends THREE.Object3D {
           },
           ease: Power2.easeInOut
         }).play();
-        // this.lensFlare.show();
+        this.lensFlare.show();
         // this.glow.visible = false;
         break;
       case 'night':
@@ -77,7 +92,7 @@ export default class Stage extends THREE.Object3D {
           },
           ease: Power2.easeInOut
         }).play();
-        // this.lensFlare.hide();
+        this.lensFlare.hide();
         // this.glow.visible = true;
         break;
     }
@@ -109,5 +124,19 @@ export default class Stage extends THREE.Object3D {
     // if (this.ground) {
     //   this.ground.updateSkyColor();
     // }
+    if (this.lensFlare) {
+      this.updateLensFlare();
+    }
+  }
+  updateLensFlare() {
+    const rotationX = this.exteriorControls.rotation.x;
+    const rotationY = this.exteriorControls.rotation.y;
+    const n = 0.48;
+    if (rotationX < n) {
+      this.lensFlare.scaleFactor = THREE.Math.smootherstep(rotationX, 0.12, n);
+    } else {
+      this.lensFlare.scaleFactor =
+        1 - THREE.Math.smootherstep(rotationX, n, 0.6);
+    }
   }
 }
