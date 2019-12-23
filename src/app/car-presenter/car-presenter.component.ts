@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import * as THREE from 'three';
 import Ground from './ground';
 import CustomControls from './custom-controls';
+import Stage from './stage';
 @Component({
   selector: 'app-car-presenter',
   templateUrl: './car-presenter.component.html',
@@ -20,13 +21,13 @@ export class CarPresenterComponent implements OnInit {
   height;
   ground: Ground;
   interiorControls: CustomControls;
-  exteriorControls: CustomControls;
   controls: CustomControls;
 
   autoOrbit = false;
   multisenseMode = false;
   introMode = false;
   objects = [];
+  stage: Stage;
 
   constructor() {}
 
@@ -35,26 +36,25 @@ export class CarPresenterComponent implements OnInit {
     this.initAutoCamera();
     this.initLights();
     this.initGround();
-    this.initControls();
+    this.initStage();
     this.update();
   }
+  initStage() {
+    this.stage = new Stage(this.camera, this.renderer);
+    this.scene.add(this.stage);
+    this.controls = this.stage.exteriorControls;
+    this.stage.setMode('day');
+  }
   initAutoCamera() {
-    this.autoCamera=new THREE.PerspectiveCamera(30,this.width/this.height,.001,100)
-    this.autoCamera.name='auto'
-  }
-  initControls() {
-    this.exteriorControls = new CustomControls({
-      camera: this.camera,
-      origin: new THREE.Vector3(0, 0.5, 0),
-      clampY: Math.PI / 2,
-      domElement: this.renderer.domElement
-    });
-    this.exteriorControls.setRotation(new THREE.Vector2(0, Math.PI / 4));
-    this.exteriorControls.setTargetRotation(
-      new THREE.Vector2(Math.PI / 3, Math.PI / 2.2)
+    this.autoCamera = new THREE.PerspectiveCamera(
+      30,
+      this.width / this.height,
+      0.001,
+      100
     );
-    this.controls = this.exteriorControls;
+    this.autoCamera.name = 'auto';
   }
+
   initGround() {
     this.ground = new Ground();
     this.ground.setMode('day');
@@ -105,6 +105,9 @@ export class CarPresenterComponent implements OnInit {
     this.objects.forEach(obj => {
       obj.update();
     });
+    if (this.stage) {
+      this.stage.update();
+    }
     this.updateControls();
     requestAnimationFrame(this.update.bind(this));
   }
@@ -117,11 +120,12 @@ export class CarPresenterComponent implements OnInit {
       if (this.interiorControls) {
         this.interiorControls.enabled = false;
       }
-      this.exteriorControls.enabled = false;
+      this.stage.exteriorControls.enabled = false;
+
       if (this.camera === this.interiorCamera) {
         this.controls = this.interiorControls;
       } else {
-        this.controls = this.exteriorControls;
+        this.controls = this.stage.exteriorControls;
       }
 
       // this.autoCamera.enabled ||

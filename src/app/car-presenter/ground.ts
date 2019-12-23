@@ -50,7 +50,6 @@ export default class Ground extends THREE.Object3D {
   }
 
   update(e) {
-    console.log(e);
     (this.mesh.material as GroundMaterial).update(
       e,
       this.map.offset,
@@ -78,7 +77,6 @@ export default class Ground extends THREE.Object3D {
           material.colorStep2.lerp(new THREE.Color(0xcecdcb), progress);
           material.colorStep3.lerp(new THREE.Color(0xdce0e1), progress);
           material.color.lerp(this.dayDiffuse, progress);
-          console.log(material.uniforms);
         }
       }).play();
     } else if (mode === 'night') {

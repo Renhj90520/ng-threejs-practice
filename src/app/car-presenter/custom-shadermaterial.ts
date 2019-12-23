@@ -104,8 +104,8 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
         this.uniforms.offsetRepeat.value.set(
           val.offset.x,
           val.offset.y,
-          val.offset.x,
-          val.offset.y
+          val.repeat.x,
+          val.repeat.y
         );
       }
     });

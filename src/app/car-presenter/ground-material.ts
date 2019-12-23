@@ -152,8 +152,6 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
   }
 
   update(e, mapOffset, mapRepeat) {
-    console.log('ground material');
-    console.log(e);
     this.uniforms.offsetRepeat.value.set(
       mapOffset.x,
       mapOffset.y,

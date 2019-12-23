@@ -14,7 +14,7 @@ export default class TunnelMaterial extends BasicCustomShaderMaterial {
             vUv = uv * offsetRepeat.zw + offsetRepeat.xy;
         #endif
         vWorldPos = (modelMatrix * vec4(position,1.)).xyz;
-        gl_Position = projectionMatrix * movelViewMatrix * vec4(position, 1.);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
     }
   `;
   fragmentShader = `
@@ -82,10 +82,15 @@ export default class TunnelMaterial extends BasicCustomShaderMaterial {
     brightness: { type: 'f', value: 1 }
   };
   bgColor: any;
+  baseColor: any;
+  glowColor: any;
+  gradientHeight: any;
+  glowPosition: any;
+  brightness: any;
   constructor(parameters) {
     super(parameters);
 
-    parameters = _.extends(
+    parameters = _.extend(
       {
         vertexShader: this.vertexShader,
         fragmentShader: this.fragmentShader,
@@ -113,6 +118,11 @@ export default class TunnelMaterial extends BasicCustomShaderMaterial {
       this.uniforms.brightness.value = val;
     });
     this.bgColor = parameters.bgColor || new THREE.Color(0xeeeeee);
-    
+    this.baseColor = parameters.baseColor || new THREE.Color(0xffffff);
+    this.glowColor = parameters.glowColor || new THREE.Color(0xffffff);
+    this.gradientHeight =
+      parameters.gradientHeight != undefined ? parameters.gradientHeight : 5;
+    this.glowPosition = parameters.glowPosition || new THREE.Vector3(5, 5, 5);
+    this.brightness = parameters.brightness || 1;
   }
 }
