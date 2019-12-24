@@ -3,21 +3,36 @@ import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJS
 export default class AutoCamera extends THREE.Object3D {
   cinematicCamera: THREE.PerspectiveCamera;
   bone;
-  animation: THREE.AnimationMixer;
+  mixer: THREE.AnimationMixer;
+  action: THREE.AnimationAction;
+  clock = new THREE.Clock();
   //JFC_USP_MS_Parcours_Camera
-  constructor(aspect, animation, boneName) {
+  constructor(aspect, animation) {
     super();
 
     this.cinematicCamera = new THREE.PerspectiveCamera(30, aspect, 0.001, 100);
     const jsonLoader = new LegacyJSONLoader();
-    jsonLoader.load(`/assets/carpresenter/models/${animation}.js`, result => {
-      const geometry = result.geometry;
-      const bones = this.parseBones(geometry, true);
-      this.add(bones);
-      this.bone = bones.getObjectByName(boneName);
-      this.animation = new THREE.AnimationMixer(this.bone);
-    });
-    this.add(this.cinematicCamera);
+
+    jsonLoader.load(
+      `/assets/carpresenter/models/${animation}.js`,
+      (geometry: any) => {
+        const mesh = new THREE.SkinnedMesh(
+          new THREE.BufferGeometry().fromGeometry(geometry)
+        );
+        const skeleton = new THREE.Skeleton(this.parseBones(geometry, false));
+        const rootBone = skeleton.bones[0];
+        console.log(skeleton);
+        mesh.add(rootBone);
+        mesh.bind(skeleton);
+        this.mixer = new THREE.AnimationMixer(mesh);
+        const clips = geometry.animations;
+
+        clips.forEach(clip => {
+          this.action = this.mixer.clipAction(clip);
+          this.action.play();
+        });
+      }
+    );
   }
 
   parseBones(geometry: THREE.Geometry, isObject) {
@@ -40,17 +55,25 @@ export default class AutoCamera extends THREE.Object3D {
           : obj.scale.set(1, 1, 1);
       }
 
-      for (let i = 0; i < geometry.bones.length; i++) {
-        const bone: any = geometry.bones[i];
-        if (bone.parent) {
-          console.log(bone.parent);
-          objs[bone.parent].add(objs[i]);
-        } else {
-          root = objs[i];
+      if (isObject) {
+        for (let i = 0; i < geometry.bones.length; i++) {
+          const bone: any = geometry.bones[i];
+          if (bone.parent !== -1) {
+            objs[bone.parent].add(objs[i]);
+          } else {
+            root = objs[i];
+          }
         }
-      }
 
-      return root;
+        return root;
+      } else {
+        return objs;
+      }
+    }
+  }
+  update() {
+    if (this.mixer) {
+      this.mixer.update(this.clock.getDelta());
     }
   }
 }

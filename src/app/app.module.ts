@@ -43,6 +43,7 @@ import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
 import { RenderTargetComponent } from './render-target/render-target.component';
 import { BreatheComponent } from './breathe/breathe.component';
 import { CarPresenterComponent } from './car-presenter/car-presenter.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -88,7 +89,7 @@ import { CarPresenterComponent } from './car-presenter/car-presenter.component';
     RenderTargetComponent,
     BreatheComponent
   ],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent]
 })

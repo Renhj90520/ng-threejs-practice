@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import Ground from './ground';
 import CustomControls from './custom-controls';
 import Stage from './stage';
+import AutoCamera from './auto-camera';
 @Component({
   selector: 'app-car-presenter',
   templateUrl: './car-presenter.component.html',
@@ -15,7 +16,7 @@ export class CarPresenterComponent implements OnInit {
   renderer: THREE.WebGLRenderer;
   orbitCamera: THREE.PerspectiveCamera;
   interiorCamera: THREE.PerspectiveCamera;
-  autoCamera: THREE.PerspectiveCamera;
+  autoCamera: AutoCamera;
   transitionCamera: THREE.PerspectiveCamera;
   width;
   height;
@@ -24,7 +25,6 @@ export class CarPresenterComponent implements OnInit {
   controls: CustomControls;
 
   autoOrbit = false;
-  multisenseMode = false;
   introMode = false;
   objects = [];
   stage: Stage;
@@ -46,11 +46,9 @@ export class CarPresenterComponent implements OnInit {
     this.stage.setMode('day');
   }
   initAutoCamera() {
-    this.autoCamera = new THREE.PerspectiveCamera(
-      30,
+    this.autoCamera = new AutoCamera(
       this.width / this.height,
-      0.001,
-      100
+      'JFC_USP_MS_Parcours_Camera'
     );
     this.autoCamera.name = 'auto';
   }
@@ -109,6 +107,7 @@ export class CarPresenterComponent implements OnInit {
       this.stage.update();
     }
     this.updateControls();
+    this.autoCamera.update();
     requestAnimationFrame(this.update.bind(this));
   }
   updateControls() {
@@ -130,7 +129,7 @@ export class CarPresenterComponent implements OnInit {
 
       // this.autoCamera.enabled ||
       // this.transitionCamera.enabled ||
-      this.controls.enabled = !(this.multisenseMode || this.introMode);
+      this.controls.enabled = !this.introMode;
       this.controls.update();
     }
   }

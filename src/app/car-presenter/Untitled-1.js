@@ -39766,12 +39766,12 @@
           r =
             "varying vec3 vWorldPos;\nvarying float vOpacity;\nvarying float vDistance;\nuniform float envMapOffset;\nuniform float flipN;\n\n#ifdef USE_REFLECTIONMASK\n    uniform sampler2D reflectionMask;\n#endif\n\nuniform sampler2D paintMask;\n\n#define PHONG\nuniform vec3 diffuse;\nuniform vec3 diffuse2;\nuniform float colorTransition;\nuniform float carLength;\nvarying vec3 vPosition;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#define PI 3.14159\n#define PI2 6.28318\n#define RECIPROCAL_PI2 0.15915494\n#define LOG2 1.442695\n#define EPSILON 1e-6\n\nfloat square( in float a ) { return a*a; }\nvec2  square( in vec2 a )  { return vec2( a.x*a.x, a.y*a.y ); }\nvec3  square( in vec3 a )  { return vec3( a.x*a.x, a.y*a.y, a.z*a.z ); }\nvec4  square( in vec4 a )  { return vec4( a.x*a.x, a.y*a.y, a.z*a.z, a.w*a.w ); }\nfloat saturate( in float a ) { return clamp( a, 0.0, 1.0 ); }\nvec2  saturate( in vec2 a )  { return clamp( a, 0.0, 1.0 ); }\nvec3  saturate( in vec3 a )  { return clamp( a, 0.0, 1.0 ); }\nvec4  saturate( in vec4 a )  { return clamp( a, 0.0, 1.0 ); }\nfloat average( in float a ) { return a; }\nfloat average( in vec2 a )  { return ( a.x + a.y) * 0.5; }\nfloat average( in vec3 a )  { return ( a.x + a.y + a.z) / 3.0; }\nfloat average( in vec4 a )  { return ( a.x + a.y + a.z + a.w) * 0.25; }\nfloat whiteCompliment( in float a ) { return saturate( 1.0 - a ); }\nvec2  whiteCompliment( in vec2 a )  { return saturate( vec2(1.0) - a ); }\nvec3  whiteCompliment( in vec3 a )  { return saturate( vec3(1.0) - a ); }\nvec4  whiteCompliment( in vec4 a )  { return saturate( vec4(1.0) - a ); }\nvec3 transformDirection( in vec3 normal, in mat4 matrix ) {\n    return normalize( ( matrix * vec4( normal, 0.0 ) ).xyz );\n}\n// http://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations\nvec3 inverseTransformDirection( in vec3 normal, in mat4 matrix ) {\n    return normalize( ( vec4( normal, 0.0 ) * matrix ).xyz );\n}\nvec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {\n    float distance = dot( planeNormal, point-pointOnPlane );\n    return point - distance * planeNormal;\n}\nfloat sideOfPlane( in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {\n    return sign( dot( point - pointOnPlane, planeNormal ) );\n}\nvec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal ) {\n    return pointOnLine + lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) );\n}\nfloat calcLightAttenuation( float lightDistance, float cutoffDistance, float decayExponent ) {\n    if ( decayExponent > 0.0 ) {\n      return pow( saturate( 1.0 - lightDistance / cutoffDistance ), decayExponent );\n    }\n    return 1.0;\n}\n\nvec3 inputToLinear( in vec3 a ) {\n#ifdef GAMMA_INPUT\n    return pow( a, vec3( float( GAMMA_FACTOR ) ) );\n#else\n    return a;\n#endif\n}\nvec3 linearToOutput( in vec3 a ) {\n#ifdef GAMMA_OUTPUT\n    return pow( a, vec3( 1.0 / float( GAMMA_FACTOR ) ) );\n#else\n    return a;\n#endif\n}\n\n#ifdef USE_COLOR\n\n    varying vec3 vColor;\n\n#endif\n\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP )\n\n    varying vec2 vUv;\n\n#endif\n\n#ifdef USE_MAP\n\n    uniform sampler2D map;\n\n#endif\n#ifdef USE_ALPHAMAP\n\n    uniform sampler2D alphaMap;\n\n#endif\n\n#ifdef USE_LIGHTMAP\n\n    varying vec2 vUv2;\n    uniform sampler2D lightMap;\n\n#endif\n#ifdef USE_EMISSIVEMAP\n\n    uniform sampler2D emissiveMap;\n    uniform float emissiveIntensity;\n\n    #ifdef USE_EMISSIVECOLOR\n        uniform vec3 emissiveColor;\n    #endif\n\n#endif\n#ifdef USE_ENVMAP\n\n    uniform float reflectivity;\n    #ifdef ENVMAP_TYPE_CUBE\n        uniform samplerCube envMap;\n    #else\n        uniform sampler2D envMap;\n    #endif\n    uniform float flipEnvMap;\n\n    #if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n\n        uniform float refractionRatio;\n\n    #else\n\n        varying vec3 vReflect;\n\n    #endif\n\n#endif\n\n#ifdef USE_FOG\n\n    uniform vec3 fogColor;\n\n    #ifdef FOG_EXP2\n\n        uniform float fogDensity;\n\n    #else\n\n        uniform float fogNear;\n        uniform float fogFar;\n    #endif\n\n#endif\nuniform vec3 ambientLightColor;\n\n#if MAX_DIR_LIGHTS > 0\n\n    uniform vec3 directionalLightColor[ MAX_DIR_LIGHTS ];\n    uniform vec3 directionalLightDirection[ MAX_DIR_LIGHTS ];\n\n#endif\n\n#if MAX_HEMI_LIGHTS > 0\n\n    uniform vec3 hemisphereLightSkyColor[ MAX_HEMI_LIGHTS ];\n    uniform vec3 hemisphereLightGroundColor[ MAX_HEMI_LIGHTS ];\n    uniform vec3 hemisphereLightDirection[ MAX_HEMI_LIGHTS ];\n\n#endif\n\n#if MAX_POINT_LIGHTS > 0\n\n    uniform vec3 pointLightColor[ MAX_POINT_LIGHTS ];\n\n    uniform vec3 pointLightPosition[ MAX_POINT_LIGHTS ];\n    uniform float pointLightDistance[ MAX_POINT_LIGHTS ];\n    uniform float pointLightDecay[ MAX_POINT_LIGHTS ];\n\n#endif\n\n#if MAX_SPOT_LIGHTS > 0\n\n    uniform vec3 spotLightColor[ MAX_SPOT_LIGHTS ];\n    uniform vec3 spotLightPosition[ MAX_SPOT_LIGHTS ];\n    uniform vec3 spotLightDirection[ MAX_SPOT_LIGHTS ];\n    uniform float spotLightAngleCos[ MAX_SPOT_LIGHTS ];\n    uniform float spotLightExponent[ MAX_SPOT_LIGHTS ];\n    uniform float spotLightDistance[ MAX_SPOT_LIGHTS ];\n    uniform float spotLightDecay[ MAX_SPOT_LIGHTS ];\n\n#endif\n\n#if MAX_SPOT_LIGHTS > 0 || defined( USE_BUMPMAP ) || defined( USE_ENVMAP )\n\n    varying vec3 vWorldPosition;\n\n#endif\n\n#ifdef WRAP_AROUND\n\n    uniform vec3 wrapRGB;\n\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n    varying vec3 vNormal;\n\n#endif\n\n#ifdef USE_SHADOWMAP\n\n    uniform sampler2D shadowMap[ MAX_SHADOWS ];\n    uniform vec2 shadowMapSize[ MAX_SHADOWS ];\n\n    uniform float shadowDarkness[ MAX_SHADOWS ];\n    uniform float shadowBias[ MAX_SHADOWS ];\n\n    varying vec4 vShadowCoord[ MAX_SHADOWS ];\n\n    float unpackDepth( const in vec4 rgba_depth ) {\n\n        const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\n        float depth = dot( rgba_depth, bit_shift );\n        return depth;\n\n    }\n\n#endif\n#ifdef USE_BUMPMAP\n\n    uniform sampler2D bumpMap;\n    uniform float bumpScale;\n\n    // Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen\n    // http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html\n\n    // Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)\n\n    vec2 dHdxy_fwd() {\n\n        vec2 dSTdx = dFdx( vUv );\n        vec2 dSTdy = dFdy( vUv );\n\n        float Hll = bumpScale * texture2D( bumpMap, vUv ).x;\n        float dBx = bumpScale * texture2D( bumpMap, vUv + dSTdx ).x - Hll;\n        float dBy = bumpScale * texture2D( bumpMap, vUv + dSTdy ).x - Hll;\n\n        return vec2( dBx, dBy );\n\n    }\n\n    vec3 perturbNormalArb( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {\n\n        vec3 vSigmaX = dFdx( surf_pos );\n        vec3 vSigmaY = dFdy( surf_pos );\n        vec3 vN = surf_norm;        // normalized\n\n        vec3 R1 = cross( vSigmaY, vN );\n        vec3 R2 = cross( vN, vSigmaX );\n\n        float fDet = dot( vSigmaX, R1 );\n\n        vec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\n        return normalize( abs( fDet ) * surf_norm - vGrad );\n\n    }\n\n#endif\n\n#ifdef USE_NORMALMAP\n\n    uniform sampler2D normalMap;\n    uniform vec2 normalScale;\n\n    // Per-Pixel Tangent Space Normal Mapping\n    // http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\n\n    vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {\n\n        vec3 q0 = dFdx( eye_pos.xyz );\n        vec3 q1 = dFdy( eye_pos.xyz );\n        vec2 st0 = dFdx( vUv.st );\n        vec2 st1 = dFdy( vUv.st );\n\n        vec3 S = normalize( q0 * st1.t - q1 * st0.t );\n        vec3 T = normalize( -q0 * st1.s + q1 * st0.s );\n        vec3 N = normalize( surf_norm );\n\n        vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;\n        mapN.xy = normalScale * mapN.xy;\n        mat3 tsn = mat3( S, T, N );\n        return normalize( tsn * mapN );\n\n    }\n\n#endif\n\n#ifdef USE_SPECULARMAP\n\n    uniform sampler2D specularMap;\n\n#endif\n#ifdef USE_LOGDEPTHBUF\n\n    uniform float logDepthBufFC;\n\n    #ifdef USE_LOGDEPTHBUF_EXT\n\n        #extension GL_EXT_frag_depth : enable\n        varying float vFragDepth;\n\n    #endif\n\n#endif\nvoid main() {\n    vec3 outgoingLight = vec3( 0.0 );\n    vec4 diffuseColor = vec4( diffuse, opacity );\n\n    // Transition between two diffuse colors\n    float smoothingLength = 0.5;\n    float l = carLength + smoothingLength;\n    float edge1 = ((l / 2.0) - (colorTransition * l)) + (smoothingLength / 2.0);\n    float edge2 = ((l / 2.0) - (colorTransition * l)) - (smoothingLength / 2.0);\n\n\n    if (vWorldPos.z > edge1) {\n        diffuseColor = vec4(diffuse2, opacity);\n    }\n\n    if (vWorldPos.z < edge1 && vWorldPos.z > edge2) {\n        diffuseColor = vec4(mix(diffuse, diffuse2, smoothstep(edge2, edge1, vWorldPos.z)), opacity);\n    }\n\n    #ifdef USE_PAINTMASK\n\n        // Apply paint mask, which determines the areas where diffuse color is applied\n        vec4 texelPaintMask = texture2D(paintMask, vUv);\n        diffuseColor.rgb = mix(vec3(1.0), diffuseColor.rgb, texelPaintMask.r);\n\n    #endif\n\n\n#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\n\n    gl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\n\n#endif\n#ifdef USE_MAP\n\n    vec4 texelColor = texture2D( map, vUv );\n\n    texelColor.xyz = inputToLinear( texelColor.xyz );\n\n    diffuseColor *= texelColor;\n\n#endif\n#ifdef USE_COLOR\n\n    diffuseColor.rgb *= vColor;\n\n#endif\n#ifdef USE_ALPHAMAP\n\n    diffuseColor.a *= texture2D( alphaMap, vUv ).g;\n\n#endif\n\n#ifdef ALPHATEST\n\n    if ( diffuseColor.a < ALPHATEST ) discard;\n\n#endif\n\nfloat specularStrength;\n\n#ifdef USE_SPECULARMAP\n\n    vec4 texelSpecular = texture2D( specularMap, vUv );\n    specularStrength = texelSpecular.r;\n\n#else\n\n    specularStrength = 1.0;\n\n#endif\n#ifndef FLAT_SHADED\n\n    vec3 normal = normalize( vNormal );\n\n    #ifdef DOUBLE_SIDED\n\n        normal = normal * ( -1.0 + 2.0 * float( gl_FrontFacing ) );\n\n    #endif\n\n#else\n\n    vec3 fdx = dFdx( vViewPosition );\n    vec3 fdy = dFdy( vViewPosition );\n    vec3 normal = normalize( cross( fdx, fdy ) );\n\n#endif\n\nvec3 viewPosition = normalize( vViewPosition );\n\n#ifdef USE_NORMALMAP\n\n    normal = perturbNormal2Arb( -vViewPosition, flipN * normal );\n\n#elif defined( USE_BUMPMAP )\n\n    normal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );\n\n#endif\n\nvec3 totalDiffuseLight = vec3( 0.0 );\nvec3 totalSpecularLight = vec3( 0.0 );\n\n#if MAX_POINT_LIGHTS > 0\n\n    for ( int i = 0; i < MAX_POINT_LIGHTS; i ++ ) {\n\n        vec4 lPosition = viewMatrix * vec4( pointLightPosition[ i ], 1.0 );\n        vec3 lVector = lPosition.xyz + vViewPosition.xyz;\n\n        float attenuation = calcLightAttenuation( length( lVector ), pointLightDistance[ i ], pointLightDecay[ i ] );\n\n        lVector = normalize( lVector );\n\n        // diffuse\n\n        float dotProduct = dot( normal, lVector );\n\n        #ifdef WRAP_AROUND\n\n            float pointDiffuseWeightFull = max( dotProduct, 0.0 );\n            float pointDiffuseWeightHalf = max( 0.5 * dotProduct + 0.5, 0.0 );\n\n            vec3 pointDiffuseWeight = mix( vec3( pointDiffuseWeightFull ), vec3( pointDiffuseWeightHalf ), wrapRGB );\n\n        #else\n\n            float pointDiffuseWeight = max( dotProduct, 0.0 );\n\n        #endif\n\n        totalDiffuseLight += pointLightColor[ i ] * pointDiffuseWeight * attenuation;\n\n                // specular\n\n        vec3 pointHalfVector = normalize( lVector + viewPosition );\n        float pointDotNormalHalf = max( dot( normal, pointHalfVector ), 0.0 );\n        float pointSpecularWeight = specularStrength * max( pow( pointDotNormalHalf, shininess ), 0.0 );\n\n        float specularNormalization = ( shininess + 2.0 ) / 8.0;\n\n        vec3 schlick = specular + vec3( 1.0 - specular ) * pow( max( 1.0 - dot( lVector, pointHalfVector ), 0.0 ), 5.0 );\n        totalSpecularLight += schlick * pointLightColor[ i ] * pointSpecularWeight * pointDiffuseWeight * attenuation * specularNormalization;\n\n    }\n\n#endif\n\n#if MAX_SPOT_LIGHTS > 0\n\n    for ( int i = 0; i < MAX_SPOT_LIGHTS; i ++ ) {\n\n        vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ], 1.0 );\n        vec3 lVector = lPosition.xyz + vViewPosition.xyz;\n\n        float attenuation = calcLightAttenuation( length( lVector ), spotLightDistance[ i ], spotLightDecay[ i ] );\n\n        lVector = normalize( lVector );\n\n        float spotEffect = dot( spotLightDirection[ i ], normalize( spotLightPosition[ i ] - vWorldPosition ) );\n\n        if ( spotEffect > spotLightAngleCos[ i ] ) {\n\n            spotEffect = max( pow( max( spotEffect, 0.0 ), spotLightExponent[ i ] ), 0.0 );\n\n            // diffuse\n\n            float dotProduct = dot( flipN * normal, lVector );\n\n            #ifdef WRAP_AROUND\n\n                float spotDiffuseWeightFull = max( dotProduct, 0.0 );\n                float spotDiffuseWeightHalf = max( 0.5 * dotProduct + 0.5, 0.0 );\n\n                vec3 spotDiffuseWeight = mix( vec3( spotDiffuseWeightFull ), vec3( spotDiffuseWeightHalf ), wrapRGB );\n\n            #else\n\n                float spotDiffuseWeight = max( dotProduct, 0.0 );\n\n            #endif\n\n            totalDiffuseLight += spotLightColor[ i ] * spotDiffuseWeight * attenuation * spotEffect;\n\n            // specular\n\n            vec3 spotHalfVector = normalize( lVector + viewPosition );\n            float spotDotNormalHalf = max( dot( flipN * normal, spotHalfVector ), 0.0 );\n            float spotSpecularWeight = specularStrength * max( pow( spotDotNormalHalf, shininess ), 0.0 );\n\n            float specularNormalization = ( shininess + 2.0 ) / 8.0;\n\n            vec3 schlick = specular + vec3( 1.0 - specular ) * pow( max( 1.0 - dot( lVector, spotHalfVector ), 0.0 ), 5.0 );\n            totalSpecularLight += schlick * spotLightColor[ i ] * spotSpecularWeight * spotDiffuseWeight * attenuation * specularNormalization * spotEffect;\n\n        }\n\n    }\n\n#endif\n\n#if MAX_DIR_LIGHTS > 0\n\n    for( int i = 0; i < MAX_DIR_LIGHTS; i ++ ) {\n\n        vec3 dirVector = transformDirection( directionalLightDirection[ i ], viewMatrix );\n\n        // diffuse\n\n        float dotProduct = dot( normal, dirVector );\n\n        #ifdef WRAP_AROUND\n\n            float dirDiffuseWeightFull = max( dotProduct, 0.0 );\n            float dirDiffuseWeightHalf = max( 0.5 * dotProduct + 0.5, 0.0 );\n\n            vec3 dirDiffuseWeight = mix( vec3( dirDiffuseWeightFull ), vec3( dirDiffuseWeightHalf ), wrapRGB );\n\n        #else\n\n            float dirDiffuseWeight = max( dotProduct, 0.0 );\n\n        #endif\n\n        totalDiffuseLight += directionalLightColor[ i ] * dirDiffuseWeight;\n\n        // specular\n\n        vec3 dirHalfVector = normalize( dirVector + viewPosition );\n        float dirDotNormalHalf = max( dot( normal, dirHalfVector ), 0.0 );\n        float dirSpecularWeight = specularStrength * max( pow( dirDotNormalHalf, shininess ), 0.0 );\n\n        /*\n        // fresnel term from skin shader\n        const float F0 = 0.128;\n\n        float base = 1.0 - dot( viewPosition, dirHalfVector );\n        float exponential = pow( base, 5.0 );\n\n        float fresnel = exponential + F0 * ( 1.0 - exponential );\n        */\n\n        /*\n        // fresnel term from fresnel shader\n        const float mFresnelBias = 0.08;\n        const float mFresnelScale = 0.3;\n        const float mFresnelPower = 5.0;\n\n        float fresnel = mFresnelBias + mFresnelScale * pow( 1.0 + dot( normalize( -viewPosition ), normal ), mFresnelPower );\n        */\n\n        float specularNormalization = ( shininess + 2.0 ) / 8.0;\n\n        //      dirSpecular += specular * directionalLightColor[ i ] * dirSpecularWeight * dirDiffuseWeight * specularNormalization * fresnel;\n\n        vec3 schlick = specular + vec3( 1.0 - specular ) * pow( max( 1.0 - dot( dirVector, dirHalfVector ), 0.0 ), 5.0 );\n        totalSpecularLight += schlick * directionalLightColor[ i ] * dirSpecularWeight * dirDiffuseWeight * specularNormalization;\n\n\n    }\n\n#endif\n\n#if MAX_HEMI_LIGHTS > 0\n\n    for( int i = 0; i < MAX_HEMI_LIGHTS; i ++ ) {\n\n        vec3 lVector = transformDirection( hemisphereLightDirection[ i ], viewMatrix );\n\n        // diffuse\n\n        float dotProduct = dot( flipN * normal, lVector );\n        float hemiDiffuseWeight = 0.5 * dotProduct + 0.5;\n\n        vec3 hemiColor = mix( hemisphereLightGroundColor[ i ], hemisphereLightSkyColor[ i ], hemiDiffuseWeight );\n\n        totalDiffuseLight += hemiColor;\n\n        // specular (sky light)\n\n        vec3 hemiHalfVectorSky = normalize( lVector + viewPosition );\n        float hemiDotNormalHalfSky = 0.5 * dot( flipN * normal, hemiHalfVectorSky ) + 0.5;\n        float hemiSpecularWeightSky = specularStrength * max( pow( max( hemiDotNormalHalfSky, 0.0 ), shininess ), 0.0 );\n\n        // specular (ground light)\n\n        vec3 lVectorGround = -lVector;\n\n        vec3 hemiHalfVectorGround = normalize( lVectorGround + viewPosition );\n        float hemiDotNormalHalfGround = 0.5 * dot( flipN * normal, hemiHalfVectorGround ) + 0.5;\n        float hemiSpecularWeightGround = specularStrength * max( pow( max( hemiDotNormalHalfGround, 0.0 ), shininess ), 0.0 );\n\n        float dotProductGround = dot( flipN * normal, lVectorGround );\n\n        float specularNormalization = ( shininess + 2.0 ) / 8.0;\n\n        vec3 schlickSky = specular + vec3( 1.0 - specular ) * pow( max( 1.0 - dot( lVector, hemiHalfVectorSky ), 0.0 ), 5.0 );\n        vec3 schlickGround = specular + vec3( 1.0 - specular ) * pow( max( 1.0 - dot( lVectorGround, hemiHalfVectorGround ), 0.0 ), 5.0 );\n        totalSpecularLight += hemiColor * specularNormalization * ( schlickSky * hemiSpecularWeightSky * max( dotProduct, 0.0 ) + schlickGround * hemiSpecularWeightGround * max( dotProductGround, 0.0 ) );\n\n    }\n\n#endif\n\n#ifdef METAL\n\n    outgoingLight += diffuseColor.rgb * ( totalDiffuseLight + ambientLightColor ) * specular + totalSpecularLight + emissive;\n\n#else\n\n    outgoingLight += diffuseColor.rgb * ( totalDiffuseLight + ambientLightColor ) + totalSpecularLight + emissive;\n\n#endif\n\n#ifdef USE_LIGHTMAP\n\n    outgoingLight *= diffuseColor.xyz * texture2D( lightMap, vUv2 ).xyz;\n\n#endif\n#ifdef USE_ENVMAP\n\n    #if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n\n\n        vec3 cameraToVertex = normalize( vWorldPosition - cameraPosition );\n\n        // Transforming Normal Vectors with the Inverse Transformation\n        vec3 worldNormal = inverseTransformDirection( flipN * normal, viewMatrix );\n\n        #ifdef ENVMAP_MODE_REFLECTION\n\n            vec3 reflectVec = reflect( cameraToVertex, worldNormal );\n\n        #else\n\n            vec3 reflectVec = refract( cameraToVertex, worldNormal, refractionRatio );\n\n        #endif\n\n    #else\n\n        vec3 reflectVec = vReflect;\n\n    #endif\n\n    #ifdef DOUBLE_SIDED\n        float flipNormal = ( -1.0 + 2.0 * float( gl_FrontFacing ) );\n    #else\n        float flipNormal = 1.0;\n    #endif\n\n    #ifdef ENVMAP_TYPE_CUBE\n        reflectVec.z += envMapOffset;\n        vec4 envColor = textureCube( envMap, flipNormal * vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );\n\n    #elif defined( ENVMAP_TYPE_EQUIREC )\n        vec2 sampleUV;\n        sampleUV.y = saturate( flipNormal * reflectVec.y * 0.5 + 0.5 );\n        sampleUV.x = atan( flipNormal * reflectVec.z, flipNormal * reflectVec.x ) * RECIPROCAL_PI2 + 0.5;\n        vec4 envColor = texture2D( envMap, sampleUV );\n\n    #elif defined( ENVMAP_TYPE_SPHERE )\n        vec3 reflectView = flipNormal * normalize((viewMatrix * vec4( reflectVec, 0.0 )).xyz + vec3(0.0,0.0,1.0));\n        vec4 envColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5 );\n    #endif\n\n    envColor.xyz = inputToLinear( envColor.xyz );\n\n    #ifdef USE_REFLECTIONMASK\n\n        vec4 maskTexel = texture2D(reflectionMask, vUv);\n        float chromeReflectivity = 0.75;\n        float plasticReflectivity = 0.1;\n\n        // Mix when area is chrome (red component in mask)\n        outgoingLight = mix( outgoingLight, envColor.xyz, specularStrength * maskTexel.r * chromeReflectivity);\n\n        // Add when area is shiny plastic / glass (blue component in mask)\n        outgoingLight += (envColor.xyz * specularStrength * maskTexel.b * plasticReflectivity);\n\n\n        #ifdef USE_PAINTMASK\n            // Mix when area is carpaint\n            outgoingLight = mix ( outgoingLight, envColor.xyz, specularStrength * reflectivity * texelPaintMask.r);\n        #endif\n\n    #else\n\n        #ifdef ENVMAP_BLENDING_MULTIPLY\n\n            outgoingLight = mix( outgoingLight, outgoingLight * envColor.xyz, specularStrength * reflectivity );\n\n        #elif defined( ENVMAP_BLENDING_MIX )\n\n            outgoingLight = mix( outgoingLight, envColor.xyz, specularStrength * reflectivity );\n\n        #elif defined( ENVMAP_BLENDING_ADD )\n\n            outgoingLight += envColor.xyz * specularStrength * reflectivity;\n\n        #endif\n\n    #endif\n\n#endif\n\n#ifdef USE_SHADOWMAP\n\n    #ifdef SHADOWMAP_DEBUG\n\n        vec3 frustumColors[3];\n        frustumColors[0] = vec3( 1.0, 0.5, 0.0 );\n        frustumColors[1] = vec3( 0.0, 1.0, 0.8 );\n        frustumColors[2] = vec3( 0.0, 0.5, 1.0 );\n\n    #endif\n\n    #ifdef SHADOWMAP_CASCADE\n\n        int inFrustumCount = 0;\n\n    #endif\n\n    float fDepth;\n    vec3 shadowColor = vec3( 1.0 );\n\n    for( int i = 0; i < MAX_SHADOWS; i ++ ) {\n\n        vec3 shadowCoord = vShadowCoord[ i ].xyz / vShadowCoord[ i ].w;\n\n                // if ( something && something ) breaks ATI OpenGL shader compiler\n                // if ( all( something, something ) ) using this instead\n\n        bvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\n        bool inFrustum = all( inFrustumVec );\n\n                // don't shadow pixels outside of light frustum\n                // use just first frustum (for cascades)\n                // don't shadow pixels behind far plane of light frustum\n\n        #ifdef SHADOWMAP_CASCADE\n\n            inFrustumCount += int( inFrustum );\n            bvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\n\n        #else\n\n            bvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\n\n        #endif\n\n        bool frustumTest = all( frustumTestVec );\n\n        if ( frustumTest ) {\n\n            shadowCoord.z += shadowBias[ i ];\n\n            #if defined( SHADOWMAP_TYPE_PCF )\n\n                        // Percentage-close filtering\n                        // (9 pixel kernel)\n                        // http://fabiensanglard.net/shadowmappingPCF/\n\n                float shadow = 0.0;\n\n        /*\n                        // nested loops breaks shader compiler / validator on some ATI cards when using OpenGL\n                        // must enroll loop manually\n\n                for ( float y = -1.25; y <= 1.25; y += 1.25 )\n                    for ( float x = -1.25; x <= 1.25; x += 1.25 ) {\n\n                        vec4 rgbaDepth = texture2D( shadowMap[ i ], vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy );\n\n                                // doesn't seem to produce any noticeable visual difference compared to simple texture2D lookup\n                                //vec4 rgbaDepth = texture2DProj( shadowMap[ i ], vec4( vShadowCoord[ i ].w * ( vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy ), 0.05, vShadowCoord[ i ].w ) );\n\n                        float fDepth = unpackDepth( rgbaDepth );\n\n                        if ( fDepth < shadowCoord.z )\n                            shadow += 1.0;\n\n                }\n\n                shadow /= 9.0;\n\n        */\n\n                const float shadowDelta = 1.0 / 9.0;\n\n                float xPixelOffset = 1.0 / shadowMapSize[ i ].x;\n                float yPixelOffset = 1.0 / shadowMapSize[ i ].y;\n\n                float dx0 = -1.25 * xPixelOffset;\n                float dy0 = -1.25 * yPixelOffset;\n                float dx1 = 1.25 * xPixelOffset;\n                float dy1 = 1.25 * yPixelOffset;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                shadowColor = shadowColor * vec3( ( 1.0 - shadowDarkness[ i ] * shadow ) );\n\n            #elif defined( SHADOWMAP_TYPE_PCF_SOFT )\n\n                        // Percentage-close filtering\n                        // (9 pixel kernel)\n                        // http://fabiensanglard.net/shadowmappingPCF/\n\n                float shadow = 0.0;\n\n                float xPixelOffset = 1.0 / shadowMapSize[ i ].x;\n                float yPixelOffset = 1.0 / shadowMapSize[ i ].y;\n\n                float dx0 = -1.0 * xPixelOffset;\n                float dy0 = -1.0 * yPixelOffset;\n                float dx1 = 1.0 * xPixelOffset;\n                float dy1 = 1.0 * yPixelOffset;\n\n                mat3 shadowKernel;\n                mat3 depthKernel;\n\n                depthKernel[0][0] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\n                depthKernel[0][1] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\n                depthKernel[0][2] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\n                depthKernel[1][0] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\n                depthKernel[1][1] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy ) );\n                depthKernel[1][2] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\n                depthKernel[2][0] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\n                depthKernel[2][1] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\n                depthKernel[2][2] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\n\n                vec3 shadowZ = vec3( shadowCoord.z );\n                shadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\n                shadowKernel[0] *= vec3(0.25);\n\n                shadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\n                shadowKernel[1] *= vec3(0.25);\n\n                shadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\n                shadowKernel[2] *= vec3(0.25);\n\n                vec2 fractionalCoord = 1.0 - fract( shadowCoord.xy * shadowMapSize[i].xy );\n\n                shadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\n                shadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\n\n                vec4 shadowValues;\n                shadowValues.x = mix( shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\n                shadowValues.y = mix( shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\n                shadowValues.z = mix( shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\n                shadowValues.w = mix( shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\n\n                shadow = dot( shadowValues, vec4( 1.0 ) );\n\n                shadowColor = shadowColor * vec3( ( 1.0 - shadowDarkness[ i ] * shadow ) );\n\n            #else\n\n                vec4 rgbaDepth = texture2D( shadowMap[ i ], shadowCoord.xy );\n                float fDepth = unpackDepth( rgbaDepth );\n\n                if ( fDepth < shadowCoord.z )\n\n        // spot with multiple shadows is darker\n\n                    shadowColor = shadowColor * vec3( 1.0 - shadowDarkness[ i ] );\n\n        // spot with multiple shadows has the same color as single shadow spot\n\n        //                  shadowColor = min( shadowColor, vec3( shadowDarkness[ i ] ) );\n\n            #endif\n\n        }\n\n\n        #ifdef SHADOWMAP_DEBUG\n\n            #ifdef SHADOWMAP_CASCADE\n\n                if ( inFrustum && inFrustumCount == 1 ) outgoingLight *= frustumColors[ i ];\n\n            #else\n\n                if ( inFrustum ) outgoingLight *= frustumColors[ i ];\n\n            #endif\n\n        #endif\n\n    }\n\n    // NOTE: I am unsure if this is correct in linear space.  -bhouston, Dec 29, 2014\n    shadowColor = inputToLinear( shadowColor );\n\n    outgoingLight = outgoingLight * shadowColor;\n\n#endif\n\n\n    outgoingLight = linearToOutput( outgoingLight );\n\n#ifdef USE_FOG\n\n    #ifdef USE_LOGDEPTHBUF_EXT\n\n        float depth = gl_FragDepthEXT / gl_FragCoord.w;\n\n    #else\n\n        float depth = gl_FragCoord.z / gl_FragCoord.w;\n\n    #endif\n\n    #ifdef FOG_EXP2\n\n        float fogFactor = exp2( - square( fogDensity ) * square( depth ) * LOG2 );\n        fogFactor = whiteCompliment( fogFactor );\n\n    #else\n\n        float fogFactor = smoothstep( fogNear, fogFar, depth );\n\n    #endif\n\n    outgoingLight = mix( outgoingLight, fogColor, fogFactor );\n\n#endif\n    float o = smoothstep(0.15, 0.35, vDistance);\n\n#ifdef USE_EMISSIVEMAP\n        float emissiveness = texture2D(emissiveMap, vUv).r;\n        vec3 ec = vec3(1.0);\n\n        #ifdef USE_EMISSIVECOLOR\n            ec = emissiveColor;\n        #endif\n\n        gl_FragColor = vec4( mix(outgoingLight.rgb, (texelColor.rgb + (vec3(1.0) * emissiveIntensity)) * ec, emissiveness * emissiveIntensity), diffuseColor.a * vOpacity * o );\n#else\n\n    gl_FragColor = vec4( outgoingLight, diffuseColor.a * vOpacity * o);\n#endif\n}",
           o = e('38'),
-          a = function(e) {
+          SteelMaterial = function(e) {
             (e = _.extend(
               {
                 vertexShader: i,
                 fragmentShader: r,
-                uniforms: THREE.UniformsUtils.clone(a.uniforms),
+                uniforms: THREE.UniformsUtils.clone(SteelMaterial.uniforms),
                 defines: {
                   USE_AOMAP: false,
                   LIGHTMAP_ENABLED: false,
@@ -39810,7 +39810,7 @@
               (this.envMapOffset = e.envMapOffset || 0),
               (this.uniforms.flipN.value = e.flipN ? -1 : 1);
           };
-        (a.uniforms = {
+        (SteelMaterial.uniforms = {
           diffuse: {
             type: 'c',
             value: new THREE.Color(0xeeeeee)
@@ -39992,9 +39992,9 @@
             value: 1
           }
         }),
-          a.inherit(o, {
+          SteelMaterial.inherit(o, {
             clone: function(e) {
-              var t = e || new a();
+              var t = e || new SteelMaterial();
               return (
                 Material.prototype.clone.call(this, e),
                 (t.map = this.map),
@@ -40010,7 +40010,7 @@
               );
             }
           }),
-          (t.exports = a);
+          (t.exports = SteelMaterial);
       },
       {
         38: 38
@@ -40023,12 +40023,12 @@
           r =
             "varying float vOpacity;\nuniform vec3 diffuse;\nuniform float opacity;\n#define PI 3.14159\n#define PI2 6.28318\n#define RECIPROCAL_PI2 0.15915494\n#define LOG2 1.442695\n#define EPSILON 1e-6\n\nfloat square( in float a ) { return a*a; }\nvec2  square( in vec2 a )  { return vec2( a.x*a.x, a.y*a.y ); }\nvec3  square( in vec3 a )  { return vec3( a.x*a.x, a.y*a.y, a.z*a.z ); }\nvec4  square( in vec4 a )  { return vec4( a.x*a.x, a.y*a.y, a.z*a.z, a.w*a.w ); }\nfloat saturate( in float a ) { return clamp( a, 0.0, 1.0 ); }\nvec2  saturate( in vec2 a )  { return clamp( a, 0.0, 1.0 ); }\nvec3  saturate( in vec3 a )  { return clamp( a, 0.0, 1.0 ); }\nvec4  saturate( in vec4 a )  { return clamp( a, 0.0, 1.0 ); }\nfloat average( in float a ) { return a; }\nfloat average( in vec2 a )  { return ( a.x + a.y) * 0.5; }\nfloat average( in vec3 a )  { return ( a.x + a.y + a.z) / 3.0; }\nfloat average( in vec4 a )  { return ( a.x + a.y + a.z + a.w) * 0.25; }\nfloat whiteCompliment( in float a ) { return saturate( 1.0 - a ); }\nvec2  whiteCompliment( in vec2 a )  { return saturate( vec2(1.0) - a ); }\nvec3  whiteCompliment( in vec3 a )  { return saturate( vec3(1.0) - a ); }\nvec4  whiteCompliment( in vec4 a )  { return saturate( vec4(1.0) - a ); }\nvec3 transformDirection( in vec3 normal, in mat4 matrix ) {\n    return normalize( ( matrix * vec4( normal, 0.0 ) ).xyz );\n}\n// http://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations\nvec3 inverseTransformDirection( in vec3 normal, in mat4 matrix ) {\n    return normalize( ( vec4( normal, 0.0 ) * matrix ).xyz );\n}\nvec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {\n    float distance = dot( planeNormal, point-pointOnPlane );\n    return point - distance * planeNormal;\n}\nfloat sideOfPlane( in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {\n    return sign( dot( point - pointOnPlane, planeNormal ) );\n}\nvec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal ) {\n    return pointOnLine + lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) );\n}\nfloat calcLightAttenuation( float lightDistance, float cutoffDistance, float decayExponent ) {\n    if ( decayExponent > 0.0 ) {\n      return pow( saturate( 1.0 - lightDistance / cutoffDistance ), decayExponent );\n    }\n    return 1.0;\n}\n\nvec3 inputToLinear( in vec3 a ) {\n#ifdef GAMMA_INPUT\n    return pow( a, vec3( float( GAMMA_FACTOR ) ) );\n#else\n    return a;\n#endif\n}\nvec3 linearToOutput( in vec3 a ) {\n#ifdef GAMMA_OUTPUT\n    return pow( a, vec3( 1.0 / float( GAMMA_FACTOR ) ) );\n#else\n    return a;\n#endif\n}\n\n#ifdef USE_COLOR\n\n    varying vec3 vColor;\n\n#endif\n\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP )\n\n    varying vec2 vUv;\n\n#endif\n\n#ifdef USE_MAP\n\n    uniform sampler2D map;\n\n#endif\n#ifdef USE_ALPHAMAP\n\n    uniform sampler2D alphaMap;\n\n#endif\n\n#ifdef USE_LIGHTMAP\n\n    varying vec2 vUv2;\n    uniform sampler2D lightMap;\n\n#endif\n#ifdef USE_ENVMAP\n\n    uniform float reflectivity;\n    uniform float envMapOffset;\n    #ifdef ENVMAP_TYPE_CUBE\n        uniform samplerCube envMap;\n    #else\n        uniform sampler2D envMap;\n    #endif\n    uniform float flipEnvMap;\n\n    #if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n\n        uniform float refractionRatio;\n\n    #else\n\n        varying vec3 vReflect;\n\n    #endif\n\n#endif\n\n#ifdef USE_FOG\n\n    uniform vec3 fogColor;\n\n    #ifdef FOG_EXP2\n\n        uniform float fogDensity;\n\n    #else\n\n        uniform float fogNear;\n        uniform float fogFar;\n    #endif\n\n#endif\n#ifdef USE_SHADOWMAP\n\n    uniform sampler2D shadowMap[ MAX_SHADOWS ];\n    uniform vec2 shadowMapSize[ MAX_SHADOWS ];\n\n    uniform float shadowDarkness[ MAX_SHADOWS ];\n    uniform float shadowBias[ MAX_SHADOWS ];\n\n    varying vec4 vShadowCoord[ MAX_SHADOWS ];\n\n    float unpackDepth( const in vec4 rgba_depth ) {\n\n        const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );\n        float depth = dot( rgba_depth, bit_shift );\n        return depth;\n\n    }\n\n#endif\n#ifdef USE_SPECULARMAP\n\n    uniform sampler2D specularMap;\n\n#endif\n#ifdef USE_LOGDEPTHBUF\n\n    uniform float logDepthBufFC;\n\n    #ifdef USE_LOGDEPTHBUF_EXT\n\n        #extension GL_EXT_frag_depth : enable\n        varying float vFragDepth;\n\n    #endif\n\n#endif\nvoid main() {\n    vec3 outgoingLight = vec3( 0.0 );\n    vec4 diffuseColor = vec4( diffuse, opacity );\n#if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)\n\n    gl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;\n\n#endif\n#ifdef USE_MAP\n\n    vec4 texelColor = texture2D( map, vUv );\n\n    texelColor.xyz = inputToLinear( texelColor.xyz );\n\n    diffuseColor *= texelColor;\n\n#endif\n#ifdef USE_COLOR\n\n    diffuseColor.rgb *= vColor;\n\n#endif\n#ifdef USE_ALPHAMAP\n\n    diffuseColor.a *= texture2D( alphaMap, vUv ).g;\n\n#endif\n\n#ifdef ALPHATEST\n\n    if ( diffuseColor.a < ALPHATEST ) discard;\n\n#endif\n\nfloat specularStrength;\n\n#ifdef USE_SPECULARMAP\n\n    vec4 texelSpecular = texture2D( specularMap, vUv );\n    specularStrength = texelSpecular.r;\n\n#else\n\n    specularStrength = 1.0;\n\n#endif\n    outgoingLight = diffuseColor.rgb;\n#ifdef USE_LIGHTMAP\n\n    outgoingLight *= diffuseColor.xyz * texture2D( lightMap, vUv2 ).xyz;\n\n#endif\n#ifdef USE_ENVMAP\n\n    vec3 reflectVec = vReflect;\n\n    #ifdef DOUBLE_SIDED\n        float flipNormal = ( -1.0 + 2.0 * float( gl_FrontFacing ) );\n    #else\n        float flipNormal = 1.0;\n    #endif\n\n    #ifdef ENVMAP_TYPE_CUBE\n        reflectVec.z += envMapOffset;\n        vec4 envColor = textureCube( envMap, flipNormal * vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );\n\n    #elif defined( ENVMAP_TYPE_EQUIREC )\n        vec2 sampleUV;\n        sampleUV.y = saturate( flipNormal * reflectVec.y * 0.5 + 0.5 );\n        sampleUV.x = atan( flipNormal * reflectVec.z, flipNormal * reflectVec.x ) * RECIPROCAL_PI2 + 0.5;\n        vec4 envColor = texture2D( envMap, sampleUV );\n\n    #elif defined( ENVMAP_TYPE_SPHERE )\n        vec3 reflectView = flipNormal * normalize((viewMatrix * vec4( reflectVec, 0.0 )).xyz + vec3(0.0,0.0,1.0));\n        vec4 envColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5 );\n    #endif\n\n    envColor.xyz = inputToLinear( envColor.xyz );\n\n    float r = reflectivity;\n\n    #ifdef DOUBLE_SIDED\n        if (gl_FrontFacing == false) {\n            r = 0.0;\n        }\n    #endif\n\n    #ifdef ENVMAP_BLENDING_MULTIPLY\n\n        outgoingLight = mix( outgoingLight, outgoingLight * envColor.xyz, specularStrength * r );\n\n    #elif defined( ENVMAP_BLENDING_MIX )\n\n        outgoingLight = mix( outgoingLight, envColor.xyz, specularStrength * r );\n\n    #elif defined( ENVMAP_BLENDING_ADD )\n\n        outgoingLight += envColor.xyz * specularStrength * r;\n\n    #endif\n\n#endif\n\n#ifdef USE_SHADOWMAP\n\n    #ifdef SHADOWMAP_DEBUG\n\n        vec3 frustumColors[3];\n        frustumColors[0] = vec3( 1.0, 0.5, 0.0 );\n        frustumColors[1] = vec3( 0.0, 1.0, 0.8 );\n        frustumColors[2] = vec3( 0.0, 0.5, 1.0 );\n\n    #endif\n\n    #ifdef SHADOWMAP_CASCADE\n\n        int inFrustumCount = 0;\n\n    #endif\n\n    float fDepth;\n    vec3 shadowColor = vec3( 1.0 );\n\n    for( int i = 0; i < MAX_SHADOWS; i ++ ) {\n\n        vec3 shadowCoord = vShadowCoord[ i ].xyz / vShadowCoord[ i ].w;\n\n                // if ( something && something ) breaks ATI OpenGL shader compiler\n                // if ( all( something, something ) ) using this instead\n\n        bvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );\n        bool inFrustum = all( inFrustumVec );\n\n                // don't shadow pixels outside of light frustum\n                // use just first frustum (for cascades)\n                // don't shadow pixels behind far plane of light frustum\n\n        #ifdef SHADOWMAP_CASCADE\n\n            inFrustumCount += int( inFrustum );\n            bvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );\n\n        #else\n\n            bvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );\n\n        #endif\n\n        bool frustumTest = all( frustumTestVec );\n\n        if ( frustumTest ) {\n\n            shadowCoord.z += shadowBias[ i ];\n\n            #if defined( SHADOWMAP_TYPE_PCF )\n\n                        // Percentage-close filtering\n                        // (9 pixel kernel)\n                        // http://fabiensanglard.net/shadowmappingPCF/\n\n                float shadow = 0.0;\n\n        /*\n                        // nested loops breaks shader compiler / validator on some ATI cards when using OpenGL\n                        // must enroll loop manually\n\n                for ( float y = -1.25; y <= 1.25; y += 1.25 )\n                    for ( float x = -1.25; x <= 1.25; x += 1.25 ) {\n\n                        vec4 rgbaDepth = texture2D( shadowMap[ i ], vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy );\n\n                                // doesn't seem to produce any noticeable visual difference compared to simple texture2D lookup\n                                //vec4 rgbaDepth = texture2DProj( shadowMap[ i ], vec4( vShadowCoord[ i ].w * ( vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy ), 0.05, vShadowCoord[ i ].w ) );\n\n                        float fDepth = unpackDepth( rgbaDepth );\n\n                        if ( fDepth < shadowCoord.z )\n                            shadow += 1.0;\n\n                }\n\n                shadow /= 9.0;\n\n        */\n\n                const float shadowDelta = 1.0 / 9.0;\n\n                float xPixelOffset = 1.0 / shadowMapSize[ i ].x;\n                float yPixelOffset = 1.0 / shadowMapSize[ i ].y;\n\n                float dx0 = -1.25 * xPixelOffset;\n                float dy0 = -1.25 * yPixelOffset;\n                float dx1 = 1.25 * xPixelOffset;\n                float dy1 = 1.25 * yPixelOffset;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\n                if ( fDepth < shadowCoord.z ) shadow += shadowDelta;\n\n                shadowColor = shadowColor * vec3( ( 1.0 - shadowDarkness[ i ] * shadow ) );\n\n            #elif defined( SHADOWMAP_TYPE_PCF_SOFT )\n\n                        // Percentage-close filtering\n                        // (9 pixel kernel)\n                        // http://fabiensanglard.net/shadowmappingPCF/\n\n                float shadow = 0.0;\n\n                float xPixelOffset = 1.0 / shadowMapSize[ i ].x;\n                float yPixelOffset = 1.0 / shadowMapSize[ i ].y;\n\n                float dx0 = -1.0 * xPixelOffset;\n                float dy0 = -1.0 * yPixelOffset;\n                float dx1 = 1.0 * xPixelOffset;\n                float dy1 = 1.0 * yPixelOffset;\n\n                mat3 shadowKernel;\n                mat3 depthKernel;\n\n                depthKernel[0][0] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy0 ) ) );\n                depthKernel[0][1] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );\n                depthKernel[0][2] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy1 ) ) );\n                depthKernel[1][0] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );\n                depthKernel[1][1] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy ) );\n                depthKernel[1][2] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );\n                depthKernel[2][0] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy0 ) ) );\n                depthKernel[2][1] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );\n                depthKernel[2][2] = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy1 ) ) );\n\n                vec3 shadowZ = vec3( shadowCoord.z );\n                shadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ ));\n                shadowKernel[0] *= vec3(0.25);\n\n                shadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ ));\n                shadowKernel[1] *= vec3(0.25);\n\n                shadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ ));\n                shadowKernel[2] *= vec3(0.25);\n\n                vec2 fractionalCoord = 1.0 - fract( shadowCoord.xy * shadowMapSize[i].xy );\n\n                shadowKernel[0] = mix( shadowKernel[1], shadowKernel[0], fractionalCoord.x );\n                shadowKernel[1] = mix( shadowKernel[2], shadowKernel[1], fractionalCoord.x );\n\n                vec4 shadowValues;\n                shadowValues.x = mix( shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y );\n                shadowValues.y = mix( shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y );\n                shadowValues.z = mix( shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y );\n                shadowValues.w = mix( shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y );\n\n                shadow = dot( shadowValues, vec4( 1.0 ) );\n\n                shadowColor = shadowColor * vec3( ( 1.0 - shadowDarkness[ i ] * shadow ) );\n\n            #else\n\n                vec4 rgbaDepth = texture2D( shadowMap[ i ], shadowCoord.xy );\n                float fDepth = unpackDepth( rgbaDepth );\n\n                if ( fDepth < shadowCoord.z )\n\n        // spot with multiple shadows is darker\n\n                    shadowColor = shadowColor * vec3( 1.0 - shadowDarkness[ i ] );\n\n        // spot with multiple shadows has the same color as single shadow spot\n\n        //                  shadowColor = min( shadowColor, vec3( shadowDarkness[ i ] ) );\n\n            #endif\n\n        }\n\n\n        #ifdef SHADOWMAP_DEBUG\n\n            #ifdef SHADOWMAP_CASCADE\n\n                if ( inFrustum && inFrustumCount == 1 ) outgoingLight *= frustumColors[ i ];\n\n            #else\n\n                if ( inFrustum ) outgoingLight *= frustumColors[ i ];\n\n            #endif\n\n        #endif\n\n    }\n\n    // NOTE: I am unsure if this is correct in linear space.  -bhouston, Dec 29, 2014\n    shadowColor = inputToLinear( shadowColor );\n\n    outgoingLight = outgoingLight * shadowColor;\n\n#endif\n\n\n    outgoingLight = linearToOutput( outgoingLight );\n\n#ifdef USE_FOG\n\n    #ifdef USE_LOGDEPTHBUF_EXT\n\n        float depth = gl_FragDepthEXT / gl_FragCoord.w;\n\n    #else\n\n        float depth = gl_FragCoord.z / gl_FragCoord.w;\n\n    #endif\n\n    #ifdef FOG_EXP2\n\n        float fogFactor = exp2( - square( fogDensity ) * square( depth ) * LOG2 );\n        fogFactor = whiteCompliment( fogFactor );\n\n    #else\n\n        float fogFactor = smoothstep( fogNear, fogFar, depth );\n\n    #endif\n\n    outgoingLight = mix( outgoingLight, fogColor, fogFactor );\n\n#endif\n    gl_FragColor = vec4( outgoingLight, diffuseColor.a * vOpacity);\n}",
           BasicCustomShaderMaterial = e('30'),
-          a = function(e) {
+          GlassMaterial = function(e) {
             (e = _.extend(
               {
                 vertexShader: i,
                 fragmentShader: r,
-                uniforms: THREE.UniformsUtils.clone(a.uniforms),
+                uniforms: THREE.UniformsUtils.clone(GlassMaterial.uniforms),
                 defines: {
                   TRANSPARENT_MODE: false
                 }
@@ -40052,7 +40052,7 @@
               (this.envMapOffset = e.envMapOffset || 0),
               (this.reflectivity = e.reflectivity || 0.15);
           };
-        (a.uniforms = {
+        (GlassMaterial.uniforms = {
           diffuse: {
             type: 'c',
             value: new THREE.Color(0xeeeeee)
@@ -40102,9 +40102,9 @@
             value: 0
           }
         }),
-          a.inherit(BasicCustomShaderMaterial, {
+          GlassMaterial.inherit(BasicCustomShaderMaterial, {
             clone: function(e) {
-              var t = e || new a();
+              var t = e || new GlassMaterial();
               return (
                 Material.prototype.clone.call(this, e),
                 (t.map = this.map),
@@ -40113,7 +40113,7 @@
               );
             }
           }),
-          (t.exports = a);
+          (t.exports = GlassMaterial);
       },
       {
         30: 30
@@ -41636,12 +41636,12 @@
         var Loader = e('21'),
           COLORS = e('17'),
           CustomMesh = e('55'),
-          a = (e('57'), e('53')),
+          HotSpot = (e('57'), e('53')),
           Wheel = (e('43'), e('42'), e('60')),
           Door = e('49'),
-          c = (e('34'), e('31')),
+          SteelMaterial = (e('34'), e('31')),
           InnerMaterial = e('38'),
-          u = e('32'),
+          GlassMaterial = e('32'),
           f = function() {
             THREE.Object3D.call(this),
               (this.cubeMapLightSoft = Loader.getTextureCube(
@@ -41711,7 +41711,7 @@
               h = Loader.getTexture('car/exterior/rearplate.png');
             (this.hotspots = []),
               (this.materials = {
-                body: new c({
+                body: new SteelMaterial({
                   map: t,
                   color: COLORS[2],
                   color2: COLORS[3],
@@ -41730,7 +41730,7 @@
                   transparent: false,
                   flipN: false
                 }),
-                bodyFlip: new c({
+                bodyFlip: new SteelMaterial({
                   map: t,
                   color: COLORS[2],
                   color2: COLORS[3],
@@ -41749,7 +41749,7 @@
                   transparent: false,
                   flipN: true
                 }),
-                glass: new u({
+                glass: new GlassMaterial({
                   color: 0,
                   map: t,
                   envMap: this.cubeMapLightSharp,
@@ -41767,7 +41767,7 @@
                   opacity: 1,
                   depthWrite: false
                 }),
-                rearlight: new c({
+                rearlight: new SteelMaterial({
                   map: t,
                   color: COLORS[2],
                   color2: COLORS[3],
@@ -41867,7 +41867,7 @@
               p = Loader.getTexture(
                 'car/interior/JFC_Int_Carrosserie_Mask.png'
               );
-            (this.materials.interiorFront = new c({
+            (this.materials.interiorFront = new SteelMaterial({
               map: e,
               color: COLORS[2],
               color2: COLORS[3],
@@ -41999,7 +41999,7 @@
               (this.shadow = e);
           },
           addHotspot: function(e) {
-            var t = new a(e);
+            var t = new HotSpot(e);
             this.add(t),
               this.hotspots.push(t),
               this.dispatchEvent({
@@ -42364,13 +42364,13 @@
       // Car
       function(e, t, n) {
         var i = e('44'),
-          r = e('52'),
+          HeadLights = e('52'),
           Loader = (e('55'), e('21')),
           COLORS = (e('36'), e('17')),
           s = 7.5,
-          l = function(e) {
+          Car = function(e) {
             i.call(this, e);
-            var t = (this.headlights = new r({
+            var t = (this.headlights = new HeadLights({
               envMap: this.cubeMapLightSharp
             }));
             this.body.add(t),
@@ -42384,7 +42384,7 @@
                 this
               );
           };
-        l.inherit(i, {
+        Car.inherit(i, {
           initFrontGlow: function() {
             (this.frontGlowMaterial = new THREE.MeshBasicMaterial({
               map: Loader.getTexture('env/c-glow.png'),
@@ -42479,7 +42479,7 @@
               );
           }
         }),
-          (t.exports = l);
+          (t.exports = Car);
       },
       {
         17: 17,
@@ -42868,18 +42868,18 @@
               loop: false,
               debug: false
             });
-            var t = new CustomMesh('door', function(e) {
+            var Door = new CustomMesh('door', function(e) {
               var t = e.geometry;
               (t.skinIndices = []), (t.skinWeights = []);
             });
-            t.setMaterial('JFC_Body', e.materials.body),
-              t.setMaterial('JFC_Body_Flip', e.materials.bodyFlip),
-              t.setMaterial('JFC_Glass', e.materials.glass),
-              t.setMaterial('JFC_Others', e.materials.body),
-              t.setMaterial('JFC_Int_Front', e.materials.interiorFront),
-              t.setMaterial('JFC_Int_Back', e.materials.InnerMaterial),
+            Door.setMaterial('JFC_Body', e.materials.body),
+              Door.setMaterial('JFC_Body_Flip', e.materials.bodyFlip),
+              Door.setMaterial('JFC_Glass', e.materials.glass),
+              Door.setMaterial('JFC_Others', e.materials.body),
+              Door.setMaterial('JFC_Int_Front', e.materials.interiorFront),
+              Door.setMaterial('JFC_Int_Back', e.materials.InnerMaterial),
               (this.rotation.x = Math.PI / 2),
-              this.addToBone(t, 'Bone_01');
+              this.addToBone(Door, 'Bone_01');
           };
         o.inherit(BaseModel, {}), (t.exports = o);
       },
@@ -43072,7 +43072,7 @@
         var Loader = e('21'),
           CustomMesh = e('55'),
           InnerMaterial = e('38'),
-          a = function(e) {
+          HeadLights = function(e) {
             THREE.Object3D.call(this),
               (this.envMap = e.envMap),
               (this.mesh = new CustomMesh('headlights')),
@@ -43109,7 +43109,7 @@
               this.mesh.setMaterial('JFC_Optic', innerMaterial),
               this.mesh.setMaterial('JFC_Glass_Optic', glassMaterial);
           };
-        a.inherit(THREE.Object3D, {
+        HeadLights.inherit(THREE.Object3D, {
           setEnvMap: function(e) {
             (this.innerMaterial.envMap = e), (this.glassMaterial.envMap = e);
           },
@@ -43122,7 +43122,7 @@
               (this.innerMaterial.emissiveMap = this.emissiveMap);
           }
         }),
-          (t.exports = a);
+          (t.exports = HeadLights);
       },
       {
         21: 21,
@@ -43133,7 +43133,7 @@
     53: [
       function(e, t, n) {
         var Loader = e('21'),
-          r = function(e) {
+          HotSpot = function(e) {
             THREE.Sprite.call(
               this,
               new THREE.SpriteMaterial({
@@ -43154,7 +43154,7 @@
                 fade: new TWEEN.Tween()
               });
           };
-        r.inherit(THREE.Sprite, {
+        HotSpot.inherit(THREE.Sprite, {
           update: (function() {
             var e = new THREE.Vector3(),
               t = TWEEN.Easing.Quartic.Out;
@@ -43201,7 +43201,7 @@
               .start();
           }
         }),
-          (t.exports = r);
+          (t.exports = HotSpot);
       },
       {
         21: 21
@@ -44030,7 +44030,7 @@
       function(e, t, n) {
         var Loader = e('21'),
           CustomMesh = e('55'),
-          o = (e('42'), e('31')),
+          SteelMaterial = (e('42'), e('31')),
           a = e('39'),
           Wheel = function(e) {
             THREE.Object3D.call(this),
@@ -44060,7 +44060,7 @@
               u = Loader.getTexture('car/wheels/tire/JFC_Tire.jpg'),
               f = Loader.getTexture('car/wheels/tire/JFC_Tire_NM.png');
             (this.materials = {
-              rim: new o({
+              rim: new SteelMaterial({
                 map: n,
                 color: 0xffffff,
                 normalMap: l,
