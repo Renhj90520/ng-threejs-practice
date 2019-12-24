@@ -14429,14 +14429,14 @@
     ],
     21: [
       function(e, t, n) {
-        function i(e) {
-          var t = e[0],
-            n = e[1];
-          (m[t] = n), (v += n);
+        function cacheSize(e) {
+          var path = e[0],
+            size = e[1];
+          (sizes[path] = size), (totalSize += size);
         }
-        function r(e, t) {
-          e.forEach(function(e) {
-            i([t + '/' + e[0], e[1]]);
+        function calculateSizes(resources, folder) {
+          resources.forEach(function(e) {
+            cacheSize([folder + '/' + e[0], e[1]]);
           });
         }
         function o() {
@@ -14445,10 +14445,10 @@
           });
         }
         function a(e) {
-          (g += m[e] / v), o();
+          (g += sizes[e] / totalSize), o();
         }
-        var s = e('11'),
-          l = e('13'),
+        var files = e('11'),
+          textures = e('13'),
           c = e('20'),
           Loader = {
             _timers: {}
@@ -14457,31 +14457,33 @@
           f = {},
           d = {},
           p = {},
-          m = {},
-          v = 0,
+          sizes = {},
+          totalSize = 0,
           g = 0,
           y = [];
         (Loader.onLoadingProgress = function(e) {
           y.push(e);
         }),
-          (Loader.load = function(e) {
-            var models = e.models,
-              textureBundles = e.textureBundles,
+          (Loader.load = function(resources) {
+            var models = resources.models,
+              textureBundles = resources.textureBundles,
               meshes = [];
             return (
-              (m = {}),
-              (v = 0),
+              (sizes = {}),
+              (totalSize = 0),
               (g = 0),
               models &&
-                (_.each(s, function(e, n) {
-                  _.include(models, n) && i(e);
+                (_.each(files, function(e, n) {
+                  _.include(models, n) && cacheSize(e);
                 }),
                 meshes.push(Loader.loadMeshes(models))),
               textureBundles &&
-                (_.each(l, function(e, t) {
-                  _.include(textureBundles, t) && r(e, t);
+                (_.each(textures, function(e, t) {
+                  _.include(textureBundles, t) && calculateSizes(e, t);
                 }),
-                meshes.push(Loader.loadTextureBundles(e.textureBundles))),
+                meshes.push(
+                  Loader.loadTextureBundles(resources.textureBundles)
+                )),
               meshes
             );
           }),
@@ -14539,8 +14541,8 @@
             return $.when.apply($, _.map(e, Loader.loadTexture));
           }),
           (Loader.loadTextureBundle = function(e) {
-            if (!_.has(l, e)) throw 'Unknown bundle: ' + e;
-            var t = l[e].map(function(t) {
+            if (!_.has(textures, e)) throw 'Unknown bundle: ' + e;
+            var t = textures[e].map(function(t) {
               return e + '/' + t[0];
             });
             return Loader.loadTextures(t);
@@ -14549,7 +14551,7 @@
             return $.when.apply($, _.map(e, Loader.loadTextureBundle));
           }),
           (Loader.loadAllTextures = function() {
-            return Loader.loadTextureBundles(_.keys(l));
+            return Loader.loadTextureBundles(_.keys(textures));
           }),
           (Loader.getTexture = function(e) {
             if (!_.has(p, e)) throw 'Texture not found: ' + e;
@@ -39583,12 +39585,12 @@
     ],
     28: [
       function(e, t, n) {
-        function i(e, t) {
+        function i(e, resources) {
           var n = $('#loading .js-fill');
           Loader.onLoadingProgress(function(e) {
             n.css('width', Math.round(100 * e) + '%');
           });
-          var i = _.flatten([Loader.load(t), Audios.preloadAll()]);
+          var i = _.flatten([Loader.load(resources), Audios.preloadAll()]);
           $.when.apply(null, i).done(function() {
             Detector.webgl
               ? _.defer(function() {
@@ -39605,10 +39607,10 @@
                 (window.HEIGHT = window.innerHeight);
             });
         }
-        function r(e) {
-          o.setup(e),
-            e.start($('#container')),
-            e.hideStatusBar(),
+        function r(page) {
+          o.setup(page),
+            page.start($('#container')),
+            page.hideStatusBar(),
             $('#hud').removeClass('hidden'),
             $('#loading').addClass('hidden');
         }
