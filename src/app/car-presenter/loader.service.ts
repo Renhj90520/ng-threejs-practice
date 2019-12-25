@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import * as _ from 'lodash';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class LoaderService {
   files = {
     exterior: ['jfc-ext.js', 1601554],
@@ -124,8 +124,41 @@ export class LoaderService {
     ],
     textureBundles: ['car', 'env']
   };
+  sizes: any = {};
+  progressReport = new BehaviorSubject('100');
   constructor(private http: HttpClient) {}
   load(resources) {
-    
+    const models = resources.models;
+    const textureBundles = resources.textureBundles;
+    const meshes = [];
+    const totalSize = 0;
+    const percent = 0;
+
+    const reqs = [];
+    if (models) {
+      _.each(this.files, (val, key) => {
+        if (_.includes(models, key)) {
+          const req = this.loadMesh(val[0]);
+          reqs.push(req);
+        }
+      });
+    }
+
+    forkJoin(reqs).subscribe(result => {
+      console.log(result);
+    });
+  }
+  cacheSize(file) {
+    const path = file[0];
+    const size = file[1];
+    this.sizes[path] = size;
+  }
+
+  loadMesh(filePath) {
+    return this.loadResource(`/assets/carpresenter/models/${filePath}`);
+  }
+
+  loadResource(path) {
+    return this.http.get(path, { reportProgress: true, responseType: 'text' });
   }
 }

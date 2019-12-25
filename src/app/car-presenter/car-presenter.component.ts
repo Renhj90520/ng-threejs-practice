@@ -4,6 +4,8 @@ import Ground from './ground';
 import CustomControls from './custom-controls';
 import Stage from './stage';
 import AutoCamera from './auto-camera';
+import { LoaderService } from './loader.service';
+
 @Component({
   selector: 'app-car-presenter',
   templateUrl: './car-presenter.component.html',
@@ -17,7 +19,7 @@ export class CarPresenterComponent implements OnInit {
   orbitCamera: THREE.PerspectiveCamera;
   interiorCamera: THREE.PerspectiveCamera;
   autoCamera: AutoCamera;
-  transitionCamera: THREE.PerspectiveCamera;
+  transitioncamera: THREE.PerspectiveCamera;
   width;
   height;
   ground: Ground;
@@ -29,10 +31,29 @@ export class CarPresenterComponent implements OnInit {
   objects = [];
   stage: Stage;
 
-  constructor() {}
+  constructor(private loaderService: LoaderService) {}
 
   ngOnInit() {
     this.initTHREE();
+    this.loaderService.progressReport.subscribe(percent => {
+      console.log(percent);
+    });
+    this.loaderService.load({
+      models: [
+        'camera_auto',
+        'camera_transition',
+        'exterior',
+        'interior',
+        'door',
+        'tire',
+        'rim',
+        'screw',
+        'logo',
+        'headlights',
+        'tunnel'
+      ],
+      textureBundles: ['car', 'env']
+    });
     this.initAutoCamera();
     this.initLights();
     this.initGround();

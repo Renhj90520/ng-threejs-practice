@@ -43,7 +43,9 @@ import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
 import { RenderTargetComponent } from './render-target/render-target.component';
 import { BreatheComponent } from './breathe/breathe.component';
 import { CarPresenterComponent } from './car-presenter/car-presenter.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LoaderService } from './car-presenter/loader.service';
+import { LoaderInterceptor } from './car-presenter/loader-interceptor';
 
 @NgModule({
   declarations: [
@@ -90,7 +92,10 @@ import { HttpClientModule } from '@angular/common/http';
     BreatheComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
-  providers: [],
+  providers: [
+    LoaderService,
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

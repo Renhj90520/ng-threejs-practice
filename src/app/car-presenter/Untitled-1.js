@@ -14429,9 +14429,9 @@
     ],
     21: [
       function(e, t, n) {
-        function cacheSize(e) {
-          var path = e[0],
-            size = e[1];
+        function cacheSize(file) {
+          var path = file[0],
+            size = file[1];
           (sizes[path] = size), (totalSize += size);
         }
         function calculateSizes(resources, folder) {
@@ -14441,11 +14441,11 @@
         }
         function o() {
           _.each(y, function(e) {
-            e(g);
+            e(percent);
           });
         }
         function a(e) {
-          (g += sizes[e] / totalSize), o();
+          (percent += sizes[e] / totalSize), o();
         }
         var files = e('11'),
           textures = e('13'),
@@ -14459,7 +14459,7 @@
           p = {},
           sizes = {},
           totalSize = 0,
-          g = 0,
+          percent = 0,
           y = [];
         (Loader.onLoadingProgress = function(e) {
           y.push(e);
@@ -14471,10 +14471,10 @@
             return (
               (sizes = {}),
               (totalSize = 0),
-              (g = 0),
+              (percent = 0),
               models &&
-                (_.each(files, function(e, n) {
-                  _.include(models, n) && cacheSize(e);
+                (_.each(files, function(val, key) {
+                  _.include(models, key) && cacheSize(val);
                 }),
                 meshes.push(Loader.loadMeshes(models))),
               textureBundles &&
