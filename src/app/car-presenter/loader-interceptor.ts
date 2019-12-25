@@ -14,18 +14,20 @@ import { Injectable } from '@angular/core';
 export class LoaderInterceptor implements HttpInterceptor {
   private requests: HttpRequest<any>[] = [];
   totalSize = 0;
+  downloadedSizeInfo: any = {};
   downloadedSize = 0;
+
   constructor(private loaderService: LoaderService) {}
   removeRequest(req: HttpRequest<any>) {
     const idx = this.requests.indexOf(req);
     if (idx >= 0) {
       this.requests.splice(idx, 1);
     }
-    this.loaderService.progressReport.next(
-      this.totalSize === 0
-        ? null
-        : ((this.downloadedSize / this.totalSize) * 100).toFixed(2)
-    );
+    // this.loaderService.progressReport.next(
+    //   this.totalSize === 0
+    //     ? null
+    //     : ((this.downloadedSize / this.totalSize) * 100).toFixed(2)
+    // );
   }
   intercept(
     req: HttpRequest<any>,
@@ -41,16 +43,25 @@ export class LoaderInterceptor implements HttpInterceptor {
             this.removeRequest(req);
             observer.next(event);
           }
-          if (event.type === HttpEventType.Response) {
-            console.log(event);
-          }
-          if (event.type === HttpEventType.ResponseHeader) {
-            console.log(event);
-          }
+
           if (event.type === HttpEventType.DownloadProgress) {
-            console.log(this.requests.indexOf(req));
-            console.log(event.loaded);
-            console.log(event.total);
+            if (this.downloadedSizeInfo[req.url] === undefined) {
+              this.totalSize += event.total;
+            }
+            this.downloadedSizeInfo[req.url] = event.loaded;
+            this.downloadedSize = 0;
+            for (const key in this.downloadedSizeInfo) {
+              const size = this.downloadedSizeInfo[key];
+              this.downloadedSize += size;
+            }
+            this.loaderService.progressReport.next(
+              ((this.downloadedSize / this.totalSize) * 100).toFixed(2)
+            );
+            if (this.downloadedSize === this.totalSize) {
+              this.downloadedSizeInfo = {};
+              this.downloadedSize = 0;
+              this.totalSize = 0;
+            }
           }
         },
         err => {
