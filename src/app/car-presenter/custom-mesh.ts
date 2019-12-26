@@ -1,16 +1,16 @@
 import * as THREE from 'three';
-import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
 
 export default class CustomMesh extends THREE.Mesh {
   materials = [];
-  constructor(filePath) {
+  constructor(meshKey, loaderService) {
     super();
-    const loader = new LegacyJSONLoader();
-    loader.load(`/assets/carpresenter/models/${filePath}`, result => {
-      console.log(result);
-      this.geometry = result.geometry;
-      this.materials = result.materials || [];
-    });
+
+    const mesh = loaderService.meshes.find(m => (m.key = meshKey));
+    console.log(mesh);
+    if (mesh) {
+      this.geometry = mesh.geometry;
+      this.materials = mesh.materials || [];
+    }
   }
 
   getMaterial(name) {

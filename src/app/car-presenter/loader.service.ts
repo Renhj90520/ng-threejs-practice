@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as _ from 'lodash';
 import { BehaviorSubject, forkJoin } from 'rxjs';
+import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
 
 @Injectable()
 export class LoaderService {
@@ -124,28 +125,46 @@ export class LoaderService {
     ],
     textureBundles: ['car', 'env']
   };
-  sizes: any = {};
-  progressReport = new BehaviorSubject('100');
+  progressReport = new BehaviorSubject('0');
+
+  meshes = [];
   constructor(private http: HttpClient) {}
   load(resources) {
     const models = resources.models;
-    const textureBundles = resources.textureBundles;
-    const meshes = [];
-    const totalSize = 0;
-    const percent = 0;
 
     const reqs = [];
     if (models) {
       _.each(this.files, (val, key) => {
         if (_.includes(models, key)) {
           const req = this.loadMesh(val);
-          reqs.push(req);
+          reqs.push({ key, req });
         }
       });
     }
 
-    forkJoin(reqs).subscribe(result => {
-      console.log(result);
+    // if (textureBundles) {
+    //   _.each(this.textures, (val, key) => {
+    //     if (_.includes(textureBundles, key)) {
+    //       const req = this.loadTextureBundles(textureBundles);
+    //       reqs.push({ key, req });
+    //     }
+    //   });
+    // }
+    const jsonLoader = new LegacyJSONLoader();
+    forkJoin(reqs.map(r => r.req)).subscribe(result => {
+      const keys = reqs.map(r => r.key);
+      for (let i = 0; i < result.length; i++) {
+        const meshStr = result[i];
+        const key = keys[i];
+        const meshInfo = this.meshes.find(m => m.key === key);
+        const mesh = jsonLoader.parse(JSON.parse(meshStr), './textures/');
+        if (meshInfo) {
+          meshInfo.mesh = mesh;
+        } else {
+          this.meshes.push({ key, mesh });
+        }
+      }
+      console.log(this.meshes);
     });
   }
 

@@ -36,7 +36,12 @@ export class CarPresenterComponent implements OnInit {
   ngOnInit() {
     this.initTHREE();
     this.loaderService.progressReport.subscribe(percent => {
-      console.log(percent);
+      if (+percent >= 100) {
+        this.initAutoCamera();
+        this.initLights();
+        this.initGround();
+        this.initStage();
+      }
     });
     this.loaderService.load({
       models: [
@@ -54,14 +59,11 @@ export class CarPresenterComponent implements OnInit {
       ],
       textureBundles: ['car', 'env']
     });
-    this.initAutoCamera();
-    this.initLights();
-    this.initGround();
-    this.initStage();
+
     this.update();
   }
   initStage() {
-    this.stage = new Stage(this.camera, this.renderer);
+    this.stage = new Stage(this.camera, this.renderer, this.loaderService);
     this.scene.add(this.stage);
     this.controls = this.stage.exteriorControls;
     this.stage.setMode('day');

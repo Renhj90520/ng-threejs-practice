@@ -14467,7 +14467,7 @@
           (Loader.load = function(resources) {
             var models = resources.models,
               textureBundles = resources.textureBundles,
-              meshes = [];
+              reqs = [];
             return (
               (sizes = {}),
               (totalSize = 0),
@@ -14476,15 +14476,15 @@
                 (_.each(files, function(val, key) {
                   _.include(models, key) && cacheSize(val);
                 }),
-                meshes.push(Loader.loadMeshes(models))),
+                reqs.push(Loader.loadMeshes(models))),
               textureBundles &&
                 (_.each(textures, function(e, t) {
                   _.include(textureBundles, t) && calculateSizes(e, t);
                 }),
-                meshes.push(
+                reqs.push(
                   Loader.loadTextureBundles(resources.textureBundles)
                 )),
-              meshes
+              reqs
             );
           }),
           (Loader.loadMesh = function(e) {

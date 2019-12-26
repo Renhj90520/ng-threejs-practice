@@ -16,9 +16,11 @@ export default class Stage extends THREE.Object3D {
   renderer: any;
   lensFlare: LensFlare;
   rearGlow: THREE.Mesh;
+  loaderService: any;
 
-  constructor(camera, renderer) {
+  constructor(camera, renderer, loaderService) {
     super();
+    this.loaderService = loaderService;
     this.camera = camera;
     this.renderer = renderer;
     this.skyColor = new THREE.Color(0xffffff);
@@ -81,7 +83,8 @@ export default class Stage extends THREE.Object3D {
     this.add(this.vignetting);
   }
   initTunnel() {
-    this.tunnel = new Tunnel(this.skyColor);
+    debugger;
+    this.tunnel = new Tunnel({ skyColor: this.skyColor }, this.loaderService);
     this.add(this.tunnel);
   }
   setMode(mode, duration = 0.35) {
