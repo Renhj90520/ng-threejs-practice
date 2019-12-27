@@ -83,7 +83,6 @@ export default class Stage extends THREE.Object3D {
     this.add(this.vignetting);
   }
   initTunnel() {
-    debugger;
     this.tunnel = new Tunnel({ skyColor: this.skyColor }, this.loaderService);
     this.add(this.tunnel);
   }

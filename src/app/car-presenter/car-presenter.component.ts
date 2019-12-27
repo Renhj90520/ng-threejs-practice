@@ -36,12 +36,13 @@ export class CarPresenterComponent implements OnInit {
   ngOnInit() {
     this.initTHREE();
     this.loaderService.progressReport.subscribe(percent => {
-      if (+percent >= 100) {
-        this.initAutoCamera();
-        this.initLights();
-        this.initGround();
-        this.initStage();
-      }
+      console.log(percent);
+    });
+    this.loaderService.onLoadFinish.subscribe(() => {
+      this.initAutoCamera();
+      this.initLights();
+      this.initGround();
+      this.initStage();
     });
     this.loaderService.load({
       models: [
@@ -71,7 +72,7 @@ export class CarPresenterComponent implements OnInit {
   initAutoCamera() {
     this.autoCamera = new AutoCamera(
       this.width / this.height,
-      'JFC_USP_MS_Parcours_Camera'
+      this.loaderService
     );
     this.autoCamera.name = 'auto';
   }
@@ -130,7 +131,7 @@ export class CarPresenterComponent implements OnInit {
       this.stage.update();
     }
     this.updateControls();
-    this.autoCamera.update();
+    // this.autoCamera.update();
     requestAnimationFrame(this.update.bind(this));
   }
   updateControls() {

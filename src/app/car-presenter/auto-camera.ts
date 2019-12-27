@@ -7,32 +7,30 @@ export default class AutoCamera extends THREE.Object3D {
   action: THREE.AnimationAction;
   clock = new THREE.Clock();
   //JFC_USP_MS_Parcours_Camera
-  constructor(aspect, animation) {
+  constructor(aspect, loaderService) {
     super();
 
     this.cinematicCamera = new THREE.PerspectiveCamera(30, aspect, 0.001, 100);
-    const jsonLoader = new LegacyJSONLoader();
 
-    jsonLoader.load(
-      `/assets/carpresenter/models/${animation}.js`,
-      (geometry: any) => {
-        const mesh = new THREE.SkinnedMesh(
-          new THREE.BufferGeometry().fromGeometry(geometry)
-        );
-        const skeleton = new THREE.Skeleton(this.parseBones(geometry, false));
-        const rootBone = skeleton.bones[0];
-        console.log(skeleton);
-        mesh.add(rootBone);
-        mesh.bind(skeleton);
-        this.mixer = new THREE.AnimationMixer(mesh);
-        const clips = geometry.animations;
+    const meshInfo = loaderService.meshes.find(m => m.key === 'camera_auto');
+    if (meshInfo) {
+      const geometry = meshInfo.mesh.geometry;
+      const mesh = new THREE.SkinnedMesh(
+        new THREE.BufferGeometry().fromGeometry(geometry)
+      );
+      const skeleton = new THREE.Skeleton(this.parseBones(geometry, false));
+      const rootBone = skeleton.bones[0];
+      console.log(skeleton);
+      mesh.add(rootBone);
+      mesh.bind(skeleton);
+      this.mixer = new THREE.AnimationMixer(mesh);
+      const clips = geometry.animations;
 
-        clips.forEach(clip => {
-          this.action = this.mixer.clipAction(clip);
-          this.action.play();
-        });
-      }
-    );
+      clips.forEach(clip => {
+        this.action = this.mixer.clipAction(clip);
+        this.action.play();
+      });
+    }
   }
 
   parseBones(geometry: THREE.Geometry, isObject) {

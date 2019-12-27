@@ -5,11 +5,10 @@ export default class CustomMesh extends THREE.Mesh {
   constructor(meshKey, loaderService) {
     super();
 
-    const mesh = loaderService.meshes.find(m => (m.key = meshKey));
-    console.log(mesh);
-    if (mesh) {
-      this.geometry = mesh.geometry;
-      this.materials = mesh.materials || [];
+    const meshInfo = loaderService.meshes.find(m => m.key === meshKey);
+    if (meshInfo) {
+      this.geometry = meshInfo.mesh.geometry;
+      this.materials = meshInfo.mesh.materials || [];
     }
   }
 

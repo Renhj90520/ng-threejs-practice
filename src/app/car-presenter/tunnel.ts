@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import TunnelMaterial from './tunnel-material';
-import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
 import { TweenLite, Power2 } from 'gsap';
 
 export default class Tunnel extends THREE.Object3D {
@@ -50,13 +49,8 @@ export default class Tunnel extends THREE.Object3D {
     const meshInfo = loaderService.meshes.find(m => m.key === 'tunnel');
     if (meshInfo) {
       this.mesh = new THREE.Mesh(meshInfo.mesh.geometry, this.material);
+      this.add(this.mesh);
     }
-    // const jsonLoader = new LegacyJSONLoader();
-    // jsonLoader.load('/assets/carpresenter/models/tunnel.js', (result: any) => {
-    //   this.mesh = new THREE.Mesh(result, this.material);
-    //   this.add(this.mesh);
-    //   console.log(this.mesh);
-    // });
   }
   setMode(mode, duration = 0.35) {
     const material: any = this.material;

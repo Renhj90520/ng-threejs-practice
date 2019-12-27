@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as _ from 'lodash';
 import { BehaviorSubject, forkJoin } from 'rxjs';
@@ -126,7 +126,7 @@ export class LoaderService {
     textureBundles: ['car', 'env']
   };
   progressReport = new BehaviorSubject('0');
-
+  onLoadFinish = new EventEmitter();
   meshes = [];
   constructor(private http: HttpClient) {}
   load(resources) {
@@ -164,7 +164,8 @@ export class LoaderService {
           this.meshes.push({ key, mesh });
         }
       }
-      console.log(this.meshes);
+
+      this.onLoadFinish.emit();
     });
   }
 

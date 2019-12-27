@@ -45,7 +45,6 @@ export default class Ground extends THREE.Object3D {
     this.mesh = new THREE.Mesh(geometry, groundMaterial);
     this.mesh.rotation.x = -Math.PI / 2;
     this.position.y -= 0.22;
-    console.log(this.mesh);
     this.add(this.mesh);
   }
 
