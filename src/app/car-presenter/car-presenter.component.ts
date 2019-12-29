@@ -22,13 +22,10 @@ export class CarPresenterComponent implements OnInit {
   transitioncamera: THREE.PerspectiveCamera;
   width;
   height;
-  ground: Ground;
-  interiorControls: CustomControls;
   controls: CustomControls;
 
   autoOrbit = false;
   introMode = false;
-  objects = [];
   stage: Stage;
 
   constructor(private loaderService: LoaderService) {}
@@ -41,7 +38,6 @@ export class CarPresenterComponent implements OnInit {
     this.loaderService.onLoadFinish.subscribe(() => {
       this.initAutoCamera();
       this.initLights();
-      this.initGround();
       this.initStage();
     });
     this.loaderService.load({
@@ -77,12 +73,6 @@ export class CarPresenterComponent implements OnInit {
     this.autoCamera.name = 'auto';
   }
 
-  initGround() {
-    this.ground = new Ground();
-    this.ground.setMode('day');
-    this.scene.add(this.ground);
-    this.objects.push(this.ground);
-  }
   initLights() {
     const skyColor = 0xf0f2ef;
     const groundColor = 0x111111;
@@ -124,9 +114,7 @@ export class CarPresenterComponent implements OnInit {
 
   update() {
     this.renderer.render(this.scene, this.camera);
-    this.objects.forEach(obj => {
-      obj.update();
-    });
+
     if (this.stage) {
       this.stage.update();
     }
@@ -140,13 +128,13 @@ export class CarPresenterComponent implements OnInit {
         this.controls.enabled = false;
         return;
       }
-      if (this.interiorControls) {
-        this.interiorControls.enabled = false;
+      if (this.stage.interiorControls) {
+        this.stage.interiorControls.enabled = false;
       }
       this.stage.exteriorControls.enabled = false;
 
       if (this.camera === this.interiorCamera) {
-        this.controls = this.interiorControls;
+        this.controls = this.stage.interiorControls;
       } else {
         this.controls = this.stage.exteriorControls;
       }

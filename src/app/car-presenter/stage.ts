@@ -4,6 +4,7 @@ import { TweenLite, Power2, Linear } from 'gsap';
 import Vignetting from './vignetting';
 import CustomControls from './custom-controls';
 import LensFlare from './lensflare';
+import Ground from './ground';
 
 export default class Stage extends THREE.Object3D {
   skyColor: THREE.Color;
@@ -13,10 +14,14 @@ export default class Stage extends THREE.Object3D {
   camera: any;
   vignetting: Vignetting;
   exteriorControls: CustomControls;
+  interiorControls: CustomControls;
   renderer: any;
   lensFlare: LensFlare;
   rearGlow: THREE.Mesh;
   loaderService: any;
+
+  objects = [];
+  ground: Ground;
 
   constructor(camera, renderer, loaderService) {
     super();
@@ -27,6 +32,7 @@ export default class Stage extends THREE.Object3D {
     this.skyColor1 = new THREE.Color(0xffffff);
     this.skyColor2 = new THREE.Color(0xdce0e1);
     this.initControls();
+    this.initGround();
     this.initTunnel();
     this.initVignetting();
     this.initLensFlare();
@@ -49,6 +55,12 @@ export default class Stage extends THREE.Object3D {
     this.rearGlow = new THREE.Mesh(geometry, material);
     this.rearGlow.position.set(0, 0.5, -2);
     this.add(this.rearGlow);
+  }
+  initGround() {
+    this.ground = new Ground();
+    this.ground.setMode('day');
+    this.add(this.ground);
+    this.objects.push(this.ground);
   }
   initLensFlare() {
     const loader = new THREE.TextureLoader();
@@ -142,12 +154,15 @@ export default class Stage extends THREE.Object3D {
     if (this.tunnel) {
       this.tunnel.update(this.skyColor);
     }
-    // if (this.ground) {
-    //   this.ground.updateSkyColor();
-    // }
+    if (this.ground) {
+      this.ground.updateSkyColor(this.skyColor);
+    }
     if (this.lensFlare) {
       this.updateLensFlare();
     }
+    this.objects.forEach(obj => {
+      obj.update();
+    });
   }
   updateLensFlare() {
     const rotationX = this.exteriorControls.rotation.x;
