@@ -238,6 +238,91 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       #else  
         vec3 objectNormal = normal;
       #endif
+
+      #ifdef FLIP_SIDED
+        objectNormal = -objectNormal;
+      #endif
+
+      vec3 transformedNormal = normalMatrix * objectNormal;
+
+      #ifdef FLAT_SHADED
+        vNormal = normalize(transformedNormal);
+      #endif
+
+      #ifdef USE_MORPHTARGETS
+        vec3 morphed = vec3(0.0);
+        morphed += (morphTarget0 - position) * morphTargetInfluences[0];
+        morphed += (morphTarget1 - position) * morphTargetInfluences[1];
+        morphed += (morphTarget2 - position) * morphTargetInfluences[2];
+        morphed += (morphTarget3 - position) * morphTargetInfluences[3];
+        #ifndef USE_MORPHNORMALS
+          morphed += (morphTarget4 - position) * morphTargetInfluences[4];
+          morphed += (morphTarget5 - position) * morphTargetInfluences[5];
+          morphed += (morphTarget6 - position) * morphTargetInfluences[6];
+          morphed += (morphTarget7 - position) * morphTargetInfluences[7];
+        #endif
+        morphed += position;
+      #endif
+      #ifdef USE_SKINNING
+        #ifdef USE_MORPHTARGETS
+        vec4 skinVertex = bindMatrix * vec4(morphed, 1.0);
+        #else
+          vec4 skinVertex = bindMatrix * vec4(position, 1.0);
+        #endif
+        vec4 skinned = vec4(0.0);
+        skinned += boneMatX * skinVertex * skinWeight.x;
+        skinned += boneMatY * skinVertex * skinWeight.y;
+        skinned += boneMatZ * skinVertex * skinWeight.z;
+        skinned += boneMatW * skinVertex * skinWeight.w;
+        skinned  = bindMatrixInverse * skinned;
+      #endif
+      #ifdef USE_SKINNING
+          vec4 mvPosition = modelViewMatrix * skinned;
+      #elif defined(USE_MORPHTARGETS)
+          vec4 mvPosition = modelViewMatrix * vec4(morphed, 1.0);
+      #else
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      #endif
+      gl_Position = projectionMatrix * mvPosition;
+
+      #ifdef USE_LOGDEPTHBUF
+        gl_Position.z = log2(max(EPSILON, gl_Position.w + 1.0)) * logDepthBufFC;
+        #ifdef USE_LOGDEPTHBUF_EXT
+          vFragDepth = 1.0 + gl_Position.w;
+        #else
+          gl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;
+        #endif
+      #endif
+
+      vViewPosition = -mvPosition.xyz;
+
+      #if defined(USE_ENVMAP) || defined(PHONG) || defined(LAMBERT) || defined(USE_SHADOWMAP)
+          #ifdef USE_SKINNING
+              vec4 worldPosition = modelMatrix * skinned;
+          #elif defined(USE_MORPHTARGETS)
+              vec4 worldPosition = modelMatrix * vec4(morphed, 1.0);
+          #else
+              vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          #endif
+      #endif
+
+      #if defined(USE_ENVMAP) && ! defined(USE_BUMPMAP) && ! defined(USE_NORMALMAP) && ! defined(PHONG)
+        vec3 worldNormal = transformDirection(objectNormal, modelMatrix);
+        vec3 cameraToVertex = normalize(worldPosition.xyz - cameraPosition);
+        #ifdef ENVMAP_MODE_REFLECTION
+          vReflect = reflect(cameraToVertex, worldNormal);
+        #else
+          vReflect = refract(cameraToVertex, worldNormal, refractionRatio);
+        #endif
+    #endif
+    #if MAX_SPOT_LIGHTS > 0 || defined(USE_BUMPMAP) || defined(USE_ENVMAP)
+      vWorldPosition = worldPosition.xyz;
+    #endif
+    #ifdef USE_SHADOWMAP
+      for(int i = 0; i < MAX_SHADOWS; i ++) {
+        vShadowCoord[i] = shadowMatrix[i] * worldPosition;
+      }
+    #endif
     }
   `;
   fragmentShader = ``;
