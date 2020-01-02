@@ -624,7 +624,36 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
           totalSpecularLight += schlick * pointLightColor[i] * pointSpecularWeight * pointDiffuseWeight * attenuation * specularNormalization;
         }
       #endif
-
+      
+      #if MAX_SPOT_LIGHTS > 0
+        for(int i = 0; i < MAX_SPOT_LIGHTS; i++) {
+          vec4 lPosition = viewMatrix * vec4(spotLightPosition[i], 1.);
+          vec3 lVector = lPosition.xyz + vViewPosition.xyz;
+          float attenuation = calcLightAttenuation(length(lVector), spotLightDistance[i], spotLightDecay[i]);
+          lVector = normalize(lVector);
+          float spotEffect = dot(spotLightDirection[i], normalize(spotLightPosition[i] - vWorldPosition));
+          if(spotEffect > spotLightAngleCos[i]) {
+            spotEffect = max(pow(max(spotEffect, 0.0), spotLightExponent[i]), 0.0);
+            // diffuse
+            float dotProduct = dot(normal, lVector);
+            #ifdef WRAP_AROUND
+              float spotDiffuseWeightFull = max(dotProduct, 0.0);
+              float spotDiffuseWeightHalf = max(.5 * dotProduct + .5, 0.0);
+              vec3 spotDiffuseWeight = mix(vec3(spotDiffuseWeightFull), vec3(spotDiffuseWeightHalf), wrapRGB);
+            #else
+              float spotDiffuseWeight = max(dotProduct, 0.0);
+            #endif
+            totalDiffuseLight += spotLightColor[i] * spotDiffuseWeight * attenuation * spotEffect;
+            // specular
+            vec3 spotHalfVector = normalize(lVector + viewPosition);
+            float spotDotNormalHalf = max(dot(normal, spotHalfVector), 0.0);
+            float spotSpecularWeight = specularStrength * max(pow(spotDotNormalHalf, shininess), 0.0);
+            float specularNormalization = (shininess + 2.) / 8.;
+            vec3 schlick = specular + vec3(1.0 - specular) * pow(max(1.0 - dot(lVector, spotHalfVector), 0.0), 5.0);
+            totalSpecularLight += schlick * spotLightColor[i] * spotSpecularWeight * spotDiffuseWeight * attenuation * specularNormalization * spotEffect;
+          }
+        }
+      #endif
       
     }
   `;
