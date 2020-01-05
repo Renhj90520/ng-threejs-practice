@@ -3,6 +3,7 @@ import BasicCustomShaderMaterial from './custom-shadermaterial';
 
 export default class RealisticMaterial extends BasicCustomShaderMaterial {
   vertexShader = `
+    varying vec3 vWorldPos;
     #ifdef USE_COLOR
       attribute vec3 color;
       varying vec3 vColor;
@@ -44,10 +45,10 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       return vec2(a.x * a.x, a.y * a.y);
     }
     vec3 square(in vec3 a) {
-      return vec2(a.x * a.x, a.y * a.y, a.z * a.z);
+      return vec3(a.x * a.x, a.y * a.y, a.z * a.z);
     }
     vec4 square(in vec4 a) {
-      return vec2(a.x * a.x, a.y * a.y, a.z * a.z, a.w * a.w);
+      return vec4(a.x * a.x, a.y * a.y, a.z * a.z, a.w * a.w);
     }
 
     float saturate(in float a) {
@@ -94,7 +95,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     }
 
     vec3 inverseTransformDirection(in vec3 normal, in mat4 matrix) {
-      return normalize((vec4(normal, 0.0) * matrix)).xyz);
+      return normalize((vec4(normal, 0.0) * matrix).xyz);
     }
     vec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {
       float distance = dot(planeNormal, point - pointOnPlane);
@@ -103,7 +104,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     float sideOfPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {
       return sign(dot(point - pointOnPlane, planeNormal));
     }
-    vec3 linePlaneInterset(in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal) {
+    vec3 linePlaneIntersect(in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal) {
       return pointOnLine + lineDirection * (dot(planeNormal, pointOnPlane - pointOnLine) / dot(planeNormal, lineDirection));
     }
 
@@ -145,7 +146,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #endif
 
     #if MAX_SPOT_LIGHTS > 0 || defined(USE_BUMPMAP) || defined(USE_ENVMAP)
-      varying vec3 vWroldPosition;
+      varying vec3 vWorldPosition;
     #endif
 
     #ifdef USE_SKINNING
@@ -157,9 +158,9 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         uniform int boneTextureWidth;
         uniform int boneTextureHeight;
         mat4 getBoneMatrix(const in float i) {
-          flaot j = i * 4.;
+          float j = i * 4.;
           float x = mod(j, float(boneTextureWidth));
-          float y = floor(j / boneTextureWidth);
+          float y = floor(j / float(boneTextureWidth));
           float dx = 1. / float(boneTextureWidth);
           float dy = 1. / float(boneTextureHeight);
           y = dy * (y + .5);
@@ -192,6 +193,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #endif
 
     void main() {
+      vWorldPos = (modelMatrix * vec4(position, 1.)).xyz;
       #if defined(USE_MAP) || defined(USE_BUMPMAP) || defined(USE_NORMALMAP) || defined(USE_SPECULARMAP) || defined(USE_ALPHAMAP)
         vUv = uv * offsetRepeat.zw + offsetRepeat.xy;
       #endif
@@ -245,7 +247,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
 
       vec3 transformedNormal = normalMatrix * objectNormal;
 
-      #ifdef FLAT_SHADED
+      #ifndef FLAT_SHADED
         vNormal = normalize(transformedNormal);
       #endif
 
@@ -329,7 +331,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     varying vec3 vWorldPos;
     uniform float envMapOffset;
     uniform float flipWorldPos;
-    #ifdef USE_REFLECTIONMASK;
+    #ifdef USE_REFLECTIONMASK
       uniform sampler2D reflectionMask;
     #endif
 
@@ -456,7 +458,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #if MAX_HEMI_LIGHTS > 0
       uniform vec3 hemisphereLightSkyColor[MAX_HEMI_LIGHTS];
       uniform vec3 hemisphereLightGroundColor[MAX_HEMI_LIGHTS];
-      uniform vec3 hemisphereLightDirection[MAX_HEMI_LIGHT];
+      uniform vec3 hemisphereLightDirection[MAX_HEMI_LIGHTS];
     #endif
     #if MAX_POINT_LIGHTS > 0
       uniform vec3 pointLightColor[MAX_POINT_LIGHTS];
@@ -480,14 +482,14 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       uniform vec3 wrapRGB;
     #endif
     varying vec3 vViewPosition;
-    #ifdef FLAT_SHADED
+    #ifndef FLAT_SHADED
       varying vec3 vNormal;
     #endif
     #ifdef USE_SHADOWMAP
       uniform sampler2D shadowMap[MAX_SHADOWS];
       uniform vec2 shadowMapSize[MAX_SHADOWS];
-      uniform float shadowDarkness[MAX_SHDOWS];
-      uniform float shadowBias[MAX_SHAODWS];
+      uniform float shadowDarkness[MAX_SHADOWS];
+      uniform float shadowBias[MAX_SHADOWS];
       varying vec4 vShadowCoord[MAX_SHADOWS];
       float unpackDepth(const in vec4 rgba_depth) {
         const vec4 bit_shift = vec4(1. / (256. * 256. * 256.), 1. / (256. * 256.), 1. / 256., 1.);
@@ -511,7 +513,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         vec3 vSigmaX = dFdx(surf_pos);
         vec3 vSigmaY = dFdy(surf_pos);
         vec3 vN = surf_norm;
-        vec3 R1 = cross(vSigmaU, vN);
+        vec3 R1 = cross(vSigmaY, vN);
         vec3 R2 = cross(vN, vSigmaX);
         float fDet = dot(vSigmaX, R1);
         vec3 vGrad = sign(fDet) * (dHdxy.x * R1 + dHdxy.y * R2);
@@ -523,7 +525,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       uniform vec2 normalScale;
       vec3 perturbNormal2Arb(vec3 eye_pos, vec3 surf_norm) {
         vec3 q0 = dFdx(eye_pos.xyz);
-        vec3 q1 = dFdy(eys_pos.xyz);
+        vec3 q1 = dFdy(eye_pos.xyz);
         vec2 st0 = dFdx(vUv.st);
         vec2 st1 = dFdy(vUv.st);
         vec3 S = normalize(q0 * st1.t - q1 * st0.t);
@@ -531,7 +533,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         vec3 N = normalize(surf_norm);
         vec3 mapN = texture2D(normalMap, vUv).xyz * 2. - 1.;
         mapN.xy = normalScale * mapN.xy;
-        mat3 tsn mat3(S, T, N);
+        mat3 tsn = mat3(S, T, N);
         return normalize(tsn * mapN);
       }
     #endif
@@ -654,10 +656,288 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
           }
         }
       #endif
+      #if MAX_DIR_LIGHTS > 0
+        for(int i = 0; i < MAX_DIR_LIGHTS; i++) {
+          vec3 dirVector = transformDirection(directionalLightDirection[i], viewMatrix);
+          // diffuse
+          float dotProduct = dot(normal, dirVector);
+          #ifdef WRAP_AROUND
+            float dirDiffuseWeightFull = max(dotProduct, 0.0);
+            float dirDiffuseWeightHalf = max(0.5 * dotProduct + 0.5, 0.0);
+            vec3 dirDiffuseWeight = mix(vec3(dirDiffuseWeightFull), vec3(dirDiffuseWeightHalf), wrapRGB);
+          #else
+            float dirDiffuseWeight = max(dotProduct, 0.0);
+          #endif
+
+          totalDiffuseLight += directionalLightColor[i] * dirDiffuseWeight;
+
+          // specular
+          vec3 dirHalfVector = normalize(dirVector + viewPosition);
+          float dirDotNormalHalf = max(dot(normal, dirHalfVector), 0.0);
+          float dirSpecularWeight = specularStrength * max(pow(dirDotNormalHalf, shininess), 0.0);
+          float specularNormalization = (shininess + 2.0) / 8.0;
+          vec3 schlick = specular + vec3(1.0 - specular) * pow(max(1.0 - dot(dirVector, dirHalfVector), 0.0), 5.0);
+          totalSpecularLight += schlick * directionalLightColor[i] * dirSpecularWeight * dirDiffuseWeight * specularNormalization;
+        }
+      #endif
       
+      #if MAX_HEMI_LIGHTS > 0
+        for(int i = 0; i < MAX_HEMI_LIGHTS; i++) {
+          vec3 lVector = transformDirection(hemisphereLightDirection[i], viewMatrix);
+          // diffuse
+          float dotProduct = dot(normal, lVector);
+          float hemiDiffuseWeight = .5 * dotProduct + .5;
+          vec3 hemiColor = mix(hemisphereLightGroundColor[i], hemisphereLightSkyColor[i], hemiDiffuseWeight);
+          totalDiffuseLight += hemiColor;
+
+          // specular (sky light)
+          vec3 hemiHalfVectorSky = normalize(lVector + viewPosition);
+          float hemiDotNormalHalfSky = .5 * dot(normal, hemiHalfVectorSky) + .5;
+          float hemiSpecularWeightSky = specularStrength * max(pow(max(hemiDotNormalHalfSky, 0.0), shininess), 0.0);
+          // specular (ground light)
+          vec3 lVectorGround = -lVector;
+          vec3 hemiHalfVectorGround = normalize(lVectorGround + viewPosition);
+          float hemiDotNormalHalfGround = 0.5 * dot(normal, hemiHalfVectorGround) + 0.5;
+          float hemiSpecularWeightGround = specularStrength * max(pow(max(hemiDotNormalHalfGround, 0.0), shininess), 0.0);
+          float dotProductGround = dot(normal, lVectorGround);
+          float specularNormalization = (shininess + 2.) / 8.;
+          vec3 schlickSky = specular + vec3(1. - specular) * pow(max(1. - dot(lVector, hemiHalfVectorSky), 0.0), 5.);
+          vec3 schlickGround = specular + vec3(1. -specular) * pow(max(1. - dot(lVectorGround, hemiHalfVectorGround), 0.0), 5.);
+          totalSpecularLight += hemiColor * specularNormalization * (schlickSky * hemiSpecularWeightSky * max(dotProduct, 0.0) + schlickGround * hemiSpecularWeightGround * max(dotProductGround, 0.0));
+        }
+      #endif
+
+      #ifdef METAL
+        outgoingLight += diffuseColor.rgb * (totalDiffuseLight + ambientLightColor) * specular + totalSpecularLight + emissive;
+      #else
+        outgoingLight += diffuseColor.rgb * (totalDiffuseLight + ambientLightColor) + totalSpecularLight + emissive;
+      #endif
+
+      #ifdef USE_LIGHTMAP
+        outgoingLight *= diffuseColor.xyz * texture2D(lightMap, vUv2).xyz;
+      #endif
+
+      #ifdef USE_ENVMAP
+        #if defined(USE_BUMPMAP) || defined(USE_NORMALMAP) || defined(PHONG)
+          vec3 cameraToVertex = normalize(vWorldPosition - cameraPosition);
+          // Transforming  Normal Vectors with the Inverse Transformation
+          vec3 worldNormal = inverseTransformDirection(normal, viewMatrix);
+          #ifdef ENVMAP_MODE_REFLECTION
+            vec3 reflectVec = reflect(cameraToVertex, worldNormal);
+          #else
+            vec3 reflectVec = refract(cameraToVertex, worldNormal, refractionRatio);
+          #endif
+        #else
+          vec3 reflectVec = vReflect;
+        #endif
+        #ifdef DOUBLE_SIDED
+          float flipNormal = (-1. + 2. * float(gl_FrontFacing));
+        #else
+          float flipNormal = 1.;
+        #endif
+        #ifdef ENVMAP_TYPE_CUBE
+          reflectVec.z += envMapOffset;
+          vec4 envColor = textureCube(envMap, flipNormal * vec3(flipEnvMap * reflectVec.x, reflectVec.yz));
+        #elif defined(ENVMAP_TYPE_EQUIREC)
+          vec2 sampleUV;
+          sampleUV.y = saturate(flipNormal * reflectVec.y * .5 + .5);
+          sampleUV.x - atan(flipNormal * reflectVec.z, flipNormal * reflectVec.x) * RECIPROCAL_PI2 + .5;
+          vec4 envColor = texture2D(envMap, sampleUV);
+        #elif defined(ENVMAP_TYPE_SPHERE)
+          vec3 reflectView = flipNormal * normalize((viewMatrix * vec4(reflectVec, 0.0)).xyz + vec3(0.0, 0.0, 1.));
+          vec4 envColor = texture2D(envMap, reflectView.xy * .5 + .5);
+        #endif
+        envColor.xyz = inputToLinear(envColor.xyz);
+        #ifdef USE_REFLECTIONMASK
+          vec4 maskTexel = texture2D(reflectionMask, vUv);
+          float chromeReflectivity = .75;
+          float plasticReflectivity = .1;
+          // Mix when area is chrome (red component in mask)
+          outgoingLight = mix(outgoingLight, envColor.xyz, specularStrength * maskTexel.r * chromeReflectivity);
+          // Add when area is shiny plastic or glass (blue component in mask)
+          outgoingLight += (envColor.xyz * specularStrength * maskTexel.b * plasticReflectivity);
+
+          #ifdef USE_PAINTMASK
+            // Mix when area is carpaint
+            outgoingLight = mix(outgoingLight, envColor.xyz, specularStrength * reflectivity * texelPaintMask.r);
+          #endif
+        #else
+          #ifdef ENVMAP_BLENDING_MULTIPLY
+            outgoingLight = mix(outgoingLight, outgoingLight * envColor.xyz, specularStrength * reflectivity);
+          #elif defined(ENVMAP_BLENDING_MIX)
+            outgoingLight = mix(outgoingLight, envColor.xyz, specularStrength * reflectivity);
+          #elif defined(ENVMAP_BLENDING_ADD)
+            outgoingLight += envColor.xyz * specularStrength * reflectivity;
+          #endif
+        #endif
+      #endif
+      #ifdef USE_SHADOWMAP
+        #ifdef SHADOWMAP_DEBUG
+          vec3 frustumColors[3];
+          frustumColors[0] = vec3(1., .5, 0.0);
+          frustumColors[1] = vec3(0.0, 1., .8);
+          frustumColors[2] = vec3(0.0, .5, 1.0);
+        #endif
+
+        #ifdef SHADOWMAP_CASCADE
+          int inFrustumCount = 0;
+        #endif
+
+        float fDepth;
+        vec3 shadowColor = vec3(1.);
+        for(int i = 0; i < MAX_SHADOWS; i++) {
+          vec3 shadowCoord = vShadowCoord[i].xyz / vShadowCoord[i].w;
+          bvec4 inFrustumVec = bvec4(shadowCoord.x >= 0.0, shadowCoord.x <= 1., shadowCoord.y >= 0.0, shadowCoord.y <= 1.);
+          bool inFrustum = all(inFrustumVec);
+          #ifdef SHADOWMAP_CASCADE
+            inFrustumCount += int(inFrustum);
+            bvec3 frustumTestVec = bvec3(inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.);
+          #else
+            bvec2 frustumTestVec = bvec2(inFrustum, shadowCoord.z <= 1.);
+          #endif
+          bool frustumTest = all(frustumTestVec);
+          if(frustumTest) {
+            shadowCoord.z += shadowBias[i];
+            #if defined(SHADOWMAP_TYPE_PCF)
+              float shadow = 0.0;
+
+              // nested loops breaks shader compiler / validator on some ATI cards when using OpenGL
+              // must enroll loop manually
+              for(float y = -1.25; y <= 1.25; y+=1.25) {
+                for(float x = -1.25; x <= 1.25; x += 1.25) {
+                  vec4 rgbaDepth = texture2D(shadowMap[i], vec2(x * xPixelOffset, y * yPixelOffset) + shadowCoord.xy);
+                  float fDepth = unpackDepth(rgbaDepth);
+                  if(fDepth < shadowCoord.z)
+                    shadow += 1.;
+                }
+              }
+              shadow /= 9.;
+              const float shadowDelta = 1.0 / 9.0;
+              float xPixelOffset = 1.0 / shadowMapSize[i].x;
+              float yPixelOffset = 1.0 / shadowMapSize[i].y;
+              float dx0 = -1.25 * xPixelOffset;
+              float dy0 = -1.25 * yPixelOffset;
+              float dx1 = 1.25 * xPixelOffset;
+              float dy1 = 1.25 * yPixelOffset;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx0, dy0)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(0.0, dy0)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx1, dy0)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx0, 0.0)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx1, 0.0)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx0, dy1)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(0.0, dy1)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              fDepth = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx1, dy1)));
+              if (fDepth < shadowCoord.z) shadow += shadowDelta;
+              shadowColor = shadowColor * vec3((1.0 - shadowDarkness[i] * shadow));
+
+            #elif defined(SHADOWMAP_TYPE_PCF_SOFT)
+              // Percentage-close filtering
+              // (9 pixel kernel)
+              // http://fabiensanglard.net/shadowmappingPCF/
+              float shadow = 0.0;
+              float xPixelOffset = 1.0 / shadowMapSize[i].x;
+              float yPixelOffset = 1.0 / shadowMapSize[i].y;
+              float dx0 = -1.0 * xPixelOffset;
+              float dy0 = -1.0 * yPixelOffset;
+              float dx1 = 1.0 * xPixelOffset;
+              float dy1 = 1.0 * yPixelOffset;
+              mat3 shadowKernel;
+              mat3 depthKernel;
+              depthKernel[0][0] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx0, dy0)));
+              depthKernel[0][1] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx0, 0.0)));
+              depthKernel[0][2] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx0, dy1)));
+              depthKernel[1][0] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(0.0, dy0)));
+              depthKernel[1][1] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy));
+              depthKernel[1][2] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(0.0, dy1)));
+              depthKernel[2][0] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx1, dy0)));
+              depthKernel[2][1] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx1, 0.0)));
+              depthKernel[2][2] = unpackDepth(texture2D(shadowMap[i], shadowCoord.xy + vec2(dx1, dy1)));
+              vec3 shadowZ = vec3(shadowCoord.z);
+              shadowKernel[0] = vec3(lessThan(depthKernel[0], shadowZ));
+              shadowKernel[0] *= vec3(0.25);
+              shadowKernel[1] = vec3(lessThan(depthKernel[1], shadowZ));
+              shadowKernel[1] *= vec3(0.25);
+              shadowKernel[2] = vec3(lessThan(depthKernel[2], shadowZ));
+              shadowKernel[2] *= vec3(0.25);
+              vec2 fractionalCoord = 1.0 - fract(shadowCoord.xy * shadowMapSize[i].xy);
+              shadowKernel[0] = mix(shadowKernel[1], shadowKernel[0], fractionalCoord.x);
+              shadowKernel[1] = mix(shadowKernel[2], shadowKernel[1], fractionalCoord.x);
+              vec4 shadowValues;
+              shadowValues.x = mix(shadowKernel[0][1], shadowKernel[0][0], fractionalCoord.y);
+              shadowValues.y = mix(shadowKernel[0][2], shadowKernel[0][1], fractionalCoord.y);
+              shadowValues.z = mix(shadowKernel[1][1], shadowKernel[1][0], fractionalCoord.y);
+              shadowValues.w = mix(shadowKernel[1][2], shadowKernel[1][1], fractionalCoord.y);
+              shadow = dot(shadowValues, vec4(1.0));
+              shadowColor = shadowColor * vec3((1.0 - shadowDarkness[i] * shadow));
+            #else
+              vec4 rgbaDepth = texture2D(shadowMap[i], shadowCoord.xy);
+              float fDepth = unpackDepth(rgbaDepth);
+              if (fDepth < shadowCoord.z)
+              // spot with multiple shadows is darker
+              shadowColor = shadowColor * vec3(1.0 - shadowDarkness[i]);
+            #endif
+          }
+          #ifdef SHADOWMAP_DEBUG
+            #ifdef SHADOWMAP_CASCADE
+              if(inFrustum && inFrustumCount == 1) outgoingLight *= frustumColors[i];
+            #else
+              if(inFrustum) outgoingLight *= frustumColors[i];
+            #endif
+          #endif
+        }
+
+        shadowColor = inputToLinear(shadowColor);
+        outgoingLight = outgoingLight * shadowColor;
+      #endif
+      outgoingLight = linearToOutput(outgoingLight);
+      #ifdef USE_FOG
+        #ifdef USE_LOGDEPTHBUF_EXT
+          float depth = gl_FragDepthEXT / gl_FragCoord.w;
+        #else
+          float depth = gl_FragCoord.z / gl_FragCoord.w;
+        #endif
+
+        #ifdef FOG_EXP2
+          float fogFactor = exp2(-square(fogDensity) * square(depth) * LOG2);
+          fogFactor = whiteCompliment(fogFactor);
+        #else
+          float fogFactor = smoothstep(fogNear, fogFar, depth);
+        #endif
+        outgoingLight = mix(outgoingLight, fogColor, fogFactor);
+      #endif
+      #ifdef USE_EMISSIVEMAP
+        float emissiveness = texture2D(emissiveMap, vUv).r;
+        vec3 ec = vec3(1.);
+        #ifdef USE_EMISSIVECOLOR
+          ec = emissiveColor;
+        #endif
+        gl_FragColor = vec4(mix(outgoingLight.rgb, (texelColor.rgb + (vec3(1.) * emissiveIntensity)) * ec, emissiveness * emissiveIntensity), diffuseColor.a);
+      #else
+        gl_FragColor = vec4(outgoingLight, diffuseColor.a);
+      #endif
+
+      float blackness = 1. - (smoothstep(.7, 1.1, vWorldPos.x * flipWorldPos));
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.0), blackness);
     }
   `;
-  uniforms = {};
+  uniforms = {
+    diffuse: { type: 'c', value: new THREE.Color(0xeeeeee) },
+    opacity: { type: 'f', value: 1 },
+    map: { type: 't', value: null },
+    lightMap: { type: 't', value: null },
+    offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
+    specularMap: { type: 't', value: null },
+    fogNear: { type: 'f', value: 1 }
+  };
   constructor(parameters) {
     super(parameters);
   }
