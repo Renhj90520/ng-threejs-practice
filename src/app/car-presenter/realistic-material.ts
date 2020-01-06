@@ -936,7 +936,26 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     lightMap: { type: 't', value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
     specularMap: { type: 't', value: null },
-    fogNear: { type: 'f', value: 1 }
+    fogNear: { type: 'f', value: 1 },
+    fogFar: { type: 'f', value: 2000 },
+    fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
+    emissive: { type: 'c', value: new THREE.Color(0x000000) },
+    wrapRGB: { type: 'v3', value: new THREE.Vector3(1, 1, 1) },
+    pointLightColor: { type: 'fv', value: [] },
+    pointLightPosition: { type: 'fv', value: [] },
+    pointLightDistance: { type: 'fv1', value: [] },
+    directionalLightDirection: { type: 'fv', value: [] },
+    directionalLightColor: { type: 'fv', value: [] },
+    hemisphereLightDirection: { type: 'fv', value: [] },
+    hemisphereLightSkyColor: { type: 'fv', value: [] },
+    hemisphereLightGroundColor: { type: 'fv', value: [] },
+    spotLightColor: { type: 'fv', value: [] },
+    spotLightPosition: { type: 'fv', value: [] },
+    spotLightDirection: { type: 'fv', value: [] },
+    spotLightDistance: { type: 'fv', value: [] },
+    spotLightAngleCos: { type: 'fv1', value: [] },
+    spotLightExponent: { type: 'fv1', value: [] },
+    spotLightDecay: { type: 'fv1', value: [] }
   };
   constructor(parameters) {
     super(parameters);
