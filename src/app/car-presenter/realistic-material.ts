@@ -1,6 +1,24 @@
 import * as THREE from 'three';
 import BasicCustomShaderMaterial from './custom-shadermaterial';
-
+import * as _ from 'lodash';
+import {
+  square,
+  saturate,
+  average,
+  whitecompliment,
+  transformDirection,
+  inverseTransformDirection,
+  projectOnPlane,
+  sideOfPlane,
+  linePlaneIntersect,
+  calcLightAttenuation,
+  inputToLinear,
+  linearToOutput,
+  unpackDepth,
+  dHdxy_fwd,
+  perturbNormalArb,
+  perturbNormal2Arb
+} from './glsl-fragments';
 export default class RealisticMaterial extends BasicCustomShaderMaterial {
   vertexShader = `
     varying vec3 vWorldPos;
@@ -37,99 +55,18 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
-
-    float square(in float a) {
-      return a * a;
-    }
-    vec2 square(in vec2 a) {
-      return vec2(a.x * a.x, a.y * a.y);
-    }
-    vec3 square(in vec3 a) {
-      return vec3(a.x * a.x, a.y * a.y, a.z * a.z);
-    }
-    vec4 square(in vec4 a) {
-      return vec4(a.x * a.x, a.y * a.y, a.z * a.z, a.w * a.w);
-    }
-
-    float saturate(in float a) {
-      return clamp(a, 0.0, 1.);
-    }
-    vec2 saturate(in vec2 a) {
-      return clamp(a, 0.0, 1.);
-    }
-    vec3 saturate(in vec3 a) {
-      return clamp(a, 0.0, 1.);
-    }
-    vec4 saturate(in vec4 a) {
-      return clamp(a, 0.0, 1.);
-    }
-
-    float average(in float a) {
-      return a;
-    }
-    float average(in vec2 a) {
-      return (a.x + a.y) * .5;
-    }
-    float average(in vec3 a) {
-      return (a.x + a.y + a.z) / 3.;
-    }
-    float average(in vec4 a) {
-      return (a.x + a.y + a.z + a.w) * .25;
-    }
-
-    float whitecompliment(in float a) {
-      return saturate(1. - a);
-    }
-    ve2 whitecompliment(in vec2 a) {
-      return saturate(vec2(1.) - a);
-    }
-    vec3 whitecompliment(in vec3 a) {
-      return saturate(vec3(1.) - a);
-    }
-    float whitecompliment(in vec4 a) {
-      return saturate(vec4(1.) - a);
-    }
-
-    vec3 transformDirection(in vec3 normal, in mat4 matrix) {
-      return normalize((matrix * vec4(normal, 0.0)).xyz);
-    }
-
-    vec3 inverseTransformDirection(in vec3 normal, in mat4 matrix) {
-      return normalize((vec4(normal, 0.0) * matrix).xyz);
-    }
-    vec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {
-      float distance = dot(planeNormal, point - pointOnPlane);
-      return point - distance * planeNormal;
-    }
-    float sideOfPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {
-      return sign(dot(point - pointOnPlane, planeNormal));
-    }
-    vec3 linePlaneIntersect(in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal) {
-      return pointOnLine + lineDirection * (dot(planeNormal, pointOnPlane - pointOnLine) / dot(planeNormal, lineDirection));
-    }
-
-    float calcLightAttenuation(float lightDistance, float cutoffDistance, float decayExponent) {
-      if(decayExponent > 0.0) {
-        return pow(saturate(1. - lightDistance / cutoffDistance), decayExponent);
-      }
-      return 1.;
-    }
-
-    vec3 inputToLinear(in vec3 a) {
-      #ifdef GAMMA_INPUT
-        return pow(a, vec3(float(GAMMA_FACTOR)));
-      #else
-        return a;
-      #endif
-    }
-
-    vec3 linearToOutput(in vec3 a) {
-      #ifdef GAMMA_OUTPUT
-        return pow(a, vec3(1. / float(GAMMA_FACTOR)));
-      #else
-        return a;
-      #endif
-    }
+    ${square}
+    ${saturate}
+    ${average}
+    ${whitecompliment}
+    ${transformDirection}
+    ${inverseTransformDirection}
+    ${projectOnPlane}
+    ${sideOfPlane}
+    ${linePlaneIntersect}
+    ${calcLightAttenuation}
+    ${inputToLinear}
+    ${linearToOutput}
 
     #if defined(USE_MAP) || defined(USE_BUMPMAP) || defined(USE_NORMALMAP) || defined(USE_SPECULARMAP) || defined(USE_ALPHAMAP)
       varying vec2 vUv;
@@ -348,59 +285,18 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
-
-    float square(in float a) { return a * a; }
-    vec2  square(in vec2 a)  { return vec2(a.x*a.x, a.y*a.y); }
-    vec3  square(in vec3 a)  { return vec3(a.x*a.x, a.y*a.y, a.z*a.z); }
-    vec4  square(in vec4 a)  { return vec4(a.x*a.x, a.y*a.y, a.z*a.z, a.w*a.w); }
-    float saturate(in float a) { return clamp(a, 0.0, 1.0); }
-    vec2  saturate(in vec2 a)  { return clamp(a, 0.0, 1.0); }
-    vec3  saturate(in vec3 a)  { return clamp(a, 0.0, 1.0); }
-    vec4  saturate(in vec4 a)  { return clamp(a, 0.0, 1.0); }
-    float average(in float a) { return a; }
-    float average(in vec2 a)  { return (a.x + a.y) * 0.5; }
-    float average(in vec3 a)  { return (a.x + a.y + a.z) / 3.0; }
-    float average(in vec4 a)  { return (a.x + a.y + a.z + a.w) * 0.25; }
-    float whiteCompliment(in float a) { return saturate(1.0 - a); }
-    vec2  whiteCompliment(in vec2 a)  { return saturate(vec2(1.0) - a); }
-    vec3  whiteCompliment(in vec3 a)  { return saturate(vec3(1.0) - a); }
-    vec4  whiteCompliment(in vec4 a)  { return saturate(vec4(1.0) - a); }
-    vec3 transformDirection(in vec3 normal, in mat4 matrix) {
-      return normalize((matrix * vec4(normal, 0.0)).xyz);
-    }
-    vec3 inverseTransformDirection(in vec3 normal, in mat4 matrix) {
-      return normalize((vec4(normal, 0.0) * matrix).xyz);
-    }
-    vec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {
-      float distance = dot(planeNormal, point-pointOnPlane);
-      return point - distance * planeNormal;
-    }
-    float sideOfPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal) {
-      return sign(dot(point - pointOnPlane, planeNormal));
-    }
-    vec3 linePlaneIntersect(in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal) {
-      return pointOnLine + lineDirection * (dot(planeNormal, pointOnPlane - pointOnLine) / dot(planeNormal, lineDirection));
-    }
-    float calcLightAttenuation(float lightDistance, float cutoffDistance, float decayExponent) {
-      if (decayExponent > 0.0) {
-        return pow(saturate(1.0 - lightDistance / cutoffDistance), decayExponent);
-      }
-      return 1.0;
-    }
-    vec3 inputToLinear(in vec3 a) {
-    #ifdef GAMMA_INPUT
-      return pow(a, vec3(float(GAMMA_FACTOR)));
-    #else
-      return a;
-    #endif
-    }
-    vec3 linearToOutput(in vec3 a) {
-    #ifdef GAMMA_OUTPUT
-      return pow(a, vec3(1.0 / float(GAMMA_FACTOR)));
-    #else
-      return a;
-    #endif
-    }
+    ${square}
+    ${saturate}
+    ${average}
+    ${whitecompliment}
+    ${transformDirection}
+    ${inverseTransformDirection}
+    ${projectOnPlane}
+    ${sideOfPlane}
+    ${linePlaneIntersect}
+    ${calcLightAttenuation}
+    ${inputToLinear}
+    ${linearToOutput}
     #ifdef USE_COLOR
       varying vec3 vColor;
     #endif
@@ -491,51 +387,18 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       uniform float shadowDarkness[MAX_SHADOWS];
       uniform float shadowBias[MAX_SHADOWS];
       varying vec4 vShadowCoord[MAX_SHADOWS];
-      float unpackDepth(const in vec4 rgba_depth) {
-        const vec4 bit_shift = vec4(1. / (256. * 256. * 256.), 1. / (256. * 256.), 1. / 256., 1.);
-        float depth = dot(rgba_depth, bit_shift);
-        return depth;
-      }
+      ${unpackDepth}
     #endif
     #ifdef USE_BUMPMAP
       uniform sampler2D bumpMap;
       uniform float bumpScale;
-      vec2 dHdxy_fwd() {
-        vec2 dSTdx = dFdx(vUv);
-        vec2 dSTdy = dFdy(vUv);
-        float Hll = bumpScale * texture2D(bumpMap, vUv).x;
-        float dBx = bumpScale * texture2D(bumpMap, vUv + dSTdx).x - Hll;
-        float dBy = bumpScale * texture2D(bumpMap, vUv + dSTdy).x - Hll;
-
-        return vec2(dBx, dBy);
-      }
-      vec3 perturbNormalArb(vec3 surf_pos, vec3 surf_norm, vec2 dHdxy) {
-        vec3 vSigmaX = dFdx(surf_pos);
-        vec3 vSigmaY = dFdy(surf_pos);
-        vec3 vN = surf_norm;
-        vec3 R1 = cross(vSigmaY, vN);
-        vec3 R2 = cross(vN, vSigmaX);
-        float fDet = dot(vSigmaX, R1);
-        vec3 vGrad = sign(fDet) * (dHdxy.x * R1 + dHdxy.y * R2);
-        return normalize(abs(fDet) * surf_norm - vGrad);
-      }
+      ${dHdxy_fwd}
+      ${perturbNormalArb}
     #endif
     #ifdef USE_NORMALMAP
       uniform sampler2D normalMap;
       uniform vec2 normalScale;
-      vec3 perturbNormal2Arb(vec3 eye_pos, vec3 surf_norm) {
-        vec3 q0 = dFdx(eye_pos.xyz);
-        vec3 q1 = dFdy(eye_pos.xyz);
-        vec2 st0 = dFdx(vUv.st);
-        vec2 st1 = dFdy(vUv.st);
-        vec3 S = normalize(q0 * st1.t - q1 * st0.t);
-        vec3 T = normalize(-q0 * st1.s + q1 * st0.s);
-        vec3 N = normalize(surf_norm);
-        vec3 mapN = texture2D(normalMap, vUv).xyz * 2. - 1.;
-        mapN.xy = normalScale * mapN.xy;
-        mat3 tsn = mat3(S, T, N);
-        return normalize(tsn * mapN);
-      }
+      ${perturbNormal2Arb}
     #endif
 
     #ifdef USE_SPECULARMAP
@@ -955,9 +818,248 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     spotLightDistance: { type: 'fv', value: [] },
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
-    spotLightDecay: { type: 'fv1', value: [] }
+    spotLightDecay: { type: 'fv1', value: [] },
+    envMap: { type: 't', value: null },
+    flipEnvMap: { type: 'f', value: -1 },
+    reflectivity: { type: 'f', value: 0.15 },
+    refractionRatio: { type: 'f', value: 0.98 },
+    normalMap: { type: 't', value: null },
+    normalScale: { type: 'v2', value: new THREE.Vector2(1, 1) },
+    specular: { type: 'c', value: new THREE.Color(0x111111) },
+    shininess: { type: 'f', value: 30 },
+    emissiveMap: { type: 't', value: null },
+    emissiveColor: { type: 'c', value: null },
+    emissiveIntensity: { type: 'f', value: 1 },
+    reflectionMask: { type: 't', value: null }
   };
+  useVertexTexture: any;
+  emissive: any;
+  lightMap: any;
+  reflectivity: any;
+  shininess: any;
+  specular: any;
+  emissiveColor: any;
+  normalMap: any;
+  specularMap: any;
+  reflectionMask: any;
+  emissiveMap: any;
+  emissiveIntensity: any;
   constructor(parameters) {
     super(parameters);
+
+    parameters = _.extend(
+      {
+        vertexShader: this.vertexShader,
+        fragmentShader: this.fragmentShader,
+        uniforms: this.uniforms,
+        defines: {
+          USE_AOMAP: false,
+          LIGHTMAP_ENABLED: false,
+          SKINNED: false,
+          USE_EMISSIVEMAP: parameters.emissiveMap !== undefined,
+          USE_REFLECTIONMASK: parameters.reflectionMask !== undefined,
+          USE_EMISSIVECOLOR: parameters.emissiveColor !== undefined
+        }
+      },
+      parameters
+    );
+    this.setParameters(parameters);
+    this.onPropertyChange('color', val => {
+      this.uniforms.diffuse.value = val;
+    });
+    this.onPropertyChange('map', val => {
+      this.uniforms.map.value = val;
+      if (val) {
+        this.uniforms.offsetRepeat.value.set(
+          val.offset.x,
+          val.offset.y,
+          val.repeat.x,
+          val.repeat.y
+        );
+      }
+    });
+    this.onPropertyChange('opacity', val => {
+      this.uniforms.opacity.value = val;
+    });
+    this.onPropertyChange('emissive', val => {
+      this.uniforms.emissive.value = val;
+    });
+    this.onPropertyChange('lightMap', val => {
+      this.uniforms.lightMap.value = val;
+      this.defines.LIGHTMAP_ENABLED = !!val;
+    });
+    this.onPropertyChange('skinning', val => {
+      this.useVertexTexture = !!val;
+      this.defines.SKINNED = this.useVertexTexture;
+    });
+    this.onPropertyChange('envMap', val => {
+      this.uniforms.envMap.value = val;
+    });
+    this.onPropertyChange('reflectivity', val => {
+      this.uniforms.reflectivity.value = val;
+    });
+    this.onPropertyChange('shininess', val => {
+      this.uniforms.shininess.value = val;
+    });
+    this.onPropertyChange('specular', val => {
+      this.uniforms.specular.value = val;
+    });
+    this.onPropertyChange('emissiveMap', val => {
+      this.uniforms.emissiveMap.value = val;
+    });
+    this.onPropertyChange('emissiveColor', val => {
+      this.uniforms.emissiveColor.value = val;
+    });
+    this.onPropertyChange('emissiveIntensity', val => {
+      this.uniforms.emissiveIntensity.value = val;
+    });
+    this.onPropertyChange('normalMap', val => {
+      this.uniforms.normalMap.value = val;
+    });
+    this.onPropertyChange('specularMap', val => {
+      this.uniforms.specularMap.value = val;
+    });
+    this.onPropertyChange('reflectionMask', val => {
+      this.uniforms.reflectionMask.value = val;
+    });
+    this.fog = parameters.fog || true;
+    this.opacity = 1;
+    this.color = parameters.color || new THREE.Color(0xffffff);
+    this.map = parameters.map || null;
+    this.emissive = parameters.emissive || new THREE.Color(0x000000);
+    this.lightMap = parameters.lightMap || null;
+    this.skinning = parameters.skinning || false;
+    this.envMap = parameters.envMap || null;
+    this.reflectivity = parameters.reflectivity || 1;
+    this.shininess = parameters.shininess || 30;
+    this.specular = parameters.specular || new THREE.Color(0x111111);
+    this.emissiveColor = parameters.emissiveColor || new THREE.Color(0xffffff);
+    this.normalMap = parameters.normalMap || null;
+    this.specularMap = parameters.specularMap || null;
+    this.combine = parameters.combine || THREE.MultiplyOperation;
+    this.reflectionMask = parameters.reflectionMask || null;
+    this.emissiveMap = parameters.emissiveMap || null;
+    this.emissiveIntensity = parameters.emissiveIntensity || 1;
+  }
+  refreshLightUniforms(lights) {
+    const targetMatrixWorld = new THREE.Vector3();
+    const lightMatrixWorld = new THREE.Vector3();
+    const directionalLightColor = this.uniforms.directionalLightColor.value;
+    const directionalLightDirection = this.uniforms.directionalLightDirection
+      .value;
+    const hemisphereLightSkyColor = this.uniforms.hemisphereLightSkyColor.value;
+    const hemisphereLightGroundColor = this.uniforms.hemisphereLightGroundColor
+      .value;
+    const hemisphereLightDirection = this.uniforms.hemisphereLightDirection
+      .value;
+    const pointLightColor = this.uniforms.pointLightColor.value;
+    const pointLightPosition = this.uniforms.pointLightPosition.value;
+    const pointLightDistance = this.uniforms.pointLightDistance.value;
+    const spotLightColor = this.uniforms.spotLightColor.value;
+    const spotLightPosition = this.uniforms.spotLightPosition.value;
+    const spotLightDistance = this.uniforms.spotLightDistance.value;
+    const spotLightDirection = this.uniforms.spotLightDirection.value;
+    const spotLightAngleCos = this.uniforms.spotLightAngleCos.value;
+    const spotLightExponent = this.uniforms.spotLightExponent.value;
+    const spotLightDecay = this.uniforms.spotLightDecay.value;
+
+    let pointLightIdx = 0;
+    let directionalLightIdx = 0;
+    let hemisphereLightIdx = 0;
+    let spotLightIdx = 0;
+    let pointLightCount = 0;
+    let directionalLightCount = 0;
+    let hemisphereLightCount = 0;
+    let spotLightCount = 0;
+    lights.forEach((light, idx) => {
+      if (light.visible) {
+        if (light instanceof THREE.PointLight) {
+          pointLightIdx = 3 * pointLightCount;
+          this.updateUniformLightColor(
+            pointLightColor,
+            pointLightIdx,
+            light.color,
+            light.intensity
+          );
+          targetMatrixWorld.setFromMatrixPosition(light.matrixWorld);
+          pointLightPosition[pointLightIdx] = targetMatrixWorld.x;
+          pointLightPosition[pointLightIdx + 1] = targetMatrixWorld.y;
+          pointLightPosition[pointLightIdx + 2] = targetMatrixWorld.z;
+          pointLightDistance[idx] = light.distance;
+          pointLightIdx++;
+        } else if (light instanceof THREE.DirectionalLight) {
+          directionalLightIdx = 3 * directionalLightCount;
+          lightMatrixWorld.setFromMatrixPosition(light.matrixWorld);
+          targetMatrixWorld.setFromMatrixPosition(light.target.matrixWorld);
+          lightMatrixWorld.sub(targetMatrixWorld);
+          lightMatrixWorld.normalize();
+          directionalLightDirection[directionalLightIdx] = lightMatrixWorld.x;
+          directionalLightDirection[directionalLightIdx + 1] =
+            lightMatrixWorld.y;
+          directionalLightDirection[directionalLightIdx + 2] =
+            lightMatrixWorld.z;
+          this.updateUniformLightColor(
+            directionalLightColor,
+            directionalLightIdx,
+            light.color,
+            light.intensity
+          );
+          directionalLightCount++;
+        } else if (light instanceof THREE.HemisphereLight) {
+          lightMatrixWorld.setFromMatrixPosition(light.matrixWorld);
+          lightMatrixWorld.normalize();
+          hemisphereLightIdx = 3 * hemisphereLightCount;
+          hemisphereLightDirection[hemisphereLightIdx] = lightMatrixWorld.x;
+          hemisphereLightDirection[hemisphereLightIdx + 1] = lightMatrixWorld.y;
+          hemisphereLightDirection[hemisphereLightIdx + 2] = lightMatrixWorld.z;
+          const skyColor = light.color;
+          const groundColor = light.groundColor;
+          this.updateUniformLightColor(
+            hemisphereLightSkyColor,
+            hemisphereLightIdx,
+            skyColor,
+            light.intensity
+          );
+          this.updateUniformLightColor(
+            hemisphereLightGroundColor,
+            hemisphereLightIdx,
+            groundColor,
+            light.intensity
+          );
+          hemisphereLightCount++;
+        } else if (light instanceof THREE.SpotLight) {
+          spotLightIdx = 3 * spotLightCount;
+          this.updateUniformLightColor(
+            spotLightColor,
+            spotLightIdx,
+            light.color,
+            light.intensity
+          );
+          lightMatrixWorld.setFromMatrixPosition(light.matrixWorld);
+          spotLightPosition[spotLightIdx] = lightMatrixWorld.x;
+          spotLightPosition[spotLightIdx + 1] = lightMatrixWorld.y;
+          spotLightPosition[spotLightIdx + 2] = lightMatrixWorld.z;
+
+          spotLightDistance[spotLightCount] = light.distance;
+          targetMatrixWorld.setFromMatrixPosition(light.target.matrixWorld);
+          lightMatrixWorld.sub(targetMatrixWorld);
+          lightMatrixWorld.normalize();
+          spotLightDirection[spotLightIdx] = lightMatrixWorld.x;
+          spotLightDirection[spotLightIdx + 1] = lightMatrixWorld.y;
+          spotLightDirection[spotLightIdx + 2] = lightMatrixWorld.z;
+          spotLightAngleCos[spotLightCount] = Math.cos(light.angle);
+          spotLightExponent[spotLightCount] = light.exponent;
+          spotLightDecay[spotLightCount] =
+            light.distance === 0 ? 0 : light.decay;
+          spotLightCount++;
+        }
+      }
+    });
+  }
+
+  updateUniformLightColor(uniformColor, idx, lightColor, intensity) {
+    uniformColor[idx] = lightColor.r * intensity;
+    uniformColor[idx + 1] = lightColor.g * intensity;
+    uniformColor[idx + 2] = lightColor.b * intensity;
   }
 }
