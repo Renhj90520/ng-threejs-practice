@@ -44126,39 +44126,39 @@
               });
           };
         Wheel.inherit(THREE.Object3D, {
-          initModels: function(e, t) {
-            var n = Loader.getTexture('car/wheels/rim/JFC_Rim_01.jpg'),
-              s = Loader.getTexture('car/wheels/rim/JFC_Rim_01_Mask.png'),
-              l = Loader.getTexture('car/wheels/rim/JFC_Rim_01_NM.png'),
-              c = Loader.getTexture('car/wheels/int/JFC_Rim_Int.jpg'),
-              h =
+          initModels: function(rimEnvMap, carSide) {
+            var rimMap = Loader.getTexture('car/wheels/rim/JFC_Rim_01.jpg'),
+              rimReflectionMask = Loader.getTexture('car/wheels/rim/JFC_Rim_01_Mask.png'),
+              rimNormalMap = Loader.getTexture('car/wheels/rim/JFC_Rim_01_NM.png'),
+              rimIntMap = Loader.getTexture('car/wheels/int/JFC_Rim_Int.jpg'),
+              rimIntNormalMap =
                 (Loader.getTexture('car/wheels/int/JFC_Rim_Int_Mask.png'),
                 Loader.getTexture('car/wheels/int/JFC_Rim_Int_NM.png')),
-              u = Loader.getTexture('car/wheels/tire/JFC_Tire.jpg'),
-              f = Loader.getTexture('car/wheels/tire/JFC_Tire_NM.png');
+              tireMap = Loader.getTexture('car/wheels/tire/JFC_Tire.jpg'),
+              tireNormalMap = Loader.getTexture('car/wheels/tire/JFC_Tire_NM.png');
             (this.materials = {
               rim: new SteelMaterial({
-                map: n,
+                map: rimMap,
                 color: 0xffffff,
-                normalMap: l,
+                normalMap: rimNormalMap,
                 shininess: 100,
                 reflectivity: 0.15,
-                reflectionMask: s,
-                envMap: e
+                reflectionMask: rimReflectionMask,
+                envMap: rimEnvMap
               }),
               tire: new THREE.MeshPhongMaterial({
-                map: u,
+                map: tireMap,
                 color: 0xffffff,
                 shininess: 10,
-                normalMap: f
+                normalMap: tireNormalMap
               }),
               rimInt: new RimMaterial({
                 color: 0xffffff,
-                map: c,
-                normalMap: h,
+                map: rimIntMap,
+                normalMap: rimIntNormalMap,
                 shininess: 10,
                 specular: 5592405,
-                carSide: t
+                carSide: carSide
               }),
               cover: new THREE.MeshBasicMaterial({
                 color: 0,

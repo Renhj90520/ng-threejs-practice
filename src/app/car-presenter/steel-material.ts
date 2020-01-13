@@ -842,6 +842,10 @@ export default class SteelMaterial extends RealisticMaterial {
     spotLightDecay: { type: 'fv1', value: [] },
     lightVariance: { type: 'f', value: 0 }
   };
+  color2: THREE.Color;
+  carLength: any;
+  paintMask: any;
+  envMapOffset: any;
   constructor(parameters) {
     super(parameters);
     parameters = _.extend(
@@ -866,5 +870,28 @@ export default class SteelMaterial extends RealisticMaterial {
     this.onPropertyChange('color2', val => {
       this.uniforms.diffuse2.value = val;
     });
+    this.onPropertyChange('colorTransition', val => {
+      this.uniforms.colorTransition.value = val;
+    });
+    this.onPropertyChange('carLength', val => {
+      this.uniforms.carLength = val;
+    });
+    this.onPropertyChange('paintMask', val => {
+      if (val) {
+        this.uniforms.paintMask.value = val;
+      }
+    });
+    this.onPropertyChange('envMapOffset', val => {
+      this.uniforms.envMapOffset.value = val;
+    });
+    this.onPropertyChange('transparentMode', val => {
+      this.defines.TRANSPARENT_MODE = val;
+      this.needsUpdate = true;
+    });
+    this.color2 = new THREE.Color(parameters.color2 || 0xffffff);
+    this.carLength = parameters.carLength || 5;
+    this.paintMask = parameters.paintMask || null;
+    this.envMapOffset = parameters.envMapOffset || 0;
+    this.uniforms.flipN.value = parameters.flipN ? -1 : 1;
   }
 }

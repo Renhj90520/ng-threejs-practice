@@ -18,8 +18,35 @@ export default class GlassMaterial extends BasicCustomShaderMaterial {
     fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
     envMapOffset: { type: 'f', value: 0 }
   };
+  envmapOffset: any;
+  reflectivity: any;
   constructor(parameters) {
     super(parameters);
-    parameters = _.extend({}, parameters);
+    parameters = _.extend(
+      {
+        vertexShader: this.vertexShader,
+        fragmentShader: this.fragmentShader,
+        uniforms: this.uniforms,
+        defines: { TRANSPARENT_MODE: false }
+      },
+      parameters
+    );
+    this.setParameters(parameters);
+    this.onPropertyChange('envMapOffset', val => {
+      this.uniforms.envMapOffset.value = val;
+    });
+    this.onPropertyChange('reflectivity', val => {
+      this.uniforms.reflectivity.value = val;
+    });
+    this.onPropertyChange('flipEnvMap', val => {
+      this.uniforms.flipEnvMap.value = val;
+    });
+    this.onPropertyChange('transparentMode', val => {
+      this.defines.TRANSPARENT_MODE = val;
+      this.needsUpdate = true;
+    });
+    this.envMap = parameters.envMap || null;
+    this.envmapOffset = parameters.envMapOffset || 0;
+    this.reflectivity = parameters.reflectivity || 0.15;
   }
 }
