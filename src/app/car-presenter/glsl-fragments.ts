@@ -14,16 +14,16 @@ export const square = `
 `;
 export const saturate = `
   float saturate(in float a) {
-    return clamp(a, 0.0, 1.);
+    return clamp(a, 0., 1.);
   }
   vec2 saturate(in vec2 a) {
-    return clamp(a, 0.0, 1.);
+    return clamp(a, 0., 1.);
   }
   vec3 saturate(in vec3 a) {
-    return clamp(a, 0.0, 1.);
+    return clamp(a, 0., 1.);
   }
   vec4 saturate(in vec4 a) {
-    return clamp(a, 0.0, 1.);
+    return clamp(a, 0., 1.);
   }`;
 export const average = `
   float average(in float a) {
@@ -43,13 +43,13 @@ export const whitecompliment = `
   float whitecompliment(in float a) {
     return saturate(1. - a);
   }
-  ve2 whitecompliment(in vec2 a) {
+  vec2 whitecompliment(in vec2 a) {
     return saturate(vec2(1.) - a);
   }
   vec3 whitecompliment(in vec3 a) {
     return saturate(vec3(1.) - a);
   }
-  float whitecompliment(in vec4 a) {
+  vec4 whitecompliment(in vec4 a) {
     return saturate(vec4(1.) - a);
   }
 `;
@@ -154,4 +154,10 @@ export const perturbNormal2Arb = `
     mat3 tsn = mat3(S, T, N);
     return normalize(tsn * mapN);
   }
+`;
+export const lights = `
+  #define MAX_DIR_LIGHTS 0
+  #define MAX_HEMI_LIGHTS 1
+  #define MAX_POINT_LIGHTS 0
+  #define MAX_SPOT_LIGHTS 1
 `;

@@ -38214,7 +38214,7 @@
               l = 0xff0000,
               c = 43775,
               h = 0xffffff,
-              u = 3355443;
+              u = 0x333333;
             t('n1', 'n2', s),
               t('n2', 'n4', s),
               t('n4', 'n3', s),
@@ -41796,11 +41796,11 @@
                   combine: THREE.MixOperation,
                   reflectivity: 0.15,
                   shininess: 30,
-                  specular: 3355443,
+                  specular: 0x333333,
                   normalMap: bodyNormalMapTexture,
                   emissiveIntensity: 0.75,
                   emissiveMap: bodyEmissiveMapTexture,
-                  emissiveColor: 16728128,
+                  emissiveColor: 0xff4040,
                   paintMask: carrosserieMaskTexture,
                   reflectionMask: bodyMaskTexture,
                   envMapOffset: 0,
@@ -41815,11 +41815,11 @@
                   combine: THREE.MixOperation,
                   reflectivity: 0.15,
                   shininess: 30,
-                  specular: 3355443,
+                  specular: 0x333333,
                   normalMap: bodyNormalMapTexture,
                   emissiveIntensity: 0.75,
                   emissiveMap: bodyEmissiveMapTexture,
-                  emissiveColor: 16728128,
+                  emissiveColor: 0xff4040,
                   paintMask: carrosserieMaskTexture,
                   reflectionMask: bodyMaskTexture,
                   envMapOffset: 0,
@@ -41853,7 +41853,7 @@
                   reflectivity: 0.3,
                   emissiveIntensity: 0.75,
                   emissiveMap: bodyEmissiveMapTexture,
-                  emissiveColor: 16728128,
+                  emissiveColor: 0xff4040,
                   envMapOffset: 0
                 }),
                 frontPlate: new THREE.MeshBasicMaterial({
@@ -41932,46 +41932,60 @@
               this.add(this.rearPlate);
           },
           initInterior: function() {
-            var e = Loader.getTexture('car/interior/JFC_Int_Front.jpg'),
-              t = Loader.getTexture('car/interior/JFC_Int_Back.jpg'),
-              n = Loader.getTexture('car/normalmap/JFC_Int_Front_NM.png'),
-              a = Loader.getTexture('car/normalmap/JFC_Int_Back_NM.png'),
-              s = Loader.getTexture('car/interior/JFC_Int_Front_EM.png'),
-              l = Loader.getTexture('car/interior/JFC_Int_Back_SM.png'),
-              u = Loader.getTexture('car/interior/JFC_Int_Back_EM.png'),
-              f = Loader.getTexture('car/interior/JFC_Int_Front_Mask.png'),
-              d = Loader.getTexture('car/interior/JFC_Int_Back_Mask.png'),
-              p = Loader.getTexture(
+            var frontMap = Loader.getTexture('car/interior/JFC_Int_Front.jpg'),
+              backMap = Loader.getTexture('car/interior/JFC_Int_Back.jpg'),
+              frontNormalMap = Loader.getTexture(
+                'car/normalmap/JFC_Int_Front_NM.png'
+              ),
+              backNormalMap = Loader.getTexture(
+                'car/normalmap/JFC_Int_Back_NM.png'
+              ),
+              frontEmissiveMap = Loader.getTexture(
+                'car/interior/JFC_Int_Front_EM.png'
+              ),
+              backSpecularMap = Loader.getTexture(
+                'car/interior/JFC_Int_Back_SM.png'
+              ),
+              backEmissiveMap = Loader.getTexture(
+                'car/interior/JFC_Int_Back_EM.png'
+              ),
+              frontMask = Loader.getTexture(
+                'car/interior/JFC_Int_Front_Mask.png'
+              ),
+              backMask = Loader.getTexture(
+                'car/interior/JFC_Int_Back_Mask.png'
+              ),
+              carrosserieMask = Loader.getTexture(
                 'car/interior/JFC_Int_Carrosserie_Mask.png'
               );
             (this.materials.interiorFront = new SteelMaterial({
-              map: e,
+              map: frontMap,
               color: COLORS[2],
               color2: COLORS[3],
-              normalMap: n,
-              emissiveMap: s,
-              emissiveColor: 1700,
+              normalMap: frontNormalMap,
+              emissiveMap: frontEmissiveMap,
+              emissiveColor: 0x0006a4,
               emissiveIntensity: 1,
               shininess: 20,
-              reflectionMask: f,
+              reflectionMask: frontMask,
               envMap: this.cubeMapInterior,
               envMapOffset: 0,
               combine: THREE.MixOperation,
               reflectivity: 0.15,
-              paintMask: p,
+              paintMask: carrosserieMask,
               transparent: true
             })),
-              (this.materials.RealisticMaterial = new RealisticMaterial({
-                map: t,
+              (this.materials.interiorBack = new RealisticMaterial({
+                map: backMap,
                 color: 0xffffff,
-                normalMap: a,
-                specularMap: l,
-                reflectionMask: d,
+                normalMap: backNormalMap,
+                specularMap: backSpecularMap,
+                reflectionMask: backMask,
                 shininess: 0,
                 reflectivity: 0,
-                emissiveMap: u,
+                emissiveMap: backEmissiveMap,
                 emissiveIntensity: 1,
-                emissiveColor: 1700
+                emissiveColor: 0x0006a4
               })),
               (this.interior = new CustomMesh('interior')),
               this.exterior.add(this.interior),
@@ -41982,7 +41996,7 @@
               ),
               this.interior.setMaterial(
                 'JFC_Int_Back',
-                this.materials.RealisticMaterial
+                this.materials.interiorBack
               );
           },
           initDoor: function() {
@@ -41992,32 +42006,33 @@
               this.body.add(this.door);
           },
           initWheels: function() {
-            var e = 0.83,
-              t = 0.17,
-              n = 1.42,
-              i = 1.47,
-              r = new Wheel({
+            var halfWidth = 0.83,
+              height = 0.17,
+              front = 1.42,
+              back = 1.47,
+              frontRight = new Wheel({
                 envMap: this.cubeMapLightSharp,
                 carSide: 'right'
               });
-            r.position.set(-e, t, n);
-            var o = new Wheel({
+            frontRight.position.set(-halfWidth, height, front);
+            var frontLeft = new Wheel({
               envMap: this.cubeMapLightSharp,
               carSide: 'left'
             });
-            o.position.set(e, t, n), (o.rotation.y = Math.PI);
-            var a = new Wheel({
+            frontLeft.position.set(halfWidth, height, front),
+              (frontLeft.rotation.y = Math.PI);
+            var backRight = new Wheel({
               envMap: this.cubeMapLightSharp,
               carSide: 'right'
             });
-            a.position.set(-e, t, -i);
-            var l = new Wheel({
+            backRight.position.set(-halfWidth, height, -back);
+            var backLeft = new Wheel({
               envMap: this.cubeMapLightSharp,
               carSide: 'left'
             });
-            l.position.set(e, t, -i),
-              (l.rotation.y = Math.PI),
-              (this.wheels = [r, o, a, l]),
+            backLeft.position.set(halfWidth, height, -back),
+              (backLeft.rotation.y = Math.PI),
+              (this.wheels = [frontRight, frontLeft, backRight, backLeft]),
               this.wheels.forEach(function(e) {
                 this.add(e);
               }, this);
@@ -42127,20 +42142,22 @@
             }, this);
           },
           updateFlare: (function() {
-            var e = (new THREE.Vector3(), new THREE.Vector3()),
-              t =
+            var cameraPosition = (new THREE.Vector3(), new THREE.Vector3()),
+              projectDirection =
                 (new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()),
-              n = TWEEN.Easing.Quartic.Out,
+              quarticOut = TWEEN.Easing.Quartic.Out,
               i = 1.5;
-            return function(r, o) {
+            return function(flare, camera) {
               if (this.lightsEnabled) {
-                e.setFromMatrixPosition(o.matrixWorld),
-                  t.subVectors(e, r.position).normalize();
-                var a = r.orientation.dot(t),
-                  s = THREE.Math.smoothstep(a, 0, 1),
-                  l = THREE.Math.mapLinear(n(s), 0, 1, 0, i),
+                cameraPosition.setFromMatrixPosition(camera.matrixWorld),
+                  projectDirection
+                    .subVectors(cameraPosition, flare.position)
+                    .normalize();
+                var angle = flare.orientation.dot(projectDirection),
+                  s = THREE.Math.smoothstep(angle, 0, 1),
+                  l = THREE.Math.mapLinear(quarticOut(s), 0, 1, 0, i),
                   c = THREE.Math.mapLinear(l, 0, 2, 0, 0.9);
-                r.scale.set(l, l, l), (r.material.opacity = c);
+                flare.scale.set(l, l, l), (flare.material.opacity = c);
               }
             };
           })(),
@@ -42503,7 +42520,7 @@
                 ? (this.headlights.setEnvMap(this.cubeMapLightSharp),
                   (this.materials.body.emissiveIntensity = 0.75),
                   (this.materials.interiorFront.emissiveIntensity = 1),
-                  (this.materials.RealisticMaterial.emissiveIntensity = 1))
+                  (this.materials.interiorBack.emissiveIntensity = 1))
                 : 'night' === e &&
                   this.headlights.setEnvMap(this.cubeMapDarkSharp),
               'night' === e &&
@@ -42518,7 +42535,7 @@
                 (this.headlights.innerMaterial.envMap = null),
                 (this.materials.body.emissiveIntensity = 0),
                 (this.materials.interiorFront.emissiveIntensity = 0),
-                (this.materials.RealisticMaterial.emissiveIntensity = 0));
+                (this.materials.interiorBack.emissiveIntensity = 0));
           },
           setColor: function(e) {
             this.materials.body.color2.setHex(COLORS[e]),
@@ -42537,11 +42554,11 @@
                     )
                     .onComplete(
                       function() {
-                        var e = this.materials.body.color;
+                        var bodyColor = this.materials.body.color;
                         (this.materials.body.color = this.materials.body.color2),
                           (this.materials.bodyFlip.color = this.materials.bodyFlip.color2),
-                          (this.materials.body.color2 = e),
-                          (this.materials.bodyFlip.color2 = e),
+                          (this.materials.body.color2 = bodyColor),
+                          (this.materials.bodyFlip.color2 = bodyColor),
                           (this.materials.body.colorTransition = 0),
                           (this.materials.bodyFlip.colorTransition = 0);
                       }.bind(this)
@@ -42954,7 +42971,7 @@
               Door.setMaterial('JFC_Glass', e.materials.glass),
               Door.setMaterial('JFC_Others', e.materials.body),
               Door.setMaterial('JFC_Int_Front', e.materials.interiorFront),
-              Door.setMaterial('JFC_Int_Back', e.materials.RealisticMaterial),
+              Door.setMaterial('JFC_Int_Back', e.materials.interiorBack),
               (this.rotation.x = Math.PI / 2),
               this.addToBone(Door, 'Bone_01');
           };
@@ -43154,21 +43171,27 @@
               (this.envMap = e.envMap),
               (this.mesh = new CustomMesh('headlights')),
               this.add(this.mesh);
-            var t = Loader.getTexture('car/headlights/JFC_Optic.png'),
-              n = Loader.getTexture('car/headlights/JFC_Optic_NM.png'),
-              a = Loader.getTexture('car/headlights/JFC_Optic_EM.png'),
-              s = Loader.getTexture('car/headlights/JFC_Optic_EM_2.png'),
-              l = Loader.getTexture('car/headlights/JFC_Optic_SM.png'),
-              c = Loader.getTexture('car/headlights/JFC_Optic_Mask.png'),
+            var map = Loader.getTexture('car/headlights/JFC_Optic.png'),
+              normalMap = Loader.getTexture('car/headlights/JFC_Optic_NM.png'),
+              emissiveMap = Loader.getTexture(
+                'car/headlights/JFC_Optic_EM.png'
+              ),
+              emissiveMap2 = Loader.getTexture(
+                'car/headlights/JFC_Optic_EM_2.png'
+              ),
+              specularMap = Loader.getTexture(
+                'car/headlights/JFC_Optic_SM.png'
+              ),
+              mask = Loader.getTexture('car/headlights/JFC_Optic_Mask.png'),
               innerMaterial = new RealisticMaterial({
                 color: 0xffffff,
-                map: t,
-                normalMap: n,
-                emissiveMap: a,
+                map: map,
+                normalMap: normalMap,
+                emissiveMap: emissiveMap,
                 emissiveIntensity: 2,
                 combine: THREE.MixOperation,
-                specularMap: l,
-                reflectionMask: c,
+                specularMap: specularMap,
+                reflectionMask: mask,
                 envMap: this.envMap
               }),
               glassMaterial = new THREE.MeshLambertMaterial({
@@ -43181,8 +43204,8 @@
               });
             (this.innerMaterial = innerMaterial),
               (this.glassMaterial = glassMaterial),
-              (this.emissiveMap = a),
-              (this.emissiveMap2 = s),
+              (this.emissiveMap = emissiveMap),
+              (this.emissiveMap2 = emissiveMap2),
               this.mesh.setMaterial('JFC_Optic', innerMaterial),
               this.mesh.setMaterial('JFC_Glass_Optic', glassMaterial);
           };
@@ -44128,14 +44151,20 @@
         Wheel.inherit(THREE.Object3D, {
           initModels: function(rimEnvMap, carSide) {
             var rimMap = Loader.getTexture('car/wheels/rim/JFC_Rim_01.jpg'),
-              rimReflectionMask = Loader.getTexture('car/wheels/rim/JFC_Rim_01_Mask.png'),
-              rimNormalMap = Loader.getTexture('car/wheels/rim/JFC_Rim_01_NM.png'),
+              rimReflectionMask = Loader.getTexture(
+                'car/wheels/rim/JFC_Rim_01_Mask.png'
+              ),
+              rimNormalMap = Loader.getTexture(
+                'car/wheels/rim/JFC_Rim_01_NM.png'
+              ),
               rimIntMap = Loader.getTexture('car/wheels/int/JFC_Rim_Int.jpg'),
               rimIntNormalMap =
                 (Loader.getTexture('car/wheels/int/JFC_Rim_Int_Mask.png'),
                 Loader.getTexture('car/wheels/int/JFC_Rim_Int_NM.png')),
               tireMap = Loader.getTexture('car/wheels/tire/JFC_Tire.jpg'),
-              tireNormalMap = Loader.getTexture('car/wheels/tire/JFC_Tire_NM.png');
+              tireNormalMap = Loader.getTexture(
+                'car/wheels/tire/JFC_Tire_NM.png'
+              );
             (this.materials = {
               rim: new SteelMaterial({
                 map: rimMap,
@@ -44179,8 +44208,8 @@
               (this.currentRim = this.models.rim);
           },
           initCover: function() {
-            var e = 0.3,
-              t = new THREE.CylinderGeometry(e, e, 0.01, 24, 1);
+            var radius = 0.3,
+              t = new THREE.CylinderGeometry(radius, radius, 0.01, 24, 1);
             (this.cover = new THREE.Mesh(t, this.materials.cover)),
               (this.cover.rotation.z = Math.PI / 2),
               (this.cover.position.x += 0.11),
@@ -44188,11 +44217,13 @@
               this.add(this.cover);
           },
           initShadow: function() {
-            var e = Loader.getTexture('car/shadow/JFC_Ground_Wheel_AO.png');
+            var shadowMap = Loader.getTexture(
+              'car/shadow/JFC_Ground_Wheel_AO.png'
+            );
             (this.shadow = new THREE.Mesh(
               new THREE.PlaneBufferGeometry(0.9, 1.5, 1, 1),
               new THREE.MeshBasicMaterial({
-                map: e,
+                map: shadowMap,
                 transparent: true
               })
             )),

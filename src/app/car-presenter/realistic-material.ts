@@ -17,10 +17,12 @@ import {
   unpackDepth,
   dHdxy_fwd,
   perturbNormalArb,
-  perturbNormal2Arb
+  perturbNormal2Arb,
+  lights
 } from './glsl-fragments';
 export default class RealisticMaterial extends BasicCustomShaderMaterial {
   vertexShader = `
+    ${lights}
     varying vec3 vWorldPos;
     #ifdef USE_COLOR
       attribute vec3 color;
@@ -55,6 +57,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
+    
     ${square}
     ${saturate}
     ${average}
@@ -285,6 +288,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
+    
     ${square}
     ${saturate}
     ${average}
@@ -442,7 +446,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         specularStrength = 1.;
       #endif
 
-      #ifdef FLAT_SHADED
+      #ifndef FLAT_SHADED
         vec3 normal = normalize(vNormal);
         #ifdef DOUBLE_SIDED
           normal = normal * (-1. + 2. * float(gl_FrontFacing));
@@ -830,7 +834,8 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     emissiveMap: { type: 't', value: null },
     emissiveColor: { type: 'c', value: null },
     emissiveIntensity: { type: 'f', value: 1 },
-    reflectionMask: { type: 't', value: null }
+    reflectionMask: { type: 't', value: null },
+    combine: { type: 'f', value: 0 }
   };
   useVertexTexture: any;
   emissive: any;

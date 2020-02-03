@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as _ from 'lodash';
+import { lights } from './glsl-fragments';
 class CustomShaderMaterial extends THREE.ShaderMaterial {
   constructor(parameters?) {
     super(parameters);
@@ -31,6 +32,7 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
 
 export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
   vertexShader = `
+  ${lights}
   #ifdef USE_MAP
     varying vec2 vUv;
     uniform vec4 offsetRepeat;

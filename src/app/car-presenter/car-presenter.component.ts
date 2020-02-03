@@ -39,6 +39,7 @@ export class CarPresenterComponent implements OnInit {
       this.initAutoCamera();
       this.initLights();
       this.initStage();
+      console.log(this.scene)
     });
     this.loaderService.load({
       models: [

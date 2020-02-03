@@ -5,6 +5,7 @@ import Vignetting from './vignetting';
 import CustomControls from './custom-controls';
 import LensFlare from './lensflare';
 import Ground from './ground';
+import Car from './car';
 
 export default class Stage extends THREE.Object3D {
   skyColor: THREE.Color;
@@ -22,25 +23,31 @@ export default class Stage extends THREE.Object3D {
 
   objects = [];
   ground: Ground;
+  car: Car;
 
   constructor(camera, renderer, loaderService) {
     super();
     this.loaderService = loaderService;
     this.camera = camera;
     this.renderer = renderer;
+    this.car = new Car(loaderService);
     this.skyColor = new THREE.Color(0xffffff);
     this.skyColor1 = new THREE.Color(0xffffff);
     this.skyColor2 = new THREE.Color(0xdce0e1);
     this.initControls();
     this.initGround();
     this.initTunnel();
+    this.initCar();
     this.initVignetting();
     this.initLensFlare();
     this.refreshCustomMaterials();
 
     this.initRearGlow();
   }
-
+  initCar() {
+    this.objects.push(this.car);
+    this.add(this.car);
+  }
   initRearGlow() {
     const loader = new THREE.TextureLoader();
     const texture = loader.load(

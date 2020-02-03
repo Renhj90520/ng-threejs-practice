@@ -2,13 +2,16 @@ import * as THREE from 'three';
 
 export default class CustomMesh extends THREE.Mesh {
   materials = [];
-  constructor(meshKey, loaderService) {
+  constructor(meshKey, loaderService, callback?) {
     super();
 
     const meshInfo = loaderService.meshes.find(m => m.key === meshKey);
     if (meshInfo) {
       this.geometry = meshInfo.mesh.geometry;
       this.materials = meshInfo.mesh.materials || [];
+      if (callback) {
+        callback(meshInfo.mesh);
+      }
     }
   }
 

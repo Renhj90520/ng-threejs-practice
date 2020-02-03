@@ -17,11 +17,13 @@ import {
   unpackDepth,
   dHdxy_fwd,
   perturbNormalArb,
-  perturbNormal2Arb
+  perturbNormal2Arb,
+  lights
 } from './glsl-fragments';
 
 export default class SteelMaterial extends RealisticMaterial {
   vertexShader = `
+    ${lights}
     varying vec3 vWorldPos;
     varying float vOpacity;
     varying float vDistance;
@@ -47,7 +49,7 @@ export default class SteelMaterial extends RealisticMaterial {
     #endif
     #define PHONG
     varying vec3 vViewPosition;
-    #ifdef FLAT_SHADED
+    #ifndef FLAT_SHADED
         varying vec3 vNormal;
     #endif
     #define PI 3.14159
@@ -55,6 +57,7 @@ export default class SteelMaterial extends RealisticMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
+    
     ${square}
     ${saturate}
     ${average}
@@ -82,7 +85,7 @@ export default class SteelMaterial extends RealisticMaterial {
       uniform float refractionRatio;
     #endif
 
-    #if MAX_SPOT_LIGHTS > 0 || defined(USE_BUMPMAP) || defined(USE_ENVMAP) 
+    #if defined(USE_BUMPMAP) || defined(USE_ENVMAP) || MAX_SPOT_LIGHTS > 0
       varying vec3 vWorldPosition;
     #endif
 
@@ -272,7 +275,7 @@ export default class SteelMaterial extends RealisticMaterial {
           vReflect = refract(cameraToVertex, worldNormal, refractionRatio);
         #endif
       #endif
-      #if MAX_SPOT_LIGHTS > 0 || defined(USE_BUMPMAP) || defined(USE_ENVMAP)
+      #if defined(USE_BUMPMAP) || defined(USE_ENVMAP) || MAX_SPOT_LIGHTS > 0
         vWorldPosition = worldPosition.xyz;
       #endif
       #ifdef USE_SHADOWMAP
@@ -283,6 +286,7 @@ export default class SteelMaterial extends RealisticMaterial {
     }
   `;
   fragmentShader = `
+    ${lights}
     varying vec3 vWorldPos;
     varying float vOpacity;
     varying float vDistance;
@@ -307,9 +311,8 @@ export default class SteelMaterial extends RealisticMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
+    
     ${square}
-    ${saturate}
-    ${average}
     ${whitecompliment}
     ${transformDirection}
     ${inverseTransformDirection}
@@ -478,7 +481,7 @@ export default class SteelMaterial extends RealisticMaterial {
       #else
         specularStrength = 1.;
       #endif
-      #ifdef FLAT_SHADED
+      #ifndef FLAT_SHADED
         vec3 normal = normalize(vNormal);
         #ifdef DOUBLE_SIDED
           normal = normal *(-1. + 2. * float(gl_FrontFacing));
@@ -840,7 +843,24 @@ export default class SteelMaterial extends RealisticMaterial {
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
     spotLightDecay: { type: 'fv1', value: [] },
-    lightVariance: { type: 'f', value: 0 }
+    lightVariance: { type: 'f', value: 0 },
+    envMap: { type: 't', value: null },
+    flipEnvMap: { type: 'f', value: -1 },
+    reflectivity: { type: 'f', value: 0.15 },
+    refractionRatio: { type: 'f', value: 0.98 },
+    normalMap: { type: 't', value: null },
+    normalScale: { type: 'v2', value: new THREE.Vector2(1, 1) },
+    specular: { type: 'c', value: new THREE.Color(0x111111) },
+    combine: { type: 'f', value: 0 },
+    shininess: { type: 'f', value: 30 },
+    emissiveMap: { type: 't', value: null },
+    emissiveColor: { type: 'c', value: null },
+    emissiveIntensity: { type: 'f', value: 1 },
+    carLength: { type: 'f', value: 1 },
+    reflectionMask: { type: 't', value: null },
+    paintMask: { type: 't', value: null },
+    envMapOffset: { type: 'f', value: 0 },
+    flipN: { type: 'f', value: 1 }
   };
   color2: THREE.Color;
   carLength: any;
@@ -848,6 +868,7 @@ export default class SteelMaterial extends RealisticMaterial {
   envMapOffset: any;
   constructor(parameters) {
     super(parameters);
+    this.derivatives = true;
     parameters = _.extend(
       {
         vertexShader: this.vertexShader,
