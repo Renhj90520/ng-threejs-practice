@@ -39,17 +39,17 @@ export const average = `
     return (a.x + a.y + a.z + a.w) * .25;
   }
 `;
-export const whitecompliment = `
-  float whitecompliment(in float a) {
+export const whiteCompliment = `
+  float whiteCompliment(in float a) {
     return saturate(1. - a);
   }
-  vec2 whitecompliment(in vec2 a) {
+  vec2 whiteCompliment(in vec2 a) {
     return saturate(vec2(1.) - a);
   }
-  vec3 whitecompliment(in vec3 a) {
+  vec3 whiteCompliment(in vec3 a) {
     return saturate(vec3(1.) - a);
   }
-  vec4 whitecompliment(in vec4 a) {
+  vec4 whiteCompliment(in vec4 a) {
     return saturate(vec4(1.) - a);
   }
 `;

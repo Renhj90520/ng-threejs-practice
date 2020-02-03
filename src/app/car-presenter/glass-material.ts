@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import {
   square,
   average,
-  whitecompliment,
+  whiteCompliment,
   transformDirection,
   inverseTransformDirection,
   projectOnPlane,
@@ -24,7 +24,7 @@ export default class GlassMaterial extends BasicCustomShaderMaterial {
     #define EPSILON 1e-6
     ${square}
     ${average}
-    ${whitecompliment}
+    ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
     ${projectOnPlane}
@@ -228,7 +228,7 @@ export default class GlassMaterial extends BasicCustomShaderMaterial {
     #define EPSILON 1e-6
     ${square}
     ${average}
-    ${whitecompliment}
+    ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
     ${projectOnPlane}

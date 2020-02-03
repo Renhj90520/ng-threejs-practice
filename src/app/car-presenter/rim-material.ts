@@ -5,15 +5,15 @@ import {
   square,
   saturate,
   average,
-  whitecompliment,
+  whiteCompliment,
   transformDirection,
   inverseTransformDirection,
   projectOnPlane,
   sideOfPlane,
-  linearToOutput,
   linePlaneIntersect,
   calcLightAttenuation,
   inputToLinear,
+  linearToOutput,
   dHdxy_fwd,
   perturbNormalArb,
   perturbNormal2Arb
@@ -43,20 +43,22 @@ export default class RimMaterial extends RealisticMaterial {
       #endif
     #endif
     #define PHONG
+
     varying vec3 vViewPosition;
     #ifndef FLAT_SHADED
       varying vec3 vNormal;
     #endif
+    
     #define PI 3.14159
     #define PI2 6.28318
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
-    
+
     ${square}
     ${saturate}
     ${average}
-    ${whitecompliment}
+    ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
     ${projectOnPlane}
@@ -124,13 +126,12 @@ export default class RimMaterial extends RealisticMaterial {
     #endif
     #ifdef USE_LOGDEPTHBUF
       #ifdef USE_LOGDEPTHBUF_EXT
-        varying float vFragDepth;
+          varying float vFragDepth;
       #endif
       uniform float logDepthBufFC;
     #endif
-
     void main() {
-      vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+      vWorldPos = (modelMatrix * vec4(position, 1.)).xyz;
       #if defined(USE_MAP) || defined(USE_BUMPMAP) || defined(USE_NORMALMAP) || defined(USE_SPECULARMAP) || defined(USE_ALPHAMAP)
         vUv = uv * offsetRepeat.zw + offsetRepeat.xy;
       #endif
@@ -177,10 +178,12 @@ export default class RimMaterial extends RealisticMaterial {
       #ifdef FLIP_SIDED
         objectNormal = -objectNormal;
       #endif
+
       vec3 transformedNormal = normalMatrix * objectNormal;
       #ifndef FLAT_SHADED
         vNormal = normalize(transformedNormal);
       #endif
+
       #ifdef USE_MORPHTARGETS
         vec3 morphed = vec3(0.0);
         morphed += (morphTarget0 - position) * morphTargetInfluences[0];
@@ -215,25 +218,30 @@ export default class RimMaterial extends RealisticMaterial {
       #else
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
       #endif
+
       gl_Position = projectionMatrix * mvPosition;
+
       #ifdef USE_LOGDEPTHBUF
-        gl_Position.z = log2(max(EPSILON, gl_Position.w + 1.0)) * logDepthBufFC;
+        gl_Position.z = log2(max(EPSILON, gl_Position.w + 1.)) * logDepthBufFC;
         #ifdef USE_LOGDEPTHBUF_EXT
-          vFragDepth = 1.0 + gl_Position.w;
+          vFragDepth = 1. + gl_Position.w;
         #else
-          gl_Position.z = (gl_Position.z - 1.0) * gl_Position.w;
+          gl_Position.z = (gl_Position.z - 1.) * gl_Position.w;
         #endif
       #endif
-        vViewPosition = -mvPosition.xyz;
-      #if defined(USE_ENVMAP) || defined(PHONG) || defined(LAMBERT) || defined (USE_SHADOWMAP)
+
+      vViewPosition = -mvPosition.xyz;
+
+      #if defined(USE_ENVMAP) || defined(PHONG) || defined(LAMBERT) || defined(USE_SHADOWMAP)
         #ifdef USE_SKINNING
           vec4 worldPosition = modelMatrix * skinned;
         #elif defined(USE_MORPHTARGETS)
-          vec4 worldPosition = modelMatrix * vec4(morphed, 1.0);
+          vec4 worldPosition = modelMatrix * vec4(morphed, 1.);
         #else
-          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vec4 worldPosition = modelMatrix * vec4(position, 1.);
         #endif
       #endif
+
       #if defined(USE_ENVMAP) && ! defined(USE_BUMPMAP) && ! defined(USE_NORMALMAP) && ! defined(PHONG)
         vec3 worldNormal = transformDirection(objectNormal, modelMatrix);
         vec3 cameraToVertex = normalize(worldPosition.xyz - cameraPosition);
@@ -247,8 +255,8 @@ export default class RimMaterial extends RealisticMaterial {
         vWorldPosition = worldPosition.xyz;
       #endif
       #ifdef USE_SHADOWMAP
-        for(int i = 0; i < MAX_SHADOWS; i ++) {
-            vShadowCoord[i] = shadowMatrix[i] * worldPosition;
+        for(int i = 0; i < MAX_SHADOWS; i++) {
+          vShadowCoord[i] = shadowMatrix[i] * worldPosition;
         }
       #endif
     }
@@ -258,7 +266,7 @@ export default class RimMaterial extends RealisticMaterial {
     uniform float envMapOffset;
     uniform float flipWorldPos;
     #ifdef USE_REFLECTIONMASK
-      uniform sampler2D reflectionMask;
+        uniform sampler2D reflectionMask;
     #endif
     #define PHONG
     uniform vec3 diffuse;
@@ -272,11 +280,11 @@ export default class RimMaterial extends RealisticMaterial {
     #define RECIPROCAL_PI2 0.15915494
     #define LOG2 1.442695
     #define EPSILON 1e-6
-    
+
     ${square}
     ${saturate}
     ${average}
-    ${whitecompliment}
+    ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
     ${projectOnPlane}
@@ -407,49 +415,54 @@ export default class RimMaterial extends RealisticMaterial {
     void main() {
       vec3 outgoingLight = vec3(0.0);
       vec4 diffuseColor = vec4(diffuse, opacity);
-    #if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)
-      gl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * 0.5;
-    #endif
-    #ifdef USE_MAP
-      vec4 texelColor = texture2D(map, vUv);
-      texelColor.xyz = inputToLinear(texelColor.xyz);
-      diffuseColor *= texelColor;
-    #endif
-    #ifdef USE_COLOR
-      diffuseColor.rgb *= vColor;
-    #endif
-    #ifdef USE_ALPHAMAP
-      diffuseColor.a *= texture2D(alphaMap, vUv).g;
-    #endif
-    #ifdef ALPHATEST
-      if (diffuseColor.a < ALPHATEST) discard;
-    #endif
-    float specularStrength;
-    #ifdef USE_SPECULARMAP
-      vec4 texelSpecular = texture2D(specularMap, vUv);
-      specularStrength = texelSpecular.r;
-    #else
-      specularStrength = 1.0;
-    #endif
-    #ifndef FLAT_SHADED
-      vec3 normal = normalize(vNormal);
-      #ifdef DOUBLE_SIDED
-        normal = normal * (-1.0 + 2.0 * float(gl_FrontFacing));
+      #if defined(USE_LOGDEPTHBUF) && defined(USE_LOGDEPTHBUF_EXT)
+        gl_FragDepthEXT = log2(vFragDepth) * logDepthBufFC * .5;
       #endif
-    #else
-      vec3 fdx = dFdx(vViewPosition);
-      vec3 fdy = dFdy(vViewPosition);
-      vec3 normal = normalize(cross(fdx, fdy));
-    #endif
-    vec3 viewPosition = normalize(vViewPosition);
-    #ifdef USE_NORMALMAP
-      normal = perturbNormal2Arb(-vViewPosition, normal);
-    #elif defined(USE_BUMPMAP)
-      normal = perturbNormalArb(-vViewPosition, normal, dHdxy_fwd());
-    #endif
-    vec3 totalDiffuseLight = vec3(0.0);
-    vec3 totalSpecularLight = vec3(0.0);
-    #if MAX_POINT_LIGHTS > 0
+      #ifdef USE_MAP
+        vec4 texelColor = texture2D(map, vUv);
+        texelColor.xyz = inputToLinear(texelColor.xyz);
+        diffuseColor *= texelColor;
+      #endif
+
+      #ifdef USE_COLOR
+        diffuseColor.rgb *= vColor;
+      #endif
+
+      #ifdef USE_ALPHAMAP
+        diffuseColor.a *= texture2D(alphaMap, vUv).g;
+      #endif
+
+      #ifdef ALPHATEST
+        if(diffuseColor.a < ALPHATEST) discard;
+      #endif
+      float specularStrength;
+      #ifdef USE_SPECULARMAP
+        vec4 texelSpecular = texture2D(specularMap, vUv);
+        specularStrength = texelSpecular.r;
+      #else
+        specularStrength = 1.;
+      #endif
+
+      #ifndef FLAT_SHADED
+        vec3 normal = normalize(vNormal);
+        #ifdef DOUBLE_SIDED
+          normal = normal * (-1. + 2. * float(gl_FrontFacing));
+        #endif
+      #else
+        vec3 fdx = dFdx(vViewPosition);
+        vec3 fdy = dFdy(vViewPosition);
+        vec3 normal = normalize(cross(fdx, fdy));
+      #endif
+      vec3 viewPosition = normalize(vViewPosition);
+      #ifdef USE_NORMALMAP
+        normal = perturbNormal2Arb(-vViewPosition, normal);
+      #elif defined(USE_BUMPMAP)
+        normal = perturbNormalArb(-vViewPosition, normal, dHdxy_fwd());
+      #endif
+      vec3 totalDiffuseLight = vec3(0.0);
+      vec3 totalSpecularLight = vec3(0.0);
+
+      #if MAX_POINT_LIGHTS > 0
       for (int i = 0; i < MAX_POINT_LIGHTS; i ++) {
         vec4 lPosition = viewMatrix * vec4(pointLightPosition[i], 1.0);
         vec3 lVector = lPosition.xyz + vViewPosition.xyz;
