@@ -5,7 +5,7 @@ import {
   square,
   saturate,
   average,
-  whitecompliment,
+  whiteCompliment,
   transformDirection,
   inverseTransformDirection,
   projectOnPlane,
@@ -58,7 +58,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     ${square}
     ${saturate}
     ${average}
-    ${whitecompliment}
+    ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
     ${projectOnPlane}
@@ -288,7 +288,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     ${square}
     ${saturate}
     ${average}
-    ${whitecompliment}
+    ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
     ${projectOnPlane}
