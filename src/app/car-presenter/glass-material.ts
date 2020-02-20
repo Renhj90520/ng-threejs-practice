@@ -12,10 +12,13 @@ import {
   linePlaneIntersect,
   calcLightAttenuation,
   inputToLinear,
-  linearToOutput
+  linearToOutput,
+  lights,
+  saturate
 } from './glsl-fragments';
 export default class GlassMaterial extends BasicCustomShaderMaterial {
   vertexShader = `
+    ${lights}
     varying float vOpacity;
     #define PI 3.14159
     #define PI2 6.28318
@@ -24,6 +27,7 @@ export default class GlassMaterial extends BasicCustomShaderMaterial {
     #define EPSILON 1e-6
     ${square}
     ${average}
+    ${saturate}
     ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
@@ -228,6 +232,7 @@ export default class GlassMaterial extends BasicCustomShaderMaterial {
     #define EPSILON 1e-6
     ${square}
     ${average}
+    ${saturate}
     ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}

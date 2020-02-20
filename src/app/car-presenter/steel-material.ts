@@ -85,7 +85,7 @@ export default class SteelMaterial extends RealisticMaterial {
       uniform float refractionRatio;
     #endif
 
-    #if defined(USE_BUMPMAP) || defined(USE_ENVMAP) || MAX_SPOT_LIGHTS > 0
+    #if MAX_SPOT_LIGHTS > 0 || defined(USE_BUMPMAP) || defined(USE_ENVMAP) 
       varying vec3 vWorldPosition;
     #endif
 
@@ -275,7 +275,7 @@ export default class SteelMaterial extends RealisticMaterial {
           vReflect = refract(cameraToVertex, worldNormal, refractionRatio);
         #endif
       #endif
-      #if defined(USE_BUMPMAP) || defined(USE_ENVMAP) || MAX_SPOT_LIGHTS > 0
+      #if MAX_SPOT_LIGHTS > 0 || defined(USE_BUMPMAP) || defined(USE_ENVMAP)
         vWorldPosition = worldPosition.xyz;
       #endif
       #ifdef USE_SHADOWMAP
@@ -313,6 +313,8 @@ export default class SteelMaterial extends RealisticMaterial {
     #define EPSILON 1e-6
     
     ${square}
+    ${saturate}
+    ${average}
     ${whiteCompliment}
     ${transformDirection}
     ${inverseTransformDirection}
@@ -828,17 +830,17 @@ export default class SteelMaterial extends RealisticMaterial {
     fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
     emissive: { type: 'c', value: new THREE.Color(0x000000) },
     wrapRGB: { type: 'v3', value: new THREE.Vector3(1, 1, 1) },
-    pointLightColor: { type: 'fv', value: [] },
-    pointLightPosition: { type: 'fv', value: [] },
-    pointLightDistance: { type: 'fv', value: [] },
-    directionalLightDirection: { type: 'fv', value: [] },
-    directionalLightColor: { type: 'fv', value: [] },
-    hemisphereLightDirection: { type: 'fv', value: [] },
-    hemisphereLightSkyColor: { type: 'fv', value: [] },
-    hemisphereLightGroundColor: { type: 'fv', value: [] },
-    spotLightColor: { type: 'fv', value: [] },
-    spotLightPosition: { type: 'fv', value: [] },
-    spotLightDirection: { type: 'fv', value: [] },
+    pointLightColor: { type: 'fv', value: [0, 0, 0] },
+    pointLightPosition: { type: 'fv', value: [0, 0, 0] },
+    pointLightDistance: { type: 'fv1', value: [] },
+    directionalLightDirection: { type: 'fv', value: [0, 0, 0] },
+    directionalLightColor: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightDirection: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightSkyColor: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightGroundColor: { type: 'fv', value: [0, 0, 0] },
+    spotLightColor: { type: 'fv', value: [0, 0, 0] },
+    spotLightPosition: { type: 'fv', value: [0, 0, 0] },
+    spotLightDirection: { type: 'fv', value: [0, 0, 0] },
     spotLightDistance: { type: 'fv1', value: [] },
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
@@ -868,7 +870,7 @@ export default class SteelMaterial extends RealisticMaterial {
   envMapOffset: any;
   constructor(parameters) {
     super(parameters);
-    this.derivatives = true;
+    this.extensions.derivatives = true;
     parameters = _.extend(
       {
         vertexShader: this.vertexShader,
@@ -878,7 +880,7 @@ export default class SteelMaterial extends RealisticMaterial {
           USE_AOMAP: false,
           LIGHTMAP_ENABLED: false,
           SKINNED: false,
-          USE_EMISSIVEMAP: parameters.emissiveMap !== undefined,
+          // USE_EMISSIVEMAP: parameters.emissiveMap !== undefined,
           USE_REFLECTIONMASK: parameters.reflectionMask !== undefined,
           USE_PAINTMASK: parameters.paintMask !== undefined,
           USE_EMISSIVECOLOR: parameters.emissiveColor !== undefined,
@@ -895,7 +897,7 @@ export default class SteelMaterial extends RealisticMaterial {
       this.uniforms.colorTransition.value = val;
     });
     this.onPropertyChange('carLength', val => {
-      this.uniforms.carLength = val;
+      this.uniforms.carLength.value = val;
     });
     this.onPropertyChange('paintMask', val => {
       if (val) {

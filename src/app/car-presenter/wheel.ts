@@ -26,11 +26,13 @@ export default class Wheel extends THREE.Object3D {
     this.initShadow();
     this.initCover();
     this.tire.add(this.models.tire);
+    this.tire.name = 'tire';
     this.rim.add(this.currentRim);
-    console.log(this.screw);
-    console.log(this.models.screw);
+    this.rim.name = 'rim';
     this.screw.add(this.models.screw);
-    // this.logo.add(this.models.logo);
+    this.screw.name = 'screw';
+    this.logo.add(this.models.logo);
+    this.logo.name = 'logo';
     this.rotating = false;
     this.speed = 0;
   }
@@ -121,7 +123,22 @@ export default class Wheel extends THREE.Object3D {
     };
     this.models.rim.setMaterial('JFC_Rim_01', this.materials.rim);
     this.models.rim.setMaterial('JFC_Rim_Int', this.materials.rimInt);
-    this.models.tire.material = this.materials.tire;
+    // this.models.rim.geometry.materials = [
+    //   this.materials.rim,
+    //   this.materials.rimInt
+    // ];
+    // this.models.rim.geometry.faces.forEach((face, i) => {
+    //   if (i <= 2383) {
+    //     face.materialIndex = 0;
+    //   } else {
+    //     face.materialIndex = 1;
+    //   }
+    // });
+    // this.models.rim.needsUpdate = true;
+    // this.models.rim.geometry.groupsNeedUpdate = true;
+    // this.models.rim.geometry.uvsNeedUpdate = true;
+    // this.models.rim.geometry.elementsNeedUpdate = true;
+    this.models.tire.setMaterial('JFC_Tire', this.materials.tire);
     this.models.screw.material = this.materials.rim;
     this.models.logo.material = this.materials.rim;
     this.currentRim = this.models.rim;

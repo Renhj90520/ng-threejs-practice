@@ -13,6 +13,7 @@ export const square = `
   }
 `;
 export const saturate = `
+#ifndef saturate
   float saturate(in float a) {
     return clamp(a, 0., 1.);
   }
@@ -24,7 +25,8 @@ export const saturate = `
   }
   vec4 saturate(in vec4 a) {
     return clamp(a, 0., 1.);
-  }`;
+  }
+#endif`;
 export const average = `
   float average(in float a) {
     return a;

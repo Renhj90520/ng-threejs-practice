@@ -112,6 +112,8 @@ export default class Stage extends THREE.Object3D {
     let tl;
     switch (mode) {
       case 'day':
+        this.ground.setMode(mode, duration);
+        this.car.setMode(mode);
         tl = TweenLite.to(this, duration, {
           onUpdate: () => {
             const progress = tl.progress();

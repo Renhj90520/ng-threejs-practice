@@ -69,9 +69,9 @@ export default class Car extends THREE.Object3D {
     this.initInterior();
     this.initDoor();
     this.initWheels();
-    // this.initShadow();
-    // this.initFlares();
-    // this.initPlates();
+    this.initShadow();
+    this.initFlares();
+    this.initPlates();
     // TODO tweens
     this.rolling = false;
     this.speed = 0;
@@ -105,6 +105,7 @@ export default class Car extends THREE.Object3D {
     });
 
     this.frontGlow = new THREE.Object3D();
+    this.frontGlow.name = 'frontGlow';
     this.add(this.frontGlow);
     this.frontGlow.visible = false;
     const frontGlow = new THREE.Mesh(
@@ -190,7 +191,7 @@ export default class Car extends THREE.Object3D {
         emissiveColor: new THREE.Color(0xff4040),
         envMapOffset: 0
       }),
-      frontplate: new THREE.MeshBasicMaterial({
+      frontPlate: new THREE.MeshBasicMaterial({
         transparent: true,
         map: this.frontPlateTexture
       }),
@@ -249,6 +250,7 @@ export default class Car extends THREE.Object3D {
       emissiveColor: new THREE.Color(0x0006a4)
     });
     this.interior = new CustomMesh('interior', this.loaderService);
+    this.interior.name = 'interior';
     this.exterior.add(this.interior);
     this.interior.renderOrder = 0;
     this.interior.setMaterial('JFC_Int_Front', this.materials.interiorFront);
@@ -259,12 +261,14 @@ export default class Car extends THREE.Object3D {
       new THREE.PlaneBufferGeometry(0.5, 0.5, 1, 1),
       this.materials.frontPlate
     );
+    this.frontPlate.name = 'frontPlate';
     this.frontPlate.position.set(0, 0.32, 2.45);
     this.add(this.frontPlate);
     this.rearPlate = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(0.55, 0.55, 1, 1),
       this.materials.rearPlate
     );
+    this.rearPlate.name = 'rearPlate';
     this.rearPlate.rotation.x = 1.1 * Math.PI;
     this.rearPlate.rotation.z = Math.PI;
     this.rearPlate.position.set(0, 0.485, -2.34);
@@ -283,12 +287,14 @@ export default class Car extends THREE.Object3D {
     });
     const scale = 2;
     const leftFlare = new THREE.Sprite(spriteMaterial.clone());
+    leftFlare.name = 'leftFlare';
     leftFlare.position.set(0.75, 0.65, 1.95);
     leftFlare.scale.set(scale, scale, scale);
     // sprite.orientation = new THREE.Vector3(0.75, 0, 1); TODO
     this.leftFlare = leftFlare;
     flares.add(this.leftFlare);
     const rightFlare = new THREE.Sprite(spriteMaterial.clone());
+    rightFlare.name = 'rightFlare';
     rightFlare.position.set(-0.75, 0.65, 1.95);
     rightFlare.scale.set(scale, scale, scale);
     // rightFlare.orientation = new THREE.Vector3(-0.75, 0, 1); TODO
@@ -304,6 +310,7 @@ export default class Car extends THREE.Object3D {
       new THREE.PlaneGeometry(6, 6, 1, 1),
       this.materials.shadow
     );
+    shadow.name = 'shadow';
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y -= 0.2;
     this.add(shadow);
@@ -352,6 +359,7 @@ export default class Car extends THREE.Object3D {
 
   initExterior() {
     this.exterior = new CustomMesh('exterior', this.loaderService);
+    this.exterior.name = 'exterior';
     this.exterior.castShadow = true;
     this.exterior.receiveShadow = true;
     this.body.add(this.exterior);
@@ -369,6 +377,7 @@ export default class Car extends THREE.Object3D {
   initBody() {
     this.body = new THREE.Object3D();
     this.body.rotation.x = -Math.PI / 2;
+    this.body.name = 'body';
     this.add(this.body);
   }
   setSpeed(speed) {

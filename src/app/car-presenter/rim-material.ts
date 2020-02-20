@@ -16,11 +16,13 @@ import {
   linearToOutput,
   dHdxy_fwd,
   perturbNormalArb,
-  perturbNormal2Arb
+  perturbNormal2Arb,
+  lights
 } from './glsl-fragments';
 
 export default class RimMaterial extends RealisticMaterial {
   vertexShader = `
+    ${lights}
     varying vec3 vWorldPos;
     #ifdef USE_COLOR
       attribute vec3 color;
@@ -262,6 +264,7 @@ export default class RimMaterial extends RealisticMaterial {
     }
   `;
   fragmentShader = `
+    ${lights}
     varying vec3 vWorldPos;
     uniform float envMapOffset;
     uniform float flipWorldPos;
@@ -533,22 +536,8 @@ export default class RimMaterial extends RealisticMaterial {
         vec3 dirHalfVector = normalize(dirVector + viewPosition);
         float dirDotNormalHalf = max(dot(normal, dirHalfVector), 0.0);
         float dirSpecularWeight = specularStrength * max(pow(dirDotNormalHalf, shininess), 0.0);
-        /*
-        // fresnel term from skin shader
-        const float F0 = 0.128;
-        float base = 1.0 - dot(viewPosition, dirHalfVector);
-        float exponential = pow(base, 5.0);
-        float fresnel = exponential + F0 * (1.0 - exponential);
-        */
-        /*
-        // fresnel term from fresnel shader
-        const float mFresnelBias = 0.08;
-        const float mFresnelScale = 0.3;
-        const float mFresnelPower = 5.0;
-        float fresnel = mFresnelBias + mFresnelScale * pow(1.0 + dot(normalize(-viewPosition), normal), mFresnelPower);
-        */
+      
         float specularNormalization = (shininess + 2.0) / 8.0;
-        //      dirSpecular += specular * directionalLightColor[i] * dirSpecularWeight * dirDiffuseWeight * specularNormalization * fresnel;
         vec3 schlick = specular + vec3(1.0 - specular) * pow(max(1.0 - dot(dirVector, dirHalfVector), 0.0), 5.0);
         totalSpecularLight += schlick * directionalLightColor[i] * dirSpecularWeight * dirDiffuseWeight * specularNormalization;
       }
@@ -795,20 +784,20 @@ export default class RimMaterial extends RealisticMaterial {
     lightMap: { type: 't', value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
     fogNear: { type: 'f', value: 1 },
-    fogFar: { type: 'f', value: 2e3 },
+    fogFar: { type: 'f', value: 2000 },
     fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
     emissive: { type: 'c', value: new THREE.Color(0) },
-    pointLightColor: { type: 'fv', value: [] },
-    pointLightPosition: { type: 'fv', value: [] },
-    pointLightDistance: { type: 'fv1', value: [] },
-    directionalLightDirection: { type: 'fv', value: [] },
-    directionalLightColor: { type: 'fv', value: [] },
-    hemisphereLightDirection: { type: 'fv', value: [] },
-    hemisphereLightSkyColor: { type: 'fv', value: [] },
-    hemisphereLightGroundColor: { type: 'fv', value: [] },
-    spotLightColor: { type: 'fv', value: [] },
-    spotLightPosition: { type: 'fv', value: [] },
-    spotLightDirection: { type: 'fv', value: [] },
+    pointLightColor: { type: 'fv', value: [0, 0, 0] },
+    pointLightPosition: { type: 'fv', value: [0, 0, 0] },
+    pointLightDistance: { type: 'fv', value: [0, 0, 0] },
+    directionalLightDirection: { type: 'fv', value: [0, 0, 0] },
+    directionalLightColor: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightDirection: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightSkyColor: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightGroundColor: { type: 'fv', value: [0, 0, 0] },
+    spotLightColor: { type: 'fv', value: [0, 0, 0] },
+    spotLightPosition: { type: 'fv', value: [0, 0, 0] },
+    spotLightDirection: { type: 'fv', value: [0, 0, 0] },
     spotLightDistance: { type: 'fv1', value: [] },
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
@@ -834,6 +823,9 @@ export default class RimMaterial extends RealisticMaterial {
   paintMask: any;
   constructor(parameters) {
     super(parameters);
+    this.extensions.derivatives = true;
+    console.log('rim-material');
+
     parameters = _.extend(
       {
         vertexShader: this.vertexShader,

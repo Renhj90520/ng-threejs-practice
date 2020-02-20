@@ -23,7 +23,6 @@ import {
 export default class RealisticMaterial extends BasicCustomShaderMaterial {
   vertexShader = `
     ${lights}
-    varying vec3 vWorldPos;
     #ifdef USE_COLOR
       attribute vec3 color;
       varying vec3 vColor;
@@ -38,13 +37,11 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         attribute vec3 morphNormal1;
         attribute vec3 morphNormal2;
         attribute vec3 morphNormal3;
-        uniform float morphTargetInfluences[8];
       #else
         attribute vec3 morphTarget4;
         attribute vec3 morphTarget5;
         attribute vec3 morphTarget6;
         attribute vec3 morphTarget7;
-        uniform float morphTargetInfluences[4];
       #endif
     #endif
     #define PHONG
@@ -70,6 +67,14 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     ${calcLightAttenuation}
     ${inputToLinear}
     ${linearToOutput}
+
+    #ifdef USE_MORPHTARGETS
+      #ifndef USE_MORPHNORMALS
+        uniform float morphTargetInfluences[8];
+      #else
+        uniform float morphTargetInfluences[4];
+      #endif
+    #endif
 
     #if defined(USE_MAP) || defined(USE_BUMPMAP) || defined(USE_NORMALMAP) || defined(USE_SPECULARMAP) || defined(USE_ALPHAMAP)
       varying vec2 vUv;
@@ -133,7 +138,6 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #endif
 
     void main() {
-      vWorldPos = (modelMatrix * vec4(position, 1.)).xyz;
       #if defined(USE_MAP) || defined(USE_BUMPMAP) || defined(USE_NORMALMAP) || defined(USE_SPECULARMAP) || defined(USE_ALPHAMAP)
         vUv = uv * offsetRepeat.zw + offsetRepeat.xy;
       #endif
@@ -268,17 +272,16 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     }
   `;
   fragmentShader = `
-    varying vec3 vWorldPos;
-    uniform float envMapOffset;
-    uniform float flipWorldPos;
+    ${lights}
     #ifdef USE_REFLECTIONMASK
       uniform sampler2D reflectionMask;
     #endif
 
-    #define PHONG
     uniform vec3 diffuse;
-    varying vec3 vPosition;
     uniform vec3 emissive;
+    #ifdef USE_EMISSIVECOLOR
+      uniform vec3 emissiveColor;
+    #endif
     uniform vec3 specular;
     uniform float shininess;
     uniform float opacity;
@@ -321,9 +324,6 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     #ifdef USE_EMISSIVEMAP
       uniform sampler2D emissiveMap;
       uniform float emissiveIntensity;
-      #ifdef USE_EMISSIVECOLOR
-        uniform vec3 emissiveColor;
-      #endif
     #endif
     #ifdef USE_ENVMAP
       uniform float reflectivity;
@@ -603,12 +603,11 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
           float flipNormal = 1.;
         #endif
         #ifdef ENVMAP_TYPE_CUBE
-          reflectVec.z += envMapOffset;
           vec4 envColor = textureCube(envMap, flipNormal * vec3(flipEnvMap * reflectVec.x, reflectVec.yz));
         #elif defined(ENVMAP_TYPE_EQUIREC)
           vec2 sampleUV;
           sampleUV.y = saturate(flipNormal * reflectVec.y * .5 + .5);
-          sampleUV.x - atan(flipNormal * reflectVec.z, flipNormal * reflectVec.x) * RECIPROCAL_PI2 + .5;
+          sampleUV.x = atan(flipNormal * reflectVec.z, flipNormal * reflectVec.x) * RECIPROCAL_PI2 + .5;
           vec4 envColor = texture2D(envMap, sampleUV);
         #elif defined(ENVMAP_TYPE_SPHERE)
           vec3 reflectView = flipNormal * normalize((viewMatrix * vec4(reflectVec, 0.0)).xyz + vec3(0.0, 0.0, 1.));
@@ -617,17 +616,12 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         envColor.xyz = inputToLinear(envColor.xyz);
         #ifdef USE_REFLECTIONMASK
           vec4 maskTexel = texture2D(reflectionMask, vUv);
-          float chromeReflectivity = .75;
-          float plasticReflectivity = .1;
+          float chromeReflectivity = .8;
+          float plasticReflectivity = .25;
           // Mix when area is chrome (red component in mask)
           outgoingLight = mix(outgoingLight, envColor.xyz, specularStrength * maskTexel.r * chromeReflectivity);
           // Add when area is shiny plastic or glass (blue component in mask)
           outgoingLight += (envColor.xyz * specularStrength * maskTexel.b * plasticReflectivity);
-
-          #ifdef USE_PAINTMASK
-            // Mix when area is carpaint
-            outgoingLight = mix(outgoingLight, envColor.xyz, specularStrength * reflectivity * texelPaintMask.r);
-          #endif
         #else
           #ifdef ENVMAP_BLENDING_MULTIPLY
             outgoingLight = mix(outgoingLight, outgoingLight * envColor.xyz, specularStrength * reflectivity);
@@ -668,17 +662,6 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
             #if defined(SHADOWMAP_TYPE_PCF)
               float shadow = 0.0;
 
-              // nested loops breaks shader compiler / validator on some ATI cards when using OpenGL
-              // must enroll loop manually
-              for(float y = -1.25; y <= 1.25; y+=1.25) {
-                for(float x = -1.25; x <= 1.25; x += 1.25) {
-                  vec4 rgbaDepth = texture2D(shadowMap[i], vec2(x * xPixelOffset, y * yPixelOffset) + shadowCoord.xy);
-                  float fDepth = unpackDepth(rgbaDepth);
-                  if(fDepth < shadowCoord.z)
-                    shadow += 1.;
-                }
-              }
-              shadow /= 9.;
               const float shadowDelta = 1.0 / 9.0;
               float xPixelOffset = 1.0 / shadowMapSize[i].x;
               float yPixelOffset = 1.0 / shadowMapSize[i].y;
@@ -791,9 +774,6 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       #else
         gl_FragColor = vec4(outgoingLight, diffuseColor.a);
       #endif
-
-      float blackness = 1. - (smoothstep(.7, 1.1, vWorldPos.x * flipWorldPos));
-      gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.0), blackness);
     }
   `;
   uniforms = {
@@ -808,18 +788,18 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
     emissive: { type: 'c', value: new THREE.Color(0x000000) },
     wrapRGB: { type: 'v3', value: new THREE.Vector3(1, 1, 1) },
-    pointLightColor: { type: 'fv', value: [] },
-    pointLightPosition: { type: 'fv', value: [] },
+    pointLightColor: { type: 'fv', value: [0, 0, 0] },
+    pointLightPosition: { type: 'fv', value: [0, 0, 0] },
     pointLightDistance: { type: 'fv1', value: [] },
-    directionalLightDirection: { type: 'fv', value: [] },
-    directionalLightColor: { type: 'fv', value: [] },
-    hemisphereLightDirection: { type: 'fv', value: [] },
-    hemisphereLightSkyColor: { type: 'fv', value: [] },
-    hemisphereLightGroundColor: { type: 'fv', value: [] },
-    spotLightColor: { type: 'fv', value: [] },
-    spotLightPosition: { type: 'fv', value: [] },
-    spotLightDirection: { type: 'fv', value: [] },
-    spotLightDistance: { type: 'fv', value: [] },
+    directionalLightDirection: { type: 'fv', value: [0, 0, 0] },
+    directionalLightColor: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightDirection: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightSkyColor: { type: 'fv', value: [0, 0, 0] },
+    hemisphereLightGroundColor: { type: 'fv', value: [0, 0, 0] },
+    spotLightColor: { type: 'fv', value: [0, 0, 0] },
+    spotLightPosition: { type: 'fv', value: [0, 0, 0] },
+    spotLightDirection: { type: 'fv', value: [0, 0, 0] },
+    spotLightDistance: { type: 'fv1', value: [] },
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
     spotLightDecay: { type: 'fv1', value: [] },
@@ -851,7 +831,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
   emissiveIntensity: any;
   constructor(parameters) {
     super(parameters);
-
+    this.extensions.derivatives = true;
     parameters = _.extend(
       {
         vertexShader: this.vertexShader,
@@ -861,7 +841,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
           USE_AOMAP: false,
           LIGHTMAP_ENABLED: false,
           SKINNED: false,
-          USE_EMISSIVEMAP: parameters.emissiveMap !== undefined,
+          // USE_EMISSIVEMAP: parameters.emissiveMap !== undefined,
           USE_REFLECTIONMASK: parameters.reflectionMask !== undefined,
           USE_EMISSIVECOLOR: parameters.emissiveColor !== undefined
         }
@@ -895,7 +875,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     });
     this.onPropertyChange('skinning', val => {
       this.useVertexTexture = !!val;
-      this.defines.SKINNED = this.useVertexTexture;
+      this.defines.SKINNED = !!val;
     });
     this.onPropertyChange('envMap', val => {
       this.uniforms.envMap.value = val;
@@ -922,10 +902,14 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
       this.uniforms.normalMap.value = val;
     });
     this.onPropertyChange('specularMap', val => {
-      this.uniforms.specularMap.value = val;
+      if (val) {
+        this.uniforms.specularMap.value = val;
+      }
     });
     this.onPropertyChange('reflectionMask', val => {
-      this.uniforms.reflectionMask.value = val;
+      if (val) {
+        this.uniforms.reflectionMask.value = val;
+      }
     });
     this.fog = parameters.fog || true;
     this.opacity = 1;

@@ -39,7 +39,6 @@ export class CarPresenterComponent implements OnInit {
       this.initAutoCamera();
       this.initLights();
       this.initStage();
-      console.log(this.scene)
     });
     this.loaderService.load({
       models: [
@@ -65,6 +64,7 @@ export class CarPresenterComponent implements OnInit {
     this.scene.add(this.stage);
     this.controls = this.stage.exteriorControls;
     this.stage.setMode('day');
+    console.log(this.scene);
   }
   initAutoCamera() {
     this.autoCamera = new AutoCamera(

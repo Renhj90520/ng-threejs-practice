@@ -74,7 +74,7 @@ export default class VignettingMaterial extends BasicCustomShaderMaterial {
     },
     fogFar: {
       type: 'f',
-      value: 2e3
+      value: 2000
     },
     fogColor: {
       type: 'c',
