@@ -115,7 +115,9 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
       this.uniforms.opacity.value = val;
     });
     this.onPropertyChange('combine', val => {
-      this.uniforms.combine.value = val;
+      if (this.uniforms.combine) {
+        this.uniforms.combine.value = val;
+      }
     });
     this.onPropertyChange('envMap', val => {
       if (val) this.uniforms.envMap.value = val;

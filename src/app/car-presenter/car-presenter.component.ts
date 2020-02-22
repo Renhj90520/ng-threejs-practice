@@ -37,7 +37,6 @@ export class CarPresenterComponent implements OnInit {
     });
     this.loaderService.onLoadFinish.subscribe(() => {
       this.initAutoCamera();
-      this.initLights();
       this.initStage();
     });
     this.loaderService.load({
@@ -74,19 +73,6 @@ export class CarPresenterComponent implements OnInit {
     this.autoCamera.name = 'auto';
   }
 
-  initLights() {
-    const skyColor = 0xf0f2ef;
-    const groundColor = 0x111111;
-    const hemisphereLight = new THREE.HemisphereLight(
-      skyColor,
-      groundColor,
-      0.8
-    );
-    this.scene.add(hemisphereLight);
-    const spotLight = new THREE.SpotLight(0xffffff, 1);
-    spotLight.position.set(0, 8, 0);
-    this.scene.add(spotLight);
-  }
   initTHREE() {
     this.width = this.stageEl.nativeElement.clientWidth;
     this.height = this.stageEl.nativeElement.clientHeight;

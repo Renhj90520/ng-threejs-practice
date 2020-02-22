@@ -824,7 +824,6 @@ export default class RimMaterial extends RealisticMaterial {
   constructor(parameters) {
     super(parameters);
     this.extensions.derivatives = true;
-    console.log('rim-material');
 
     parameters = _.extend(
       {

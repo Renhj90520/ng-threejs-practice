@@ -960,6 +960,7 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     let directionalLightCount = 0;
     let hemisphereLightCount = 0;
     let spotLightCount = 0;
+
     lights.forEach((light, idx) => {
       if (light.visible) {
         if (light instanceof THREE.PointLight) {
@@ -1037,7 +1038,8 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
           spotLightDirection[spotLightIdx + 1] = lightMatrixWorld.y;
           spotLightDirection[spotLightIdx + 2] = lightMatrixWorld.z;
           spotLightAngleCos[spotLightCount] = Math.cos(light.angle);
-          spotLightExponent[spotLightCount] = light.exponent;
+          spotLightExponent[spotLightCount] = 10;
+
           spotLightDecay[spotLightCount] =
             light.distance === 0 ? 0 : light.decay;
           spotLightCount++;

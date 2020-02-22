@@ -8,7 +8,7 @@ export default class Ground extends THREE.Object3D {
   mesh: THREE.Mesh;
   moving = false;
   speed = 0;
-  constructor() {
+  constructor(loaderService) {
     super();
     const loader = new THREE.TextureLoader();
 
@@ -39,6 +39,7 @@ export default class Ground extends THREE.Object3D {
       colorStep3: new THREE.Color(0xdfe9ea),
       lightIntensity: 1
     });
+    loaderService.customMaterials.push(groundMaterial);
     groundMaterial.needsUpdate = true;
 
     this.map = texture;

@@ -22,6 +22,7 @@ export default class Stage extends THREE.Object3D {
   loaderService: any;
 
   objects = [];
+  lights = [];
   ground: Ground;
   car: Car;
 
@@ -34,6 +35,7 @@ export default class Stage extends THREE.Object3D {
     this.skyColor = new THREE.Color(0xffffff);
     this.skyColor1 = new THREE.Color(0xffffff);
     this.skyColor2 = new THREE.Color(0xdce0e1);
+    this.initLights();
     this.initControls();
     this.initGround();
     this.initTunnel();
@@ -43,6 +45,25 @@ export default class Stage extends THREE.Object3D {
     this.refreshCustomMaterials();
 
     this.initRearGlow();
+  }
+
+  initLights() {
+    const skyColor = 0xf0f2ef;
+    const groundColor = 0x111111;
+    const hemisphereLight = new THREE.HemisphereLight(
+      skyColor,
+      groundColor,
+      0.8
+    );
+    this.lights.push(hemisphereLight);
+    this.add(hemisphereLight);
+    const spotLight = new THREE.SpotLight(0xffffff, 1);
+    spotLight.position.set(0, 8, 0);
+    this.lights.push(spotLight);
+    this.add(spotLight);
+    this.lights.forEach(light => {
+      light.updateMatrixWorld(true);
+    });
   }
   initCar() {
     this.objects.push(this.car);
@@ -64,7 +85,7 @@ export default class Stage extends THREE.Object3D {
     this.add(this.rearGlow);
   }
   initGround() {
-    this.ground = new Ground();
+    this.ground = new Ground(this.loaderService);
     this.ground.setMode('day');
     this.add(this.ground);
     this.objects.push(this.ground);
@@ -98,7 +119,7 @@ export default class Stage extends THREE.Object3D {
     );
   }
   initVignetting() {
-    this.vignetting = new Vignetting();
+    this.vignetting = new Vignetting(this.loaderService);
     this.add(this.vignetting);
   }
   initTunnel() {
@@ -139,6 +160,7 @@ export default class Stage extends THREE.Object3D {
         break;
     }
     this.tunnel.setMode(mode, duration);
+    this.refreshCustomMaterials();
   }
 
   updateSkyColor(camera) {
@@ -153,7 +175,11 @@ export default class Stage extends THREE.Object3D {
     const xAxisDepth = 1 - Math.abs(matrixWOrldNegateDirection.x);
     this.skyColor.copy(this.skyColor1).lerp(this.skyColor2, xAxisDepth);
   }
-  refreshCustomMaterials() {}
+  refreshCustomMaterials() {
+    this.loaderService.customMaterials.forEach(material => {
+      material.refreshLightUniforms(this.lights);
+    });
+  }
 
   update(e?) {
     if (this.vignetting) {

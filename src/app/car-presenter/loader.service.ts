@@ -128,6 +128,7 @@ export class LoaderService {
   progressReport = new BehaviorSubject('0');
   onLoadFinish = new EventEmitter();
   meshes = [];
+  customMaterials = [];
   constructor(private http: HttpClient) {}
   load(resources) {
     const models = resources.models;

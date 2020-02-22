@@ -97,7 +97,8 @@ export default class Wheel extends THREE.Object3D {
         shininess: 100,
         reflectivity: 0.15,
         reflectionMask: rimReflectionMask,
-        envMap: envMap
+        envMap: envMap,
+        hemisphereLightDirection: [0, 1.0]
       }),
       tire: new THREE.MeshPhongMaterial({
         map: tireMap,
@@ -111,18 +112,28 @@ export default class Wheel extends THREE.Object3D {
         normalMap: rimIntNormalMap,
         shininess: 10,
         specular: new THREE.Color(0x555555),
-        carSide: carSide
+        carSide: carSide,
+        hemisphereLightDirection: [0, 1, 0]
       }),
+
       cover: new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true })
     };
+    this.loaderService.customMaterials.push(
+      this.materials.rim,
+      this.materials.rimInt
+    );
     this.models = {
-      tire: new CustomMesh('tire', this.loaderService),
-      rim: new CustomMesh('rim', this.loaderService),
-      screw: new CustomMesh('screw', this.loaderService),
-      logo: new CustomMesh('logo', this.loaderService)
+      tire: new CustomMesh('tire', this.loaderService, this.materials.tire),
+      rim: new CustomMesh('rim', this.loaderService, [
+        this.materials.rim,
+        this.materials.rimInt
+      ]),
+      screw: new CustomMesh('screw', this.loaderService, this.materials.rim),
+      logo: new CustomMesh('logo', this.loaderService, this.materials.rim)
     };
-    this.models.rim.setMaterial('JFC_Rim_01', this.materials.rim);
-    this.models.rim.setMaterial('JFC_Rim_Int', this.materials.rimInt);
+    // this.models.rim.material = [this.materials.rim];
+    // this.models.rim.setMaterial('JFC_Rim_01', this.materials.rim);
+    // this.models.rim.setMaterial('JFC_Rim_Int', this.materials.rimInt);
     // this.models.rim.geometry.materials = [
     //   this.materials.rim,
     //   this.materials.rimInt
@@ -138,9 +149,9 @@ export default class Wheel extends THREE.Object3D {
     // this.models.rim.geometry.groupsNeedUpdate = true;
     // this.models.rim.geometry.uvsNeedUpdate = true;
     // this.models.rim.geometry.elementsNeedUpdate = true;
-    this.models.tire.setMaterial('JFC_Tire', this.materials.tire);
-    this.models.screw.material = this.materials.rim;
-    this.models.logo.material = this.materials.rim;
+    // this.models.tire.setMaterial('JFC_Tire', this.materials.tire);
+    // this.models.screw.material = this.materials.rim;
+    // this.models.logo.material = this.materials.rim;
     this.currentRim = this.models.rim;
   }
   update(clock) {

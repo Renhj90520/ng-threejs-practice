@@ -46,6 +46,8 @@ export default class Tunnel extends THREE.Object3D {
       glowPosition: new THREE.Vector3(-30, 5, -15)
     });
 
+    loaderService.customMaterials.push(this.material);
+
     const meshInfo = loaderService.meshes.find(m => m.key === 'tunnel');
     if (meshInfo) {
       this.mesh = new THREE.Mesh(meshInfo.mesh.geometry, this.material);

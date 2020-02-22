@@ -140,7 +140,8 @@ export default class Car extends THREE.Object3D {
         reflectionMask: this.bodyMaskTexture,
         envMapOffset: 0,
         transparent: false,
-        flipN: false
+        flipN: false,
+        hemisphereLightDirection: [0, 1, 0]
       }),
       bodyFlip: new SteelMaterial({
         map: this.bodyTexture,
@@ -159,7 +160,8 @@ export default class Car extends THREE.Object3D {
         reflectionMask: this.bodyMaskTexture,
         envMapOffset: 0,
         transparent: false,
-        flipN: true
+        flipN: true,
+        hemisphereLightDirection: [0, 1, 0]
       }),
       glass: new GlassMaterial({
         color: new THREE.Color(0x000000),
@@ -189,7 +191,8 @@ export default class Car extends THREE.Object3D {
         emissiveIntensity: 0.75,
         emissiveMap: this.bodyEmissiveMapTexture,
         emissiveColor: new THREE.Color(0xff4040),
-        envMapOffset: 0
+        envMapOffset: 0,
+        hemisphereLightDirection: [0, 1, 0]
       }),
       frontPlate: new THREE.MeshBasicMaterial({
         transparent: true,
@@ -201,6 +204,13 @@ export default class Car extends THREE.Object3D {
       }),
       debug: new THREE.MeshBasicMaterial({ color: 0xff00ff })
     };
+
+    this.loaderService.customMaterials.push(
+      this.materials.body,
+      this.materials.bodyFlip,
+      this.materials.glass,
+      this.materials.rearlight
+    );
   }
   initInterior() {
     const loader = new THREE.TextureLoader();
@@ -234,7 +244,8 @@ export default class Car extends THREE.Object3D {
       combine: THREE.MixOperation,
       reflectivity: 0.15,
       paintMask: carrosserieMask,
-      transparent: true
+      transparent: true,
+      hemisphereLightDirection: [0, 1, 0]
     });
 
     this.materials.interiorBack = new RealisticMaterial({
@@ -247,14 +258,22 @@ export default class Car extends THREE.Object3D {
       reflectivity: 0,
       emissiveMap: backEmissiveMap,
       emissiveIntensity: 1,
-      emissiveColor: new THREE.Color(0x0006a4)
+      emissiveColor: new THREE.Color(0x0006a4),
+      hemisphereLightDirection: [0, 1, 0]
     });
-    this.interior = new CustomMesh('interior', this.loaderService);
+    this.loaderService.customMaterials.push(
+      this.materials.interiorBack,
+      this.materials.interiorFront
+    );
+    this.interior = new CustomMesh('interior', this.loaderService, [
+      this.materials.interiorBack,
+      this.materials.interiorFront
+    ]);
     this.interior.name = 'interior';
     this.exterior.add(this.interior);
     this.interior.renderOrder = 0;
-    this.interior.setMaterial('JFC_Int_Front', this.materials.interiorFront);
-    this.interior.setMaterial('JFC_Int_Back', this.materials.interiorBack);
+    // this.interior.setMaterial('JFC_Int_Front', this.materials.interiorFront);
+    // this.interior.setMaterial('JFC_Int_Back', this.materials.interiorBack);
   }
   initPlates() {
     this.frontPlate = new THREE.Mesh(
@@ -276,6 +295,7 @@ export default class Car extends THREE.Object3D {
   }
   initFlares() {
     const flares = new THREE.Object3D();
+    flares.name = 'flares';
     const loader = new THREE.TextureLoader();
     const flareMap = loader.load('/assets/carpresenter/textures/car/flare.png');
     const spriteMaterial = new THREE.SpriteMaterial({
@@ -358,16 +378,21 @@ export default class Car extends THREE.Object3D {
   }
 
   initExterior() {
-    this.exterior = new CustomMesh('exterior', this.loaderService);
+    this.exterior = new CustomMesh('exterior', this.loaderService, [
+      this.materials.body,
+      this.materials.glass,
+      this.materials.bodyFlip,
+      this.materials.body
+    ]);
     this.exterior.name = 'exterior';
     this.exterior.castShadow = true;
     this.exterior.receiveShadow = true;
     this.body.add(this.exterior);
-    this.exterior.setMaterial('JFC_Body', this.materials.body);
-    this.exterior.setMaterial('JFC_Body_Flip', this.materials.bodyFlip);
-    this.exterior.setMaterial('JFC_Others', this.materials.body);
-    this.exterior.setMaterial('JFC_Glass', this.materials.glass);
-    this.exterior.setMaterial('JFC_Optic_Back', this.materials.rearlight);
+    // this.exterior.setMaterial('JFC_Body', this.materials.body);
+    // this.exterior.setMaterial('JFC_Body_Flip', this.materials.bodyFlip);
+    // this.exterior.setMaterial('JFC_Others', this.materials.body);
+    // this.exterior.setMaterial('JFC_Glass', this.materials.glass);
+    // this.exterior.setMaterial('JFC_Optic_Back', this.materials.rearlight);
     this.exterior.geometry.computeBoundingBox();
     const boundingBox = this.exterior.geometry.boundingBox;
     const carlength = boundingBox.max.y + Math.abs(boundingBox.min.y) + 0.05;

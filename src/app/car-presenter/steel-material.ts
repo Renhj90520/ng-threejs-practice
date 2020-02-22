@@ -853,7 +853,6 @@ export default class SteelMaterial extends RealisticMaterial {
     normalMap: { type: 't', value: null },
     normalScale: { type: 'v2', value: new THREE.Vector2(1, 1) },
     specular: { type: 'c', value: new THREE.Color(0x111111) },
-    combine: { type: 'f', value: 0 },
     shininess: { type: 'f', value: 30 },
     emissiveMap: { type: 't', value: null },
     emissiveColor: { type: 'c', value: null },

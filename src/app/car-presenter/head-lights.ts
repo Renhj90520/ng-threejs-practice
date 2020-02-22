@@ -13,8 +13,7 @@ export default class HeadLights extends THREE.Object3D {
   constructor(parameters, loaderService: LoaderService) {
     super();
     this.envMap = parameters.envMap;
-    this.mesh = new CustomMesh('headlights', loaderService);
-    this.add(this.mesh);
+
     const loader = new THREE.TextureLoader();
     const path = '/assets/carpresenter/textures/car/headlights/';
     const map = loader.load(`${path}JFC_Optic.png`);
@@ -32,8 +31,10 @@ export default class HeadLights extends THREE.Object3D {
       combine: THREE.MixOperation,
       specularMap,
       reflectionMask: mask,
-      envMap: this.envMap
+      envMap: this.envMap,
+      hemisphereLightDirection: [0, 1, 0]
     });
+    loaderService.customMaterials.push(innerMaterial);
     const glassMaterial = new THREE.MeshLambertMaterial({
       color: 0xffffff,
       envMap: this.envMap,
@@ -47,8 +48,11 @@ export default class HeadLights extends THREE.Object3D {
     this.glassMaterial = glassMaterial;
     this.emissiveMap = emissiveMap;
     this.emissiveMap2 = emissiveMap2;
-    this.mesh.setMaterial('JFC_Optic', innerMaterial);
-    this.mesh.setMaterial('JFC_Glass_Optic', glassMaterial);
+    this.mesh = new CustomMesh('headlights', loaderService, [
+      innerMaterial,
+      glassMaterial
+    ]);
+    this.add(this.mesh);
   }
 
   setEnvMap(envMap) {
