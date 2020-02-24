@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as _ from 'lodash';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
-
+import * as THREE from 'three';
 @Injectable()
 export class LoaderService {
   files = {
@@ -176,5 +176,42 @@ export class LoaderService {
 
   loadResource(path) {
     return this.http.get(path, { reportProgress: true, responseType: 'text' });
+  }
+
+  parseBones(geometry, isObject) {
+    let root;
+    const objs = [];
+    if (geometry && geometry.bones) {
+      for (let idx = 0; idx < geometry.bones.length; idx++) {
+        const bone: any = geometry.bones[idx];
+        const pos = bone.pos;
+        const rotq = bone.rotq;
+        const scl = bone.scl;
+        const obj = isObject ? new THREE.Object3D() : new THREE.Bone();
+        objs.push(obj);
+        obj.name = bone.name;
+        obj.position.set(pos[0], pos[1], pos[2]);
+        obj.quaternion.set(rotq[0], rotq[1], rotq[2], rotq[3]);
+
+        scl !== undefined
+          ? obj.scale.set(scl[0], scl[1], scl[2])
+          : obj.scale.set(1, 1, 1);
+      }
+
+      // if (isObject) {
+      for (let i = 0; i < geometry.bones.length; i++) {
+        const bone: any = geometry.bones[i];
+        if (bone.parent !== -1) {
+          objs[bone.parent].add(objs[i]);
+        } else {
+          root = objs[i];
+        }
+      }
+
+      return root;
+      // } else {
+      //   return objs;
+      // }
+    }
   }
 }

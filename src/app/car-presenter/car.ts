@@ -477,10 +477,10 @@ export default class Car extends THREE.Object3D {
     }
   }
 
-  updateHotspots(position) {
+  updateHotspots(camera) {
     if (this.hotspots && this.hotspots.length > 0) {
       this.hotspots.forEach(hotspot => {
-        hotspot.update(position);
+        hotspot.update(camera);
       });
     }
   }
@@ -573,7 +573,8 @@ export default class Car extends THREE.Object3D {
     this.materials.glass.transparentMode = transparent;
   }
 
-  update() {
+  update(e, camera) {
+    this.updateHotspots(camera);
     console.log('TODO car update');
   }
   private loadTextures() {
@@ -635,5 +636,18 @@ export default class Car extends THREE.Object3D {
   getCubeTexture(baseUrl, paths) {
     this.cubeTextureLoder.setPath(baseUrl);
     return this.cubeTextureLoder.load(paths);
+  }
+
+  addHotSpot() {
+    const hotspot = new HotSpot({
+      name: 'door',
+      group: 'exterior',
+      position: new THREE.Vector3(0.95, 0.75, 0),
+      orientation: new THREE.Vector3(1, 0, 0),
+      maxSize: 0.12
+    });
+    this.hotspots.push(hotspot);
+    this.add(hotspot);
+    hotspot.fadeIn();
   }
 }

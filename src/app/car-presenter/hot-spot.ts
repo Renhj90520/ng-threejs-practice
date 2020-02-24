@@ -26,9 +26,9 @@ export default class HotSpot extends THREE.Sprite {
     this.maxSize = parameters.maxSize !== undefined ? parameters.maxSize : 1;
     this.fadeDuration = 200;
   }
-  update(position) {
+  update(camera) {
     const pos = new THREE.Vector3();
-    pos.subVectors(position, this.position).normalize();
+    pos.subVectors(camera.position, this.position).normalize();
     const process = THREE.Math.clamp(this.orientation.dot(pos), 0, 1);
     const scale = this.maxSize * this.quarticOut(process);
     this.scale.set(scale, scale, scale);

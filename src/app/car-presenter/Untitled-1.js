@@ -14642,7 +14642,7 @@
               n
             );
           }),
-          (Loader.parseBones = function(geometry, t) {
+          (Loader.parseBones = function(geometry, isObj) {
             var root,
               objs = [];
             if (geometry && void 0 !== geometry.bones) {
@@ -14661,7 +14661,7 @@
                   (pos = bone.pos),
                   (rotq = bone.rotq),
                   (scl = bone.scl),
-                  (obj = t ? new THREE.Object3D() : new THREE.Bone(this)),
+                  (obj = isObj ? new THREE.Object3D() : new THREE.Bone(this)),
                   objs.push(obj),
                   (obj.name = bone.name),
                   obj.position.set(pos[0], pos[1], pos[2]),

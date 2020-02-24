@@ -49,8 +49,8 @@ export default class HeadLights extends THREE.Object3D {
     this.emissiveMap = emissiveMap;
     this.emissiveMap2 = emissiveMap2;
     this.mesh = new CustomMesh('headlights', loaderService, [
-      innerMaterial,
-      glassMaterial
+      glassMaterial,
+      innerMaterial
     ]);
     this.add(this.mesh);
   }

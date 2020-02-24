@@ -74,30 +74,32 @@ export default class CustomControls extends THREE.EventDispatcher {
   }
 
   setupEvents() {
-    this.container.addEventListener('mousedown.orbit touchstart.orbit', evt => {
-      this.container.addEventListener(
-        'mousemove.orbit touchmove.orbit',
-        this.onMove.bind(this)
-      );
-      this.container.addEventListener(
-        'mouseup touchend',
-        this.onMoveEnd.bind(this)
-      );
-      this.container.addEventListener('mouseout', this.onMouseOut.bind(this));
-      if (evt.type === 'touchstart') {
-        this.mouseOnDown.x = evt.originalEvent.touches[0].clientX;
-        this.mouseOnDown.y = -evt.originalEvent.touches[0].clientY;
-      } else {
-        this.mouseOnDown.x = evt.clientX;
-        this.mouseOnDown.y = -evt.clientY;
-      }
+    this.container.addEventListener('mousedown', evt => {
+      this.container.addEventListener('mousemove', this.onMove);
+      this.container.addEventListener('mouseup', this.onMoveEnd);
+      this.container.addEventListener('mouseout', this.onMouseOut);
+
+      this.mouseOnDown.x = evt.clientX;
+      this.mouseOnDown.y = -evt.clientY;
 
       if (this.reverse) {
         this.mouseOnDown.y *= -1;
       }
       this.targetOnDown.copy(this.target);
     });
-    this.container.addEventListener('mousewheel MozMousePixelScroll', evt => {
+    this.container.addEventListener('touchstart', evt => {
+      this.container.addEventListener('touchmove', this.onMove);
+      this.container.addEventListener('touchend', this.onMoveEnd);
+      this.container.addEventListener('mouseout', this.onMouseOut);
+
+      this.mouseOnDown.x = evt.originalEvent.touches[0].clientX;
+      this.mouseOnDown.y = -evt.originalEvent.touches[0].clientY;
+      if (this.reverse) {
+        this.mouseOnDown.y *= -1;
+      }
+      this.targetOnDown.copy(this.target);
+    });
+    this.container.addEventListener('mousewheel', evt => {
       if (this.enabled && this.zoomEnabled) {
         evt.preventDefault();
         const delta = evt.originalEvent.deltaY
@@ -107,7 +109,7 @@ export default class CustomControls extends THREE.EventDispatcher {
       }
     });
   }
-  onMove(evt) {
+  onMove = evt => {
     const moveVector = new THREE.Vector2();
 
     if (!this.horizontalOnly) {
@@ -137,12 +139,13 @@ export default class CustomControls extends THREE.EventDispatcher {
       this.target.addVectors(this.targetOnDown, moveVector);
       this.dispatchEvent({ type: 'move' });
     }
-  }
-  onMoveEnd(evt) {
-    this.container.removeEventListener(
-      'mousemove.orbit touchmove mouseup touchend'
-    );
-    this.container.removeEventListener('mouseout');
+  };
+  onMoveEnd = evt => {
+    this.container.removeEventListener('mousemove', this.onMove, false);
+    this.container.removeEventListener('touchmove', this.onMove, false);
+    this.container.removeEventListener('mouseup', this.onMoveEnd, false);
+    this.container.removeEventListener('touchend', this.onMoveEnd, false);
+    this.container.removeEventListener('mouseout', this.onMouseOut, false);
     if (this.autoRotateNeedsResume) {
       this.autoRotateTween = setTimeout(() => {
         this.autoRotate = true;
@@ -153,11 +156,11 @@ export default class CustomControls extends THREE.EventDispatcher {
     }
 
     this.dispatchEvent({ type: 'moveEnd' });
-  }
-  onMouseOut(evt) {
-    this.container.removeEventListener('mousemove.orbit');
-    this.container.removeEventListener('mouseout');
-  }
+  };
+  onMouseOut = evt => {
+    this.container.removeEventListener('mousemove', this.onMove, false);
+    this.container.removeEventListener('mouseout', this.onMouseOut, false);
+  };
   zoom(delta) {
     if (this.zoomEnabled) {
       this.distance -= delta;

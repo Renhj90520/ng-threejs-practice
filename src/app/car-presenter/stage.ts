@@ -32,6 +32,7 @@ export default class Stage extends THREE.Object3D {
     this.camera = camera;
     this.renderer = renderer;
     this.car = new Car(loaderService);
+    this.car.addHotSpot();
     this.skyColor = new THREE.Color(0xffffff);
     this.skyColor1 = new THREE.Color(0xffffff);
     this.skyColor2 = new THREE.Color(0xdce0e1);
@@ -181,7 +182,13 @@ export default class Stage extends THREE.Object3D {
     });
   }
 
-  update(e?) {
+  update(clock?) {
+    this.updateCamera(clock);
+    this.updateGlow();
+    this.updateControls(clock);
+    this.objects.forEach(obj => {
+      obj.update(clock, this.camera);
+    });
     if (this.vignetting) {
       this.vignetting.update(this.exteriorControls.distance);
     }
@@ -195,10 +202,10 @@ export default class Stage extends THREE.Object3D {
     if (this.lensFlare) {
       this.updateLensFlare();
     }
-    this.objects.forEach(obj => {
-      obj.update();
-    });
   }
+  updateCamera(clock) {}
+  updateGlow() {}
+  updateControls(clock) {}
   updateLensFlare() {
     const rotationX = this.exteriorControls.rotation.x;
     const rotationY = this.exteriorControls.rotation.y;

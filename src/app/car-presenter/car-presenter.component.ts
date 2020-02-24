@@ -27,6 +27,7 @@ export class CarPresenterComponent implements OnInit {
   autoOrbit = false;
   introMode = false;
   stage: Stage;
+  clock: THREE.Clock;
 
   constructor(private loaderService: LoaderService) {}
 
@@ -36,7 +37,7 @@ export class CarPresenterComponent implements OnInit {
       console.log(percent);
     });
     this.loaderService.onLoadFinish.subscribe(() => {
-      this.initAutoCamera();
+      // this.initAutoCamera();
       this.initStage();
     });
     this.loaderService.load({
@@ -56,6 +57,7 @@ export class CarPresenterComponent implements OnInit {
       textureBundles: ['car', 'env']
     });
 
+    this.clock = new THREE.Clock();
     this.update();
   }
   initStage() {
@@ -102,14 +104,17 @@ export class CarPresenterComponent implements OnInit {
   update() {
     this.renderer.render(this.scene, this.camera);
 
+    const clock = { delta: 0, elapsed: 0 };
+    clock.delta = this.clock.getDelta();
+    clock.elapsed = this.clock.getElapsedTime();
     if (this.stage) {
-      this.stage.update();
+      this.stage.update(clock);
     }
-    this.updateControls();
+    this.updateControls(clock);
     // this.autoCamera.update();
     requestAnimationFrame(this.update.bind(this));
   }
-  updateControls() {
+  updateControls(clock) {
     if (this.controls) {
       if (this.autoOrbit) {
         this.controls.enabled = false;
