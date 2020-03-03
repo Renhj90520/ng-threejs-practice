@@ -46,6 +46,7 @@ import { CarPresenterComponent } from './car-presenter/car-presenter.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoaderService } from './car-presenter/loader.service';
 import { LoaderInterceptor } from './car-presenter/loader-interceptor';
+import { ShowroomComponent } from './showroom/showroom.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +90,8 @@ import { LoaderInterceptor } from './car-presenter/loader-interceptor';
     IconsThreedComponent,
     HoverExplodeComponent,
     RenderTargetComponent,
-    BreatheComponent
+    BreatheComponent,
+    ShowroomComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

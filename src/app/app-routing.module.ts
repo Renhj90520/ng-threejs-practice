@@ -28,6 +28,7 @@ import { IconsThreedComponent } from './icons-threed/icons-threed.component';
 import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
 import { RenderTargetComponent } from './render-target/render-target.component';
 import { BreatheComponent } from './breathe/breathe.component';
+import { ShowroomComponent } from './showroom/showroom.component';
 
 const routes: Routes = [
   {
@@ -60,7 +61,8 @@ const routes: Routes = [
   { path: 'explode', component: HoverExplodeComponent },
   { path: 'rendertarget', component: RenderTargetComponent },
   { path: 'breathe', component: BreatheComponent },
-  { path: 'carpresenter', component: CarPresenterComponent }
+  { path: 'carpresenter', component: CarPresenterComponent },
+  { path: 'showroom', component: ShowroomComponent }
 ];
 @NgModule({
   declarations: [],
