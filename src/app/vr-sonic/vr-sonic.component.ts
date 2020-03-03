@@ -16,8 +16,8 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
   styleUrls: ['./vr-sonic.component.css']
 })
 export class VrSonicComponent implements OnInit {
-  @ViewChild('threecontainer') threeContainer;
-  @ViewChild('info') infoEl;
+  @ViewChild('threecontainer', { static: true }) threeContainer;
+  @ViewChild('info', { static: true }) infoEl;
   scene;
   camera;
   renderer;

@@ -152,10 +152,10 @@ export class LoaderService {
     //   });
     // }
     const jsonLoader = new LegacyJSONLoader();
-    forkJoin(reqs.map(r => r.req)).subscribe(result => {
+    forkJoin(reqs.map(r => r.req)).subscribe((result: any) => {
       const keys = reqs.map(r => r.key);
       for (let i = 0; i < result.length; i++) {
-        const meshStr = result[i];
+        const meshStr: string = result[i];
         const key = keys[i];
         const meshInfo = this.meshes.find(m => m.key === key);
         const mesh = jsonLoader.parse(JSON.parse(meshStr), './textures/');

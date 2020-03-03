@@ -13,7 +13,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
   styleUrls: ['./periodic-table.component.css']
 })
 export class PeriodicTableComponent implements OnInit {
-  @ViewChild('canvas') canvas;
+  @ViewChild('canvas', { static: true }) canvas;
   scene: THREE.Scene;
   renderer: CSS3DRenderer;
   camera: THREE.PerspectiveCamera;

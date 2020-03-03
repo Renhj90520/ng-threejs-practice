@@ -16,7 +16,7 @@ import * as WebFont from "webfontloader";
   styleUrls: ["./icons-threed.component.css"]
 })
 export class IconsThreedComponent implements OnInit {
-  @ViewChild("stage") stageEl;
+  @ViewChild("stage", { static: true }) stageEl;
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;

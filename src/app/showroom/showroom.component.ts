@@ -7,7 +7,7 @@ import * as _ from 'lodash';
   styleUrls: ['./showroom.component.css']
 })
 export class ShowroomComponent implements OnInit {
-  @ViewChild('stage') stageEl;
+  @ViewChild('stage', { static: true }) stageEl;
   width;
   height;
   renderer: THREE.WebGLRenderer;

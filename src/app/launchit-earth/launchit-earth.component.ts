@@ -16,7 +16,7 @@ import {
   styleUrls: ['./launchit-earth.component.css']
 })
 export class LaunchitEarthComponent implements OnInit {
-  @ViewChild('three') threeEl;
+  @ViewChild('three', { static: true }) threeEl;
   scene;
   camera;
   renderer;
