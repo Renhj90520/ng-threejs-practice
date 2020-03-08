@@ -17,7 +17,6 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
   }
 
   onPropertyChange(propertyName, callback) {
-    // if (Object.getOwnPropertyNames(this).indexOf(propertyName) < 0) {
     Object.defineProperty(this, propertyName, {
       get: function() {
         return this['_' + propertyName];
@@ -28,7 +27,6 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
       },
       configurable: true
     });
-    // }
   }
 
   refreshLightUniforms(lightUniforms) {}
