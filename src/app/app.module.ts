@@ -47,6 +47,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoaderService } from './car-presenter/loader.service';
 import { LoaderInterceptor } from './car-presenter/loader-interceptor';
 import { ShowroomComponent } from './showroom/showroom.component';
+import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,8 @@ import { ShowroomComponent } from './showroom/showroom.component';
     HoverExplodeComponent,
     RenderTargetComponent,
     BreatheComponent,
-    ShowroomComponent
+    ShowroomComponent,
+    HeatmapDrawComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

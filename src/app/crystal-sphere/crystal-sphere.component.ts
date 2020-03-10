@@ -143,7 +143,10 @@ export class CrystalSphereComponent implements OnInit {
     this.renderer.setSize(width, height);
 
     this.el.nativeElement.appendChild(this.renderer.domElement);
-    this.controls = new TrackballControls(this.camera);
+    this.controls = new TrackballControls(
+      this.camera,
+      this.renderer.domElement
+    );
     this.controls.rotateSpeed = 2;
     this.controls.zoomSpeed = 1.2;
     this.controls.panSpeed = 0.8;

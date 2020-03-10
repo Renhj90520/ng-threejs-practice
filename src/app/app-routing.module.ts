@@ -29,6 +29,7 @@ import { HoverExplodeComponent } from './hover-explode/hover-explode.component';
 import { RenderTargetComponent } from './render-target/render-target.component';
 import { BreatheComponent } from './breathe/breathe.component';
 import { ShowroomComponent } from './showroom/showroom.component';
+import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
 
 const routes: Routes = [
   {
@@ -62,7 +63,8 @@ const routes: Routes = [
   { path: 'rendertarget', component: RenderTargetComponent },
   { path: 'breathe', component: BreatheComponent },
   { path: 'carpresenter', component: CarPresenterComponent },
-  { path: 'showroom', component: ShowroomComponent }
+  { path: 'showroom', component: ShowroomComponent },
+  { path: 'heatmapdraw', component: HeatmapDrawComponent }
 ];
 @NgModule({
   declarations: [],

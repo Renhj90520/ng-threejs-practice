@@ -6,10 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./gallery.component.css']
 })
 export class GalleryComponent implements OnInit {
-
-  constructor() { }
+  heatmapdata = [];
+  constructor() {}
 
   ngOnInit() {
+    for (let i = 0; i < 42; i++) {
+      const row = [];
+      for (let j = 0; j < 13; j++) {
+        row.push(200);
+      }
+      this.heatmapdata.push(row);
+    }
   }
-
 }

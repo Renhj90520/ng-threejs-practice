@@ -1,0 +1,22 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr 20px;
+  width: 100%;
+  height: 100%;
+  column-gap: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.stage {
+  height: 100%;
+}
+.visualmap {
+  background: linear-gradient(
+    to top,
+    blue 40%,
+    cyan 60%,
+    lime 70%,
+    yellow 80%,
+    red 100%
+  );
+}
