@@ -19,5 +19,9 @@
   <app-crystal-sphere></app-crystal-sphere>
 </div>
 <div class="row">
-  <app-heatmap-draw [data]="heatmapdata"></app-heatmap-draw>
+  <app-heatmap-draw
+    style="width: 400px; height: 500px;"
+    [data]="heatmapdata"
+    [max]="350"
+  ></app-heatmap-draw>
 </div>
