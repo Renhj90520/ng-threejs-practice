@@ -18,10 +18,13 @@
   <app-sphere-shader></app-sphere-shader>
   <app-crystal-sphere></app-crystal-sphere>
 </div>
-<div class="row">
+<div
+  class="row"
+  style="background-color: black; padding-top: 20px; padding-bottom: 20px;"
+>
   <app-heatmap-draw
-    style="width: 300px; height: 500px;"
-    [data]="heatmapdata"
-    [max]="350"
+    style="width: 500px; height: 500px;"
+    [internalData]="internalData"
+    [externalData]="externalData"
   ></app-heatmap-draw>
 </div>

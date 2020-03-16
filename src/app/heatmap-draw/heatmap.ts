@@ -32,23 +32,20 @@ export default class Heatmap {
     this.grad = ctx.getImageData(0, 0, 1, 256).data;
   }
   drawGrid(canvas, data) {
-    const stage = canvas.parentElement;
-    const width = stage.clientWidth;
-    const height = stage.clientHeight;
-    canvas.width = width;
-    canvas.height = height;
-    const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
-    ctx.clearRect(0, 0, width, height);
+    const { ctx, width, height } = this.initCanvas(canvas);
 
     const image = document.createElement('canvas');
     const rowCount = data.length;
-    const columnCount = data[0].length;
+    const columnCount = Array.isArray(data[0]) ? data[0].length : 1;
     image.width = columnCount;
     image.height = rowCount;
     const imgCtx = image.getContext('2d');
 
     for (let i = 0; i < data.length; i++) {
-      const row = data[i];
+      let row = data[i];
+      if (!Array.isArray(row)) {
+        row = [row];
+      }
       for (let j = 0; j < row.length; j++) {
         const p = row[j];
         const selfColor = this.getColorStr(this.getColor(p));
@@ -59,6 +56,24 @@ export default class Heatmap {
 
     ctx.drawImage(image, 0, 0, width, height);
   }
+  private initCanvas(canvas) {
+    const stage = canvas.parentElement;
+    let width, height;
+    if (stage) {
+      width = stage.clientWidth;
+      height = stage.clientHeight;
+    } else {
+      width = canvas.width;
+      height = canvas.height;
+    }
+
+    canvas.width = width;
+    canvas.height = height;
+    const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+    ctx.clearRect(0, 0, width, height);
+    return { ctx, width, height };
+  }
+
   getColor(pointValue) {
     const ratio = pointValue / this.max;
     const scaleIdx = Math.floor(256 * ratio) - 1;

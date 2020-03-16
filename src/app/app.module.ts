@@ -48,6 +48,7 @@ import { LoaderService } from './car-presenter/loader.service';
 import { LoaderInterceptor } from './car-presenter/loader-interceptor';
 import { ShowroomComponent } from './showroom/showroom.component';
 import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
+import { ValveDrawComponent } from './heatmap-draw/valve-draw/valve-draw.component';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,8 @@ import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
     RenderTargetComponent,
     BreatheComponent,
     ShowroomComponent,
-    HeatmapDrawComponent
+    HeatmapDrawComponent,
+    ValveDrawComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

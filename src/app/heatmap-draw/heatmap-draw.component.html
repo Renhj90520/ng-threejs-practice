@@ -1,4 +1,18 @@
-<div class="stage">
-  <canvas #canvas></canvas>
+<div class="top">
+  <app-valve-draw [data]="externalData"></app-valve-draw>
+  <app-valve-draw
+    [data]="externalData"
+    [pipeDiameterRatio]="0.4"
+    [circleDiameterRatio]="0.9"
+    [pipeSide]="'right'"
+  ></app-valve-draw>
 </div>
-<div class="visualmap"></div>
+<div class="bottom">
+  <div class="external">
+    <canvas #canvasExternal></canvas>
+  </div>
+  <div class="visualmap"></div>
+  <div class="internal">
+    <canvas #canvasInternal></canvas>
+  </div>
+</div>
