@@ -20,7 +20,7 @@
 </div>
 <div
   class="row"
-  style="background-color: black; padding-top: 20px; padding-bottom: 20px;"
+  style="background-color: black; padding-top: 20px; padding-bottom: 20px; align-content: space-around;"
 >
   <app-heatmap-draw
     style="width: 500px; height: 500px;"
@@ -28,4 +28,8 @@
     [internalData]="internalData"
     [externalData]="externalData"
   ></app-heatmap-draw>
+  <app-cloud-temperature
+    style="width: 500px; height: 500px;"
+    [data]="cloudTemperatureData"
+  ></app-cloud-temperature>
 </div>

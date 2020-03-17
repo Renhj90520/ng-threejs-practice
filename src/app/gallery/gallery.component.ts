@@ -9,6 +9,7 @@ export class GalleryComponent implements OnInit {
   internalData = [];
   externalData: any[];
   valveData: number[];
+  cloudTemperatureData;
   constructor() {}
 
   ngOnInit() {
@@ -19,6 +20,12 @@ export class GalleryComponent implements OnInit {
     //   }
     //   this.internalData.push(row);
     // }
+
+    this.cloudTemperatureData = {
+      rotatorData: [130, 120, 118, 117, 115, 113, 109, 108, 105, 102],
+      internalData: [117, 115, 113, 109, 108, 105, 102],
+      externalData: [109, 108, 105, 102]
+    };
 
     this.valveData = [
       100,

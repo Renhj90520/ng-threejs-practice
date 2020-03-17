@@ -49,6 +49,7 @@ import { LoaderInterceptor } from './car-presenter/loader-interceptor';
 import { ShowroomComponent } from './showroom/showroom.component';
 import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
 import { ValveDrawComponent } from './heatmap-draw/valve-draw/valve-draw.component';
+import { CloudTemperatureComponent } from './heatmap-draw/cloud-temperature/cloud-temperature.component';
 
 @NgModule({
   declarations: [
@@ -95,7 +96,8 @@ import { ValveDrawComponent } from './heatmap-draw/valve-draw/valve-draw.compone
     BreatheComponent,
     ShowroomComponent,
     HeatmapDrawComponent,
-    ValveDrawComponent
+    ValveDrawComponent,
+    CloudTemperatureComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

@@ -74,6 +74,98 @@ export default class Heatmap {
     return { ctx, width, height };
   }
 
+  drawRadial(canvas, data) {
+    const { ctx, width, height } = this.initCanvas(canvas);
+    const radius = Math.min(width, height) / 2;
+    const rotatorRadius = radius * 0.4;
+    const internalRadius = radius * 0.7;
+    const gap = 8;
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const externalDataLength = data.externalData.length;
+    const externalStep = Math.floor(
+      (radius - internalRadius - gap) / externalDataLength
+    );
+    this.fillGradientCircles(
+      data.externalData,
+      radius,
+      externalStep,
+      ctx,
+      centerX,
+      centerY
+    );
+
+    ctx.beginPath();
+    ctx.fillStyle = 'black';
+    ctx.arc(centerX, centerY, internalRadius + gap, 0, Math.PI * 2);
+    ctx.fill();
+
+    const internalDataLength = data.internalData.length;
+    const internalStep = Math.floor(
+      (internalRadius - rotatorRadius - gap) / internalDataLength
+    );
+    this.fillGradientCircles(
+      data.internalData,
+      internalRadius,
+      internalStep,
+      ctx,
+      centerX,
+      centerY
+    );
+
+    ctx.beginPath();
+    ctx.fillStyle = 'black';
+    ctx.arc(centerX, centerY, rotatorRadius + gap, 0, Math.PI * 2);
+    ctx.fill();
+
+    const rotatorDataLength = data.rotatorData.length;
+    const rotatorStep = Math.floor(rotatorRadius / rotatorDataLength);
+    this.fillGradientCircles(
+      data.rotatorData,
+      rotatorRadius,
+      rotatorStep,
+      ctx,
+      centerX,
+      centerY
+    );
+  }
+  private fillGradientCircles(
+    data: any,
+    rotatorRadius: number,
+    rotatorStep: number,
+    ctx: CanvasRenderingContext2D,
+    centerX: number,
+    centerY: number
+  ) {
+    const dataLength = data.length;
+
+    for (let i = 0; i < dataLength; i++) {
+      const r = rotatorRadius - i * rotatorStep;
+      const val = data[dataLength - 1 - i];
+      const nextVal = data[dataLength - 2 - i];
+      if (nextVal !== undefined) {
+        const color = this.getColorStr(this.getColor(val));
+        const nextColor = this.getColorStr(this.getColor(nextVal));
+        const gradient = ctx.createRadialGradient(
+          centerX,
+          centerY,
+          0,
+          centerX,
+          centerY,
+          r
+        );
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, nextColor);
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
   getColor(pointValue) {
     const ratio = pointValue / this.max;
     const scaleIdx = Math.floor(256 * ratio) - 1;

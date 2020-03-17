@@ -32,9 +32,9 @@
 .visualmap {
   background: linear-gradient(
     to top,
-    blue 40%,
-    cyan 60%,
-    lime 70%,
+    blue 20%,
+    cyan 40%,
+    lime 60%,
     yellow 80%,
     red 100%
   );
