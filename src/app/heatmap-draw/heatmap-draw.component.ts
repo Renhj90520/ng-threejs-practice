@@ -18,6 +18,7 @@ export class HeatmapDrawComponent implements OnInit, OnChanges {
   @ViewChild('canvasExternal', { static: true }) canvasExternalEl;
   @Input() internalData;
   @Input() externalData;
+  @Input() valveData;
   heatmap: Heatmap;
 
   constructor() {

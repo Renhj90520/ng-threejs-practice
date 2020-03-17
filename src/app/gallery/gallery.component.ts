@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class GalleryComponent implements OnInit {
   internalData = [];
   externalData: any[];
+  valveData: number[];
   constructor() {}
 
   ngOnInit() {
@@ -18,6 +19,30 @@ export class GalleryComponent implements OnInit {
     //   }
     //   this.internalData.push(row);
     // }
+
+    this.valveData = [
+      100,
+      102,
+      103,
+      108,
+      109,
+      113,
+      115,
+      118,
+      290,
+      298,
+      330,
+      300,
+      289,
+      118,
+      117,
+      115,
+      113,
+      109,
+      108,
+      105,
+      102
+    ];
     this.externalData = [
       100,
       102,

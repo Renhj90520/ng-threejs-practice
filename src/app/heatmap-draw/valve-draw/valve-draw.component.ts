@@ -34,7 +34,110 @@ export class ValveDrawComponent implements OnInit, OnChanges {
       this.initCanvas();
       this.drawHorizontalPipe();
       this.drawVerticalPipe();
+      this.drawCircle();
     }
+  }
+  drawCircle() {
+    let centerX;
+    if (this.pipeSide === 'left') {
+      centerX = (this.width - this.pipeRadius * 2) / 2 + this.pipeRadius * 2;
+    } else {
+      centerX = (this.width - this.pipeRadius * 2) / 2;
+    }
+    const centerY = this.height / 2;
+
+    const minRadius = (this.pipeRadius * 2) / 3;
+    const leftRadius = this.circleRadius - minRadius;
+    const dataLength = this.data.length;
+    let circleCount;
+    let centerValue;
+    let mixValue = [];
+
+    if (dataLength % 2 === 0) {
+      circleCount = this.data.length / 2;
+      centerValue = Math.max(
+        this.data[circleCount - 1],
+        this.data[circleCount]
+      );
+      for (let i = 0; i < this.data.length / 2; i++) {
+        const val = this.data[i];
+        const mirrorVal = this.data[dataLength - i - 1];
+        mixValue.push(Math.floor((val + mirrorVal) / 2));
+      }
+    } else {
+      circleCount = Math.floor(this.data.length / 2);
+      centerValue = this.data[circleCount];
+
+      for (let i = 0; i < (dataLength - 1) / 2; i++) {
+        const val = this.data[i];
+        const mirrorVal = this.data[dataLength - i - 1];
+        mixValue.push(Math.floor((val + mirrorVal) / 2));
+      }
+    }
+
+    const step = Math.ceil(leftRadius / mixValue.length);
+
+    const centerColor = this.heatmap.getColorStr(
+      this.heatmap.getColor(centerValue)
+    );
+    for (let i = 0; i < mixValue.length; i++) {
+      const val = mixValue[i];
+      let nextVal;
+      if (i + 1 === mixValue.length) {
+        nextVal = centerValue;
+      } else {
+        nextVal = mixValue[i + 1];
+      }
+      const nextColor = this.heatmap.getColorStr(
+        this.heatmap.getColor(nextVal)
+      );
+      const color = this.heatmap.getColorStr(this.heatmap.getColor(val));
+      const radius = this.circleRadius - step * i;
+      const gradient = this.ctx.createRadialGradient(
+        centerX,
+        centerY,
+        0,
+        centerX,
+        centerY,
+        radius
+      );
+      gradient.addColorStop(0, nextColor);
+      gradient.addColorStop(1, color);
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.beginPath();
+      this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    const image = document.createElement('canvas');
+    const ctx = image.getContext('2d');
+    image.width = 1;
+    image.height = (this.pipeRadius * 2) / 3;
+    let pipe;
+    const y = Math.floor(this.height / 2 - image.height / 2);
+    if (this.pipeSide === 'left') {
+      pipe = this.ctx.getImageData(this.pipeRadius * 2, y, 1, image.height);
+    } else {
+      pipe = this.ctx.getImageData(0, y, 1, image.height);
+    }
+    ctx.putImageData(pipe, 0, 0);
+    this.ctx.drawImage(
+      image,
+      0,
+      0,
+      1,
+      image.height,
+      centerX - this.circleRadius - 1,
+      y,
+      this.circleRadius * 2 + 2,
+      image.height
+    );
+    this.ctx.fillStyle = centerColor;
+    this.ctx.beginPath();
+    this.ctx.arc(centerX, centerY, minRadius, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
   }
   drawVerticalPipe() {
     const width = this.height / 2 + this.pipeRadius;
@@ -45,13 +148,14 @@ export class ValveDrawComponent implements OnInit, OnChanges {
 
     this.heatmap.drawGrid(canvas, this.data);
     const clearWidth = Math.ceil((this.pipeRadius * 2) / 3);
-    const clearHeight = this.pipeRadius * 2;
+    const clearHeight = Math.floor(this.pipeRadius * 2 - clearWidth);
     const verticalClip = this.ctx.getImageData(
       0,
-      this.height / 2 - this.pipeRadius,
-      clearWidth,
+      Math.ceil(this.height / 2 - this.pipeRadius),
+      this.pipeRadius + 1,
       clearHeight
     );
+    this.ctx.save();
     if (this.pipeSide === 'left') {
       const horizontalClip = this.ctx.getImageData(
         0,
@@ -66,9 +170,8 @@ export class ValveDrawComponent implements OnInit, OnChanges {
       this.ctx.putImageData(
         verticalClip,
         2 * clearWidth,
-        this.height / 2 - this.pipeRadius
+        Math.ceil(this.height / 2 - this.pipeRadius)
       );
-
       this.ctx.putImageData(
         horizontalClip,
         0,
@@ -83,7 +186,6 @@ export class ValveDrawComponent implements OnInit, OnChanges {
         this.height / 2 - this.pipeRadius + clearWidth,
         clearWidth
       );
-      this.ctx.restore();
     } else {
       const horizontalClip = this.ctx.getImageData(
         0,
@@ -97,8 +199,8 @@ export class ValveDrawComponent implements OnInit, OnChanges {
       this.ctx.drawImage(canvas, 0, 0, width, height);
       this.ctx.putImageData(
         verticalClip,
-        this.width - this.pipeRadius * 2,
-        this.height / 2 - this.pipeRadius
+        this.width - this.pipeRadius * 2 - 2,
+        Math.ceil(this.height / 2 - this.pipeRadius)
       );
 
       this.ctx.putImageData(
