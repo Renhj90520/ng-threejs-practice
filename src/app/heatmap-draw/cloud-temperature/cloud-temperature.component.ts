@@ -17,8 +17,9 @@ export class CloudTemperatureComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasEl;
   @Input() data;
   heatmap: Heatmap;
+  max = 350;
   constructor() {
-    this.heatmap = new Heatmap(null, 350);
+    this.heatmap = new Heatmap(null, this.max);
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.data && this.data) {

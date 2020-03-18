@@ -50,6 +50,7 @@ import { ShowroomComponent } from './showroom/showroom.component';
 import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
 import { ValveDrawComponent } from './heatmap-draw/valve-draw/valve-draw.component';
 import { CloudTemperatureComponent } from './heatmap-draw/cloud-temperature/cloud-temperature.component';
+import { VisualmapComponent } from './heatmap-draw/visualmap/visualmap.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +98,8 @@ import { CloudTemperatureComponent } from './heatmap-draw/cloud-temperature/clou
     ShowroomComponent,
     HeatmapDrawComponent,
     ValveDrawComponent,
-    CloudTemperatureComponent
+    CloudTemperatureComponent,
+    VisualmapComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

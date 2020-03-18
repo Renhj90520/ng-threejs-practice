@@ -1,0 +1,33 @@
+:host {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  height: 100%;
+  min-height: 0;
+}
+.visualmap {
+  background: linear-gradient(
+    to top,
+    blue 20%,
+    cyan 40%,
+    lime 60%,
+    yellow 80%,
+    red 100%
+  );
+  min-height: 0;
+  height: 100%;
+}
+.labels {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  font-size: 12px;
+  justify-content: space-between;
+  padding-left: 8px;
+}
+p.label {
+  margin: 0;
+}
+p.unit {
+  margin-top: -20px;
+  color: white;
+}

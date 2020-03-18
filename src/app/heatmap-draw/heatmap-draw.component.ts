@@ -20,9 +20,10 @@ export class HeatmapDrawComponent implements OnInit, OnChanges {
   @Input() externalData;
   @Input() valveData;
   heatmap: Heatmap;
+  max = 350;
 
   constructor() {
-    this.heatmap = new Heatmap(null, 350);
+    this.heatmap = new Heatmap(null, this.max);
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.internalData && this.internalData) {
