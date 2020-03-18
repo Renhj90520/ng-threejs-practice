@@ -20,7 +20,7 @@ export class HeatmapDrawComponent implements OnInit, OnChanges {
   @Input() externalData;
   @Input() valveData;
   heatmap: Heatmap;
-  max = 350;
+  max = 600;
 
   constructor() {
     this.heatmap = new Heatmap(null, this.max);
