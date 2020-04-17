@@ -13,7 +13,7 @@ export default class CompressedTextureLoader extends THREE.CompressedTextureLoad
     const minimaps = [];
     const minimapsLength = Math.log2(this.size);
     let count = 0;
-    for (let i = 0; i < minimapsLength; i++) {
+    for (let i = 0; i <= minimapsLength; i++) {
       const size = Math.pow(2, minimapsLength - i);
       const offset = size * size * 4;
 
@@ -38,7 +38,7 @@ export default class CompressedTextureLoader extends THREE.CompressedTextureLoad
 
     return {
       isCubemap: true,
-      minimaps: _.flatten(minimaps),
+      mipmaps: _.flatten(minimaps),
       mipmapCount: minimapsLength + 1,
       width: this.size,
       height: this.size,

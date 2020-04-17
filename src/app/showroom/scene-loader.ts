@@ -1,18 +1,21 @@
 import * as THREE from 'three';
 import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
+import CustomMaterialLoader from './CustomMaterialLoader';
 export default class SceneLoader {
   geometryBuffer;
   texturePath: any;
   manager: THREE.LoadingManager;
-  constructor(manager?) {
+  resourceManager: any;
+  constructor(resourceManager, manager?) {
     this.manager = manager || THREE.DefaultLoadingManager;
     this.texturePath = '';
+    this.resourceManager = resourceManager;
   }
   setTexturePath(texturePath) {
     this.texturePath = texturePath;
   }
 
-  load(path, e, onProgress, onError) {
+  load(path, onLoad, onProgress, onError) {
     if (this.texturePath === '') {
       this.texturePath = path.substring(0, path.lastIndexOf('/') + 1);
     }
@@ -20,13 +23,13 @@ export default class SceneLoader {
       path,
       (sceneJSONStr: string) => {
         const sceneJSON = JSON.parse(sceneJSONStr);
-        this.parse(sceneJSON, e);
+        this.parse(sceneJSON, onLoad);
       },
       onProgress,
       onError
     );
   }
-  parse(sceneInfo, e) {
+  parse(sceneInfo, onLoad) {
     let geometries;
     if (sceneInfo.binary) {
       geometries = this.parseBinaryGeometries(sceneInfo.geometries);
@@ -36,8 +39,8 @@ export default class SceneLoader {
 
     const images = this.parseImages(sceneInfo.images, () => {
       // TODO
-      if (e !== undefined) {
-        e(scene, sceneInfo);
+      if (onLoad !== undefined) {
+        onLoad(scene, sceneInfo);
       }
     });
     const textures = this.parseTextures(sceneInfo.textures, images);
@@ -52,8 +55,8 @@ export default class SceneLoader {
 
     // TODO
     if (!(sceneInfo.images && sceneInfo.images.length !== 0)) {
-      if (e !== undefined) {
-        e(scene, sceneInfo);
+      if (onLoad !== undefined) {
+        onLoad(scene, sceneInfo);
       }
     }
     return scene;
@@ -81,13 +84,13 @@ export default class SceneLoader {
   }
   parseObject(objInfo, geometries, materials) {
     const emptyMatrix = new THREE.Matrix4();
-    const getGeometry = uuid => {
+    const getGeometry = (uuid) => {
       if (!geometries[uuid]) {
         console.warn('THREE.ObjectLoader: Undefined geometry', uuid);
       }
       return geometries[uuid];
     };
-    const getMaterial = uuid => {
+    const getMaterial = (uuid) => {
       if (!materials[uuid]) {
         console.warn('THREE.ObjectLoader: Undefined material', uuid);
       }
@@ -237,9 +240,12 @@ export default class SceneLoader {
     if (objInfo.userData !== undefined) {
       obj.userData = objInfo.userData;
     }
+
     if (objInfo.children) {
       for (const child in objInfo.children) {
-        this.parseObject(objInfo.children[child], geometries, materials);
+        obj.add(
+          this.parseObject(objInfo.children[child], geometries, materials)
+        );
       }
     }
     if (objInfo.type === 'LOD') {
@@ -260,9 +266,12 @@ export default class SceneLoader {
   parseMaterials(materialInfos, textures) {
     const materials: any = {};
     if (materialInfos) {
-      const materialLoader = new THREE.MaterialLoader();
+      const materialLoader = new CustomMaterialLoader(this.resourceManager);
       materialLoader.setTextures(textures);
       for (let i = 0; i < materialInfos.length; i++) {
+        if (materialInfos[i].type === 'ShaderMaterial') {
+          materialInfos[i].color = undefined;
+        }
         const material = materialLoader.parse(materialInfos[i]);
         materials[material.uuid] = material;
       }
@@ -308,6 +317,30 @@ export default class SceneLoader {
           if (textureInfo.mapping) {
             texture.mapping = this.parseConstant(textureInfo.mapping);
           }
+          if (textureInfo.offset) {
+            texture.offset.fromArray(textureInfo.offset);
+          }
+          if (textureInfo.repeat) {
+            texture.repeat.fromArray(textureInfo.repeat);
+          }
+          if (textureInfo.wrap) {
+            texture.wrapS = this.parseConstant(textureInfo.wrap[0]);
+            texture.wrapT = this.parseConstant(textureInfo.wrap[1]);
+          }
+          if (textureInfo.minFilter) {
+            texture.minFilter = this.parseConstant(textureInfo.minFilter);
+          }
+          if (textureInfo.magFilter) {
+            texture.magFilter = this.parseConstant(textureInfo.magFilter);
+          }
+          if (textureInfo.anisotropy) {
+            texture.anisotropy = textureInfo.anisotropy;
+          }
+          if (textureInfo.flipY !== undefined) {
+            texture.flipY = textureInfo.flipY;
+          }
+
+          textures[textureInfo.uuid] = texture;
         }
       }
     }
@@ -319,8 +352,10 @@ export default class SceneLoader {
         'THREE.ObjectLoader.parseTexture: Constant should be in numeric form.',
         constant
       );
+      return THREE[constant];
+    } else {
+      return constant;
     }
-    return THREE[constant];
   }
   parseImages(imageInfos, onLoad) {
     const images: any = {};
@@ -520,13 +555,13 @@ export default class SceneLoader {
                 case 'position':
                 case 'normal':
                 case 'color':
-                  length = 2;
+                  length = 3;
                   break;
                 case 'tangent':
                   length = 4;
                   break;
               }
-              geometry.addAttribute(
+              geometry.setAttribute(
                 offsetKey,
                 new THREE.BufferAttribute(attr, length)
               );

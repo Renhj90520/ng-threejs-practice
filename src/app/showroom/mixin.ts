@@ -1,12 +1,14 @@
 import * as _ from 'lodash';
 export function applyMixins(derivedCtor, baseCtors: any[]) {
-  baseCtors.forEach(baseCtor => {
-    Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-      Object.defineProperty(
-        derivedCtor.prototype,
-        name,
-        Object.getOwnPropertyDescriptor(baseCtor.prototype, name)
-      );
+  baseCtors.forEach((baseCtor) => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+      if (name !== 'constructor') {
+        Object.defineProperty(
+          derivedCtor.prototype,
+          name,
+          Object.getOwnPropertyDescriptor(baseCtor.prototype, name)
+        );
+      }
     });
   });
 }
@@ -19,7 +21,7 @@ export class EventMixins {
         this._events = {};
       }
       this._events[eventName] = this._events[eventName] || [];
-      this._events.push({ callback, context, ctx: context || this });
+      this._events[eventName].push({ callback, context, ctx: context || this });
     }
     return this;
   }
@@ -32,7 +34,7 @@ export class EventMixins {
     }
 
     const that = this;
-    const events: any = _.once(function() {
+    const events: any = _.once(function () {
       that.off(eventName, events);
       callback.apply(this, arguments);
     });
@@ -82,7 +84,7 @@ export class EventMixins {
     return this;
   }
 
-  trigger(eventName) {
+  trigger(eventName, ...argss) {
     if (!this._events) return this;
     const args = Array.prototype.slice.apply(arguments);
     const context = args.slice(1);
