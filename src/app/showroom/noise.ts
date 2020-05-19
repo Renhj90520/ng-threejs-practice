@@ -4,16 +4,16 @@ export default class Noise {
   target: THREE.WebGLRenderTarget;
   material: THREE.ShaderMaterial;
   vertexShader = `
-    varying vUv;
+    varying vec2 vUv;
     void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
     }  
   `;
   fragmentShader = `
-    varying vUv;
+    varying vec2 vUv;
     float rand(vec2 co) {
-        return frac(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
     }
 
     void main() {
@@ -42,6 +42,8 @@ export default class Noise {
   }
 
   render(renderer) {
-    renderer.render(this.scene, this.camera, this.target);
+    renderer.setRenderTarget(this.target);
+    renderer.render(this.scene, this.camera);
+    renderer.setRenderTarget(null);
   }
 }

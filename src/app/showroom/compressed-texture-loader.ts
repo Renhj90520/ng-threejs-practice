@@ -47,7 +47,7 @@ export default class CompressedTextureLoader extends THREE.CompressedTextureLoad
       magFilter: THREE.LinearFilter,
       wrapS: THREE.ClampToEdgeWrapping,
       wrapT: THREE.ClampToEdgeWrapping,
-      type: THREE.UnsignedByteType
+      type: THREE.UnsignedByteType,
     };
   }
   n(t, e, n) {

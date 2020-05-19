@@ -197,7 +197,7 @@ export class DollyCamera extends THREE.PerspectiveCamera {
 export interface DollyCamera extends EventMixins {}
 applyMixins(DollyCamera, [EventMixins]);
 
-enum Mode {
+export enum Mode {
   LOOK_MODE = 0,
   ORBIT_MODE = 1,
 }

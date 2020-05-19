@@ -23,7 +23,6 @@ export default class Water extends THREE.Mesh {
       shininess: 500,
       alpha: 0.35,
     });
-
     if (opts.object) {
       this.geometry = opts.object.geometry;
       this.material = this.effect.material;

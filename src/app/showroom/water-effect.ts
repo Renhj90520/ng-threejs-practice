@@ -4,12 +4,12 @@ import Mirror from './mirror';
 export default class WaterEffect extends Mirror {
   vertexShader = `
     uniform mat4 textureMatrix;
-    varying vec4 mirroCoord;
+    varying vec4 mirrorCoord;
     varying vec3 worldPosition;
     void main() {
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.);
         vec4 worldPos = modelMatrix * vec4(position, 1.);
-        mirroCoord = textureMatrix * worldPos;
+        mirrorCoord = textureMatrix * worldPos;
         worldPosition = worldPos.xyz;
         gl_Position = projectionMatrix * mvPosition;
     }
@@ -55,15 +55,15 @@ export default class WaterEffect extends Mirror {
     }
     
     void main() {
-        vec4 noise = getNoise(worldPosition.xyz);
-        vec3 surfaceNormal = normalize(noise.xyz * vec3(1.5, 1., 1.5));
+        vec4 noise = getNoise(worldPosition.xz);
+        vec3 surfaceNormal = normalize(noise.xzy * vec3(1.5, 1., 1.5));
         vec3 diffuseLight = vec3(0.);
         vec3 specularLight = vec3(0.);
         vec3 worldToEye = eye - worldPosition;
         vec3 eyeDirection = normalize(worldToEye);
         sunLight(surfaceNormal, eyeDirection, 200., 1.5, .5, diffuseLight, specularLight);
         float distance = length(worldToEye);
-        vec2 distortion = surfaceNormal.xz * (.0001 + 1. / distance) * distortionScale;
+        vec2 distortion = surfaceNormal.xz * (.001 + 1. / distance) * distortionScale;
         vec4 mirrorDistord = mirrorCoord;
         mirrorDistord.x += distortion.x;
         mirrorDistord.w += distortion.y;
@@ -125,7 +125,8 @@ export default class WaterEffect extends Mirror {
     this.alpha = opts.alpha ?? 1;
     this.time = opts.time || 0;
     this.normalSampler = opts.waterNormals || null;
-    this.sunDirection = opts.sunColor ?? new THREE.Vector3(0.70707, 0.70707, 0);
+    this.sunDirection =
+      opts.sunDirection ?? new THREE.Vector3(0.70707, 0.70707, 0);
     this.sunColor = new THREE.Color(opts.sunColor ?? 0xffffff);
     this.eye = opts.eye ?? new THREE.Vector3(0, 0, 0);
     this.distortionScale = opts.distortionScale ?? 10;
@@ -156,6 +157,6 @@ export default class WaterEffect extends Mirror {
     this.camera.updateMatrixWorld();
     cameraPosition.setFromMatrixPosition(this.camera.matrixWorld);
     this.eye = cameraPosition;
-    this.material.uniforms.eys.value = this.eye;
+    this.material.uniforms.eye.value = this.eye;
   }
 }

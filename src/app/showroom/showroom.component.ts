@@ -23,15 +23,10 @@ export class ShowroomComponent implements OnInit {
         this.resourceManager.loadScene('exterior2', this.stage, () => {
           this.resourceManager.loadScene('interior2', this.stage, () => {
             this.stage.init();
+            this.stage.start();
           });
         });
       });
     });
-  }
-
-  doUpdate() {
-    requestAnimationFrame(this.doUpdate.bind(this));
-    this.stage.update();
-    this.stage.render();
   }
 }

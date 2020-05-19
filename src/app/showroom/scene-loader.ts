@@ -270,10 +270,15 @@ export default class SceneLoader {
       materialLoader.setTextures(textures);
       for (let i = 0; i < materialInfos.length; i++) {
         if (materialInfos[i].type === 'ShaderMaterial') {
+          materialInfos[i].Color = materialInfos[i].color;
           materialInfos[i].color = undefined;
         }
-        const material = materialLoader.parse(materialInfos[i]);
-        materials[material.uuid] = material;
+        const material: any = materialLoader.parse(materialInfos[i]);
+        if (material.type === 'MultiMaterial') {
+          materials[material.uuid] = material.materials;
+        } else {
+          materials[material.uuid] = material;
+        }
       }
     }
 

@@ -132,7 +132,7 @@ export class ResourceManager {
               }
             }
             if (e instanceof THREE.DirectionalLight) {
-              e.position.set(0, 0, -1);
+              e.position.set(0, 0, 1);
               e.quaternion.normalize();
               e.position.applyQuaternion(e.quaternion);
               e.quaternion.set(0, 0, 0, 0);

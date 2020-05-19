@@ -868,8 +868,12 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
       });
     });
     this.pbr = true;
+    this.needsUpdate = true;
     this.extensions.derivatives = true;
     this.extensions.shaderTextureLOD = true;
+    // this.wireframe = true;
+    // this.extensions.drawBuffers = true;
+    // this.extensions.fragDepth = true;
   }
 
   updateEnvironmentTransform(camera: THREE.PerspectiveCamera) {
@@ -945,7 +949,7 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
     const packedMap = opts.packedMap || defaultMap;
     const emissiveMap = opts.emissiveMap || defaultMap;
     const lightMap = opts.lightMap || defaultMap;
-    const lightMapM = opts.lightmapM || defaultMap;
+    const lightMapM = opts.lightMapM || defaultMap;
     const lightMapDir = opts.lightMapDir || defaultMap;
     const sh = resourceManager.getSH(opts.environment);
     const cubeMap = resourceManager.getCubemap(opts.environment);
@@ -969,10 +973,10 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
     material.uAOPBRFactor = opts.aoFactor ?? 1;
     material.uSpecularF0Factor = opts.f0Factor ?? 0.5;
     material.uEnvironmentExposure = opts.exposure ?? 1;
-    material.uOccludeSpecular = opts.occludeSpecular ? 1 : 0;
-    material.uFlipY = opts.flipNormalY ?? 0;
-    material.uOpacityFactor = opts.opacity ?? 1;
-    material.uColor = new THREE.Color().setHex(opts.color ?? 0xffffff);
+    material.occludeSpecular = opts.occludeSpecular ? 1 : 0;
+    material.uFlipY = opts.flipNormals ?? 0;
+    material.opacity = opts.opacity ?? 1;
+    material.color = new THREE.Color().setHex(opts.color ?? 0xffffff);
     material.side = opts.side ?? THREE.FrontSide;
     albedoMap.needsUpdate = true;
     albedoMap2.needsUpdate = true;
@@ -1001,6 +1005,7 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
     material.sTextureLightMapM = lightMapM;
     material.sTextureLightMapDir = lightMapDir;
     material.sSpecularPBR = cubeMap;
+    material.sPanoramaPBR = undefined;
     if (sh) {
       material.uDiffuseSPH = new Float32Array(sh, 27);
     }

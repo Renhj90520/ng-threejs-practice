@@ -62,7 +62,7 @@ export default class UI {
     this.currentHighlighted = obj;
   }
 
-  clearHightlight() {
+  clearHighlight() {
     if (this.currentHighlighted) {
       this.currentHighlighted.stroke.visible = false;
       this.currentHighlighted = null;

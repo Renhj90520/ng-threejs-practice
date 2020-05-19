@@ -4,7 +4,7 @@ export default class Mirror extends THREE.Object3D {
   matrixNeedsUpdate: boolean;
   clipBias: any;
   clipPlane: THREE.Vector4;
-  renderer: any;
+  renderer: THREE.WebGLRenderer;
   mirrorPlane: THREE.Plane;
   normal: THREE.Vector3;
   mirrorWorldPosition: THREE.Vector3;
@@ -148,8 +148,10 @@ export default class Mirror extends THREE.Object3D {
     if (root && root instanceof THREE.Scene) {
       const materialVisible = this.material.visible;
       this.material.visible = false;
-      this.renderer.render(root, this.mirrorCamera, this.renderTarget, true);
+      this.renderer.setRenderTarget(this.renderTarget);
+      this.renderer.render(root, this.mirrorCamera);
       this.material.visible = materialVisible;
+      this.renderer.setRenderTarget(null);
     }
   }
   updateTextureMatrix() {

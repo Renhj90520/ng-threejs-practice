@@ -17,10 +17,12 @@ export default class CustomMaterialLoader extends THREE.MaterialLoader {
       material.name = materialInfo.name;
       material.materials = materialInfo.materials.map((mInfo) => {
         if (mInfo.type === 'ShaderMaterial') {
+          mInfo.Color = mInfo.color;
           mInfo.color = undefined;
         }
         return this.parse(mInfo);
       });
+      return material;
     } else {
       material = THREE.MaterialLoader.prototype.parse.call(this, materialInfo);
 
@@ -55,7 +57,7 @@ export default class CustomMaterialLoader extends THREE.MaterialLoader {
               {
                 uuid: materialInfo.uuid,
                 name: materialInfo.name,
-                color: materialInfo.color,
+                color: materialInfo.Color ?? materialInfo.color,
                 opacity: material.opacity,
                 transparent: material.transparent,
                 alphaTest: material.alphaTest,
@@ -85,7 +87,7 @@ export default class CustomMaterialLoader extends THREE.MaterialLoader {
       }
     }
 
-    // TODO Custom Type
+    material.needsUpdate = true;
     return material;
   }
 }
