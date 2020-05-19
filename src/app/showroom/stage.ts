@@ -259,7 +259,7 @@ export default class Stage {
 
     const glasses = this.interiorScene.getObjectByName('glasses');
     if (glasses) {
-      glasses.renderOrder = 100;
+      glasses.renderOrder = 104;
     }
     const sea = this.interiorScene.getObjectByName('sea');
     if (sea) {
@@ -522,8 +522,8 @@ export default class Stage {
   render() {
     this.renderer.clear();
     this.noise.render(this.renderer);
-    this.renderScene(this.interiorScene, this.camera);
     this.renderScene(this.exteriorScene, this.camera);
+    this.renderScene(this.interiorScene, this.camera);
     if (this.hoverScene.children.length > 0) {
       this.renderScene(this.hoverScene, this.camera);
     }

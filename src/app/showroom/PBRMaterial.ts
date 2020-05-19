@@ -49,7 +49,7 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
   fragmentShader = `
     #define MOBILE
     #define LUV
-    precision mediump float;
+    precision highp float;
     uniform float uAOPBRFactor;
     uniform float uAlbedoPBRFactor;
     uniform float uEnvironmentExposure;
@@ -871,7 +871,7 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
     this.needsUpdate = true;
     this.extensions.derivatives = true;
     this.extensions.shaderTextureLOD = true;
-    // this.wireframe = true;
+
     // this.extensions.drawBuffers = true;
     // this.extensions.fragDepth = true;
   }
@@ -1022,6 +1022,9 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
     material.refreshOffsetRepeat();
     material.refreshOffsetRepeatDetail();
 
+    if (material.name === 'glass') {
+      // material.wireframe = true;
+    }
     return material;
   }
 
