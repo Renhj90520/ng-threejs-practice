@@ -44,6 +44,7 @@ export class DollyCamera extends THREE.PerspectiveCamera {
     this.target = new THREE.Object3D();
     this.target.position.z = -1;
     this.add(this.target);
+    this.mode = Mode.LOOK_MODE;
     if (opts.states) {
       this.initStates(opts.states);
       if (this.states.start) {

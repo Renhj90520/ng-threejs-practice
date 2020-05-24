@@ -13,8 +13,8 @@ export default class Stage {
   renderer: THREE.WebGLRenderer;
   width: any;
   height: any;
-  mouseX: number;
-  mouseY: number;
+  // mouseX: number;
+  // mouseY: number;
   scenes = [];
   scene;
   camera: any;
@@ -49,10 +49,10 @@ export default class Stage {
     this.renderer.setClearColor(0xffffff);
     this.renderer.autoClear = false;
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.domElement.addEventListener('mousemove', (evt) => {
-      this.mouseX = (evt.pageX / this.width) * 2 - 1;
-      this.mouseY = 1 - (evt.pageY / this.height) * 2;
-    });
+    // this.renderer.domElement.addEventListener('mousemove', (evt) => {
+    //   this.mouseX = (evt.pageX / this.width) * 2 - 1;
+    //   this.mouseY = 1 - (evt.pageY / this.height) * 2;
+    // });
     stageEl.nativeElement.appendChild(this.renderer.domElement);
   }
   init() {
@@ -133,8 +133,7 @@ export default class Stage {
       this.ui.unfreezeMarker();
     });
 
-    // this.camera.on('firstMove', () => {
-    // });
+    this.camera.on('firstMove', () => {});
 
     // this.camera.on('firstRotate', () => {});
   }
@@ -145,25 +144,41 @@ export default class Stage {
     });
   }
   handleNonVREvents() {
-    this.renderer.domElement.addEventListener('mousemove', (evt) => {
-      const canvas = this.renderer.domElement;
-      const point = this.parsePoint(
-        evt,
-        {
-          x: canvas.offsetLeft,
-          y: canvas.offsetTop,
-        },
-        canvas.clientWidth,
-        canvas.clientHeight
-      );
-      this.scenePicker.updateMouseCoords(point);
-      this.hudPicker.updateMouseCoords(point);
+    this.renderer.domElement.addEventListener(
+      'mousemove',
+      (evt) => {
+        const canvas = this.renderer.domElement;
+        const point = this.parsePoint(
+          evt,
+          {
+            x: canvas.offsetLeft,
+            y: canvas.offsetTop,
+          },
+          canvas.clientWidth,
+          canvas.clientHeight
+        );
+        this.scenePicker.updateMouseCoords(point);
+        this.hudPicker.updateMouseCoords(point);
+      }
+    );
+
+    this.renderer.domElement.addEventListener('click', (evt) => {
+      let hudPickerHit, scenePickerHit;
+      if (!this.camera.moving && !this.camera.rotating && this.camera.enabled) {
+        hudPickerHit = this.hud.visible && this.hudPicker.hitTest();
+        scenePickerHit = this.scenePicker.hitTest();
+      }
+      if (hudPickerHit) {
+        this.hudPicker.onTap();
+      } else if (scenePickerHit) {
+        this.scenePicker.onTap();
+      }
     });
   }
 
   parsePoint(evt, containerOffset, containerWidth, containerHeight) {
     return {
-      x: ((evt.pageX, -containerOffset.x) / containerWidth) * 2 - 1,
+      x: ((evt.pageX - containerOffset.x) / containerWidth) * 2 - 1,
       y: 1 - ((evt.pageY - containerOffset.y) / containerHeight) * 2,
     };
   }
@@ -344,6 +359,7 @@ export default class Stage {
   }
   handlePickerEvents() {
     this.scenePicker.on('pick', (obj, point) => {
+      debugger;
       let selectObj;
       if (obj.name === 'floor') {
         this.camera.moveTo(point.x, point.z, 1000);

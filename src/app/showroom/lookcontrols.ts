@@ -71,7 +71,7 @@ export default class LookControls {
 
   onMouseMove(evt) {
     if (
-      !this.notMove &&
+      !this.notMove(evt) &&
       (this.isMouseDown || this.isPointerLocked()) &&
       this.enabled
     ) {
@@ -100,7 +100,10 @@ export default class LookControls {
     }
   }
   isPointerLocked(): boolean {
-    return document.pointerLockElement !== undefined;
+    return (
+      document.pointerLockElement !== undefined &&
+      document.pointerLockElement !== null
+    );
   }
   onMosueDown(evt) {
     this.rotateStart.set(evt.clientX, evt.clientY);
