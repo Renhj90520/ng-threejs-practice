@@ -144,23 +144,20 @@ export default class Stage {
     });
   }
   handleNonVREvents() {
-    this.renderer.domElement.addEventListener(
-      'mousemove',
-      (evt) => {
-        const canvas = this.renderer.domElement;
-        const point = this.parsePoint(
-          evt,
-          {
-            x: canvas.offsetLeft,
-            y: canvas.offsetTop,
-          },
-          canvas.clientWidth,
-          canvas.clientHeight
-        );
-        this.scenePicker.updateMouseCoords(point);
-        this.hudPicker.updateMouseCoords(point);
-      }
-    );
+    this.renderer.domElement.addEventListener('mousemove', (evt) => {
+      const canvas = this.renderer.domElement;
+      const point = this.parsePoint(
+        evt,
+        {
+          x: canvas.offsetLeft,
+          y: canvas.offsetTop,
+        },
+        canvas.clientWidth,
+        canvas.clientHeight
+      );
+      this.scenePicker.updateMouseCoords(point);
+      this.hudPicker.updateMouseCoords(point);
+    });
 
     this.renderer.domElement.addEventListener('click', (evt) => {
       let hudPickerHit, scenePickerHit;
@@ -359,10 +356,9 @@ export default class Stage {
   }
   handlePickerEvents() {
     this.scenePicker.on('pick', (obj, point) => {
-      debugger;
       let selectObj;
       if (obj.name === 'floor') {
-        this.camera.moveTo(point.x, point.z, 1000);
+        this.camera.moveTo(point.x, point.z, 1);
         this.ui.activateMarker();
 
         if (this.currentSelected) {

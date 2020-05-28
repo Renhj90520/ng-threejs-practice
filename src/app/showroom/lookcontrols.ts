@@ -86,7 +86,7 @@ export default class LookControls {
       } else {
         this.rotateEnd.set(evt.clientX, evt.clientY);
       }
-
+      
       this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart);
       this.rotateStart.copy(this.rotateEnd);
       this.phi +=

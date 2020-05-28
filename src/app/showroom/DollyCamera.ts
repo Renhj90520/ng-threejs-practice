@@ -44,7 +44,8 @@ export class DollyCamera extends THREE.PerspectiveCamera {
     this.target = new THREE.Object3D();
     this.target.position.z = -1;
     this.add(this.target);
-    this.mode = Mode.LOOK_MODE;
+    // this.mode = Mode.LOOK_MODE;
+    this.setMode(Mode.LOOK_MODE);
     if (opts.states) {
       this.initStates(opts.states);
       if (this.states.start) {
@@ -117,18 +118,35 @@ export class DollyCamera extends THREE.PerspectiveCamera {
     this.mode = mode;
   }
   tweenPositionTo(position, duration, onComplete) {
-    const tl = TweenLite.to({ x: 0, y: 0, z: 0 }, duration, {
-      ease: Power1.easeInOut,
-      onUpdate: () => {
-        const progress = tl.progress();
-        const x = position.x * progress;
-        const y = position.y * progress;
-        const z = position.z * progress;
+    const distance = {
+      dx: position.x - this.position.x,
+      dy: position.y - this.position.y,
+      dz: position.z - this.position.z,
+    };
+    const start = {
+      x: this.position.x,
+      y: this.position.y,
+      z: this.position.z,
+    };
+    const tl = TweenLite.to(
+      { x: this.position.x, y: this.position.y, z: this.position.z },
+      duration,
+      {
+        x: position.x,
+        y: position.y,
+        z: position.z,
+        ease: Power1.easeInOut,
+        onUpdate: () => {
+          const progress = tl.progress();
+          const x = start.x + distance.dx * progress;
+          const y = start.y + distance.dy * progress;
+          const z = start.z + distance.dz * progress;
 
-        this.position.set(x, y, z);
-      },
-      onComplete,
-    }).play();
+          this.position.set(x, y, z);
+        },
+        onComplete,
+      }
+    ).play();
   }
   private autoRotate() {
     this.isTransitioning = false;
@@ -152,13 +170,19 @@ export class DollyCamera extends THREE.PerspectiveCamera {
     }).play();
   }
 
-  moveTo(x, z, distance?) {
+  moveTo(x, z, duration?) {
     const position = new THREE.Vector3();
-    distance = distance || 0;
+    duration = duration || 0;
     position.set(x, 1.4, z);
-    if (distance > 0) {
+    if (duration > 0) {
       this.trigger('startMove');
       this.moving = true;
+      this.tweenPositionTo(position, duration, () => {
+        this.trigger('endMove');
+        this.moving = false;
+      });
+    } else {
+      this.position.copy(position);
     }
     if (!this.firstMove) {
       this.trigger('firstMove');
