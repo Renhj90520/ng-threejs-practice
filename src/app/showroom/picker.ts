@@ -58,7 +58,6 @@ export default class Picker extends EventMixins {
 
   hitTest() {
     const worldPosition = new THREE.Vector3();
-    const worldDirection = new THREE.Vector3();
 
     this.camera.getWorldPosition(worldPosition);
     let obj;

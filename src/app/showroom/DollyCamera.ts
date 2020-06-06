@@ -40,6 +40,13 @@ export class DollyCamera extends THREE.PerspectiveCamera {
     this.orbitControls.enableDamping = true;
     this.orbitControls.dampingFactor = 0.065;
     this.orbitControls.rotateSpeed = 0.05;
+    this.orbitControls.addEventListener('mouseup', () => {
+      if (this.mode === Mode.ORBIT_MODE) {
+        setTimeout(() => {
+          this.rotating = false;
+        }, 1000);
+      }
+    });
 
     this.target = new THREE.Object3D();
     this.target.position.z = -1;
@@ -151,7 +158,7 @@ export class DollyCamera extends THREE.PerspectiveCamera {
   private autoRotate() {
     this.isTransitioning = false;
     this.orbitControls.autoRotate = true;
-    this.orbitControls.autoRotateSpeed = 0.1;
+    // this.orbitControls.autoRotateSpeed = 0.1;
     this.startTimeout = null;
   }
 
@@ -204,7 +211,6 @@ export class DollyCamera extends THREE.PerspectiveCamera {
   update() {
     if (this.mode === Mode.ORBIT_MODE) {
       this.orbitControls.update();
-      this.rotating = this.orbitControls.autoRotate || this.isTransitioning;
     } else {
       this.lookControls.update();
       this.rotating = this.lookControls.isRotating;

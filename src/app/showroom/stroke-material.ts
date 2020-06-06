@@ -24,9 +24,9 @@ export default class StrokeMaterial extends CustomShaderMaterial {
     diffuse: {
       type: 'c',
       value: new THREE.Color(0xffffff),
-      opacity: { type: 'f', value: 1 },
-      objectScale: { type: 'f', value: 1 },
     },
+    opacity: { type: 'f', value: 1 },
+    objectScale: { type: 'f', value: 1 },
   };
   constructor(opts?) {
     super(opts);

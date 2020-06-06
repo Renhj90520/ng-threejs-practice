@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: 'Work Sans';
+  src: url('/assets/fonts/WorkSans-Medium.woff2') format('woff2'),
+    url('/assets/fonts/WorkSans-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'AlternateGothic3';
+  src: url('/assets/fonts/alt-gothic.woff2') format('woff2'),
+    url('/assets/fonts/alt-gothic.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}

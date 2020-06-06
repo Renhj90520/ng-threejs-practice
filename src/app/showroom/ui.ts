@@ -121,6 +121,7 @@ export default class UI {
         hoverGroup.traverse((hover) => {
           hover.renderOrder = 2;
         });
+        obj.group = hoverGroup;
       } else {
         obj.traverse((child) => (child.renderOrder = 2));
       }

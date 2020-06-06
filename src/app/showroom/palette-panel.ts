@@ -92,7 +92,7 @@ export default class PalettePanel extends THREE.Object3D {
     this.add(obj);
     box.setFromObject(obj);
     this.innerContainer.add(obj);
-    obj.height = box.max.y = box.min.y;
+    obj.height = box.max.y - box.min.y;
     obj.width = box.max.x - box.min.x;
 
     const x = obj.width / this.scale.x / 2 + offsetX;
@@ -125,7 +125,7 @@ export default class PalettePanel extends THREE.Object3D {
     gradient.position.set(256 - size / 2, size / 2 - 256, 0);
     gradient.renderOrder = 0;
     this.gradient = gradient;
-    this.gradient.maxOpacity = 0.3;
+    this.gradient.maxOpacity = 0.1;
   }
 
   resize(hudSize) {
@@ -158,27 +158,27 @@ export default class PalettePanel extends THREE.Object3D {
     const scaleX = this.lineObj.scale.x;
     this.lineObj.scale.setX(10e-5);
     const animObj = { val: 10e-5 };
-    const tl = TweenLite.to(animObj, 1, {
+    const tl = TweenLite.to(animObj, 3, {
       val: scaleX,
       ease: Power1.easeInOut,
       onUpdate: () => {
         this.lineObj.scale.setX(tl.progress() * (scaleX - 10e-5) + 10e-5);
       },
-    });
+    }).play();
   }
   animateUpperElement() {
     const map = this.nameObj.material.map;
     const offset = map.offset.y;
     this.nameObj.visible = true;
-    const tl = TweenLite.fromTo(
-      this.nameObj,
+    TweenLite.fromTo(
+      this.nameObj.material,
       1,
       { opacity: 0 },
       {
         opacity: 1,
         ease: Power1.easeInOut,
-        onUpdate: () => {
-          map.offset.setY(tl.progress() * (offset - 1) + 1);
+        onUpdate: function () {
+          map.offset.setY(this.progress() * (offset - 1) + 1);
         },
       }
     ).play();
@@ -208,7 +208,9 @@ export default class PalettePanel extends THREE.Object3D {
       this.gradient.material,
       1,
       { opacity: 0 },
-      { opacity: this.gradient.maxOpacity }
+      {
+        opacity: this.gradient.maxOpacity,
+      }
     );
   }
 
@@ -296,7 +298,7 @@ export default class PalettePanel extends THREE.Object3D {
             this.materialObj.position.setX(x + offset);
             objClone.position.setX(cloneX + offset);
             this.materialObj.material.opacity = 1 - progress;
-            objClone.material.opacity = 1 - progress;
+            objClone.material.opacity = progress;
           },
           onComplete,
         }).play();

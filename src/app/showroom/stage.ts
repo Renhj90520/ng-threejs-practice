@@ -29,7 +29,7 @@ export default class Stage {
   scenePicker: Picker;
   hudPicker: Picker;
   currentSelected: any;
-  isSelecting: boolean;
+  // isSelecting: boolean;
   hoverScene: any;
   water: Water;
   noise: Noise;
@@ -428,7 +428,7 @@ export default class Stage {
     }
     this.ui.highlightObject(obj);
     objGroup.getWorldPosition(objGroup.worldPosition);
-    objGroup.previousPosition.copy(objGroup.worldPosition);
+    objGroup.previousPosition.copy(objGroup.position);
     objGroup.previousParent = objGroup.parent;
     this.hoverScene.add(objGroup);
     objGroup.position.copy(objGroup.worldPosition);
@@ -449,10 +449,10 @@ export default class Stage {
       );
     };
 
-    this.isSelecting = true;
-    setTimeout(() => {
-      this.isSelecting = false;
-    }, 1500);
+    // this.isSelecting = true;
+    // setTimeout(() => {
+    //   this.isSelecting = false;
+    // }, 1500);
 
     this.clearHighlight(obj);
     this.currentSelected = obj;

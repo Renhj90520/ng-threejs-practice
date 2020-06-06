@@ -211,10 +211,10 @@ export default class MaterialManager {
           obj.material = material;
           obj.parent.remove(obj.materialClone);
           obj.materialClone = null;
-          material.transparent = false;
-          material.depthWrite = true;
-          this.crossFade = null;
         });
+        material.transparent = false;
+        material.depthWrite = true;
+        this.crossFade = null;
       };
       this.crossFade = TweenLite.to(material, 0.3, {
         opacity: 1,

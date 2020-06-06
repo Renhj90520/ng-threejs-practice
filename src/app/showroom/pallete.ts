@@ -9,6 +9,15 @@ export default class Palette extends THREE.Object3D {
   maxScale: any;
   exposureBoost: any;
   resourceManager: ResourceManager;
+
+  private _hoveredObj: string;
+  public get hoveredObj(): string {
+    return this._hoveredObj;
+  }
+  public set hoveredObj(v: string) {
+    this._hoveredObj = v;
+  }
+
   constructor(opts, resourceManager) {
     super();
     this.resourceManager = resourceManager;
@@ -41,7 +50,7 @@ export default class Palette extends THREE.Object3D {
       });
       const firstChild: any = this.children[0];
       firstChild.current = true;
-      firstChild.stroke.visible = true;
+      // firstChild.stroke.visible = true;
     }
   }
   createSphere(x, y, material, scale) {
@@ -75,7 +84,6 @@ export default class Palette extends THREE.Object3D {
     sphere.tweenValue = { scale: this.maxScale };
     sphere.material.defines.USE_AOMAP2 = false;
     sphere.material.defines.USE_NORMALMAP2 = false;
-
     return sphere;
   }
 
@@ -98,24 +106,22 @@ export default class Palette extends THREE.Object3D {
     this.visible = false;
     this.children.forEach((child: any) => {
       child.pickable = false;
+      child.scale.set(1 / 100000, 1 / 100000, 1 / 100000);
     });
   }
 
   show(animate?) {
     animate = animate === undefined || animate;
-    this.children.forEach((child: any) => {
-      child.material.opacity = 1;
-      child.stroke.material.opacity = 1;
-    });
-
     if (animate) {
-      this.visible = true;
       const tl = new TimelineLite();
       this.children.forEach((child: any, i) => {
         child.scale.set(1 / 100000, 1 / 100000, 1 / 100000);
         child.pickable = true;
+        child.material.opacity = 1;
+        child.stroke.material.opacity = 1;
       });
-      let idx = 0;
+      this.visible = true;
+
       tl.staggerTo(
         this.children,
         1,
@@ -124,7 +130,12 @@ export default class Palette extends THREE.Object3D {
           onUpdate: (self) => {
             const progress = self.progress();
             const scale = (this.maxScale - 1 / 100000) * progress + 1 / 100000;
-            self.target.scale.set(scale);
+            if (
+              !this.hoveredObj ||
+              (this.hoveredObj && this.hoveredObj !== self.target)
+            ) {
+              self.target.scale.set(scale, scale, scale);
+            }
           },
           onUpdateParams: ['{self}'],
         },
@@ -133,6 +144,8 @@ export default class Palette extends THREE.Object3D {
     } else {
       this.visible = true;
       this.children.forEach((child: any) => {
+        child.material.opacity = 1;
+        child.stroke.material.opacity = 1;
         child.pickable = true;
         child.scale.setScalar(this.maxScale);
       });

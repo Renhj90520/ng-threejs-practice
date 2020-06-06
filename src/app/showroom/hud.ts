@@ -169,32 +169,36 @@ export default class Hud extends EventMixins {
   }
 
   enter(obj) {
+    this.hoveredObject = obj;
+    if (this.currentPalette) {
+      this.currentPalette.hoveredObj = obj;
+    }
     const scaleOrign = obj.tweenValue.scale;
     const tl = TweenLite.to({}, 0.25, {
       ease: Power1.easeOut,
-      onUpdate() {
+      onUpdate: () => {
         const progress = tl.progress();
         const scale =
           progress * (1.2 * this.maxScale - scaleOrign) + scaleOrign;
         obj.scale.set(scale, scale, scale);
       },
     }).play();
-
-    this.hoveredObject = obj;
   }
 
   leave(obj) {
+    if (this.currentPalette) {
+      this.currentPalette.hoveredObj = null;
+    }
+    this.hoveredObject = null;
     const scaleOrign = obj.tweenValue.scale;
     const tl = TweenLite.to({}, 0.25, {
       ease: Power1.easeOut,
-      onUpdate() {
+      onUpdate: () => {
         const progress = tl.progress();
         const scale = progress * (this.maxScale - scaleOrign) + scaleOrign;
         obj.scale.set(scale, scale, scale);
       },
     }).play();
-
-    this.hoveredObject = null;
   }
   select(materialObj) {
     if (!materialObj.current) {
@@ -205,15 +209,15 @@ export default class Hud extends EventMixins {
         );
       }
 
-      const tl = TweenLite.fromTo(
+      TweenLite.fromTo(
         materialObj.ripple.material,
         0.4,
         { opacity: 0.35 },
         {
           opacity: 0,
           ease: Power1.easeOut,
-          onUpdate: () => {
-            const progress = tl.progress();
+          onUpdate: function () {
+            const progress = this.progress();
             const scale = 1 + progress * 0.3;
             materialObj.ripple.scale.set(scale);
           },
@@ -241,7 +245,7 @@ export default class Hud extends EventMixins {
     });
 
     palette.current = true;
-    palette.stroke.visible = true;
+    // palette.stroke.visible = true;
     this.currentPanel.setMaterial(idx);
   }
 
