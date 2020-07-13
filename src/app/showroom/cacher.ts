@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { Observable } from 'rxjs';
 export default class Cacher {
   cache: any;
   loader: any;

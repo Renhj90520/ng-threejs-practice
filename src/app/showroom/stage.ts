@@ -36,7 +36,7 @@ export default class Stage {
   seaHighlights: any;
   flares: any[];
   dirLight: any;
-  cameraScene: any;
+  // cameraScene: any;
   raycaster = new THREE.Raycaster();
   intersectables = [];
   clock = new THREE.Clock();
@@ -56,9 +56,10 @@ export default class Stage {
     stageEl.nativeElement.appendChild(this.renderer.domElement);
   }
   init() {
-    this.startScene = this.scenes[0];
-    this.exteriorScene = this.scenes[1];
-    this.interiorScene = this.scenes[2];
+    // this.startScene = this.scenes[0];
+    this.exteriorScene = this.scenes[0];
+    this.interiorScene = this.scenes[1];
+    console.log(this.scenes);
     const axesHelper1 = new THREE.AxesHelper(100);
     this.exteriorScene.add(axesHelper1);
     const axesHelper2 = new THREE.AxesHelper(100);
@@ -77,11 +78,11 @@ export default class Stage {
     this.initFlares();
     this.initDirLight();
     this.initHoverScene();
-    this.initCameraScene();
+    // this.initCameraScene();
     this.handleNonVREvents();
     this.handleHudEvents();
     this.handleCameraEvents();
-    this.preRenderHUD();
+    // this.preRenderHUD();
     this.initIntersectables();
   }
 
@@ -179,10 +180,10 @@ export default class Stage {
       y: 1 - ((evt.pageY - containerOffset.y) / containerHeight) * 2,
     };
   }
-  initCameraScene() {
-    this.cameraScene = new THREE.Scene();
-    this.cameraScene.add(this.camera);
-  }
+  // initCameraScene() {
+  //   this.cameraScene = new THREE.Scene();
+  //   this.cameraScene.add(this.camera);
+  // }
   initHoverScene() {
     this.hoverScene = new THREE.Scene();
   }
@@ -540,7 +541,7 @@ export default class Stage {
       this.renderScene(this.hoverScene, this.camera);
     }
     this.hud.render(this.renderer);
-    this.renderScene(this.cameraScene, this.camera);
+    // this.renderScene(this.cameraScene, this.camera);
   }
 
   renderScene(scene, camera) {

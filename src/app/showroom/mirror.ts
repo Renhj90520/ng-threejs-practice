@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { DollyCamera } from './DollyCamera';
 export default class Mirror extends THREE.Object3D {
   matrixNeedsUpdate: boolean;
   clipBias: any;

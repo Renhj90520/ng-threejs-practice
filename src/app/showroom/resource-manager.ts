@@ -7,6 +7,8 @@ import Cacher from './cacher';
 import CompressedTextureLoader from './compressed-texture-loader';
 import CustomFileLoader from './custom-file-loader';
 import ArrayBufferLoader from './array-buffer-loader';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
+import { download } from 'src/utils/download';
 @Injectable()
 export class ResourceManager {
   geometries = ['interior2', 'exterior2', 'start'];
@@ -140,6 +142,14 @@ export class ResourceManager {
             }
           });
 
+          // const gltfExporter = new GLTFExporter();
+          // gltfExporter.parse(
+          //   scene,
+          //   (gltf) => {
+          //     download(JSON.stringify(gltf), scene.name + '.gltf');
+          //   },
+          //   {}
+          // );
           stage.scene = scene;
           stage.scenes.push(scene);
           stage.camera = camera;

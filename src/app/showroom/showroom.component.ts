@@ -17,14 +17,14 @@ export class ShowroomComponent implements OnInit {
     this.resourceManager = new ResourceManager();
     this.stage = new Stage(this.stageEl, this.resourceManager);
     this.resourceManager.load(() => {
-      this.resourceManager.loadScene('start', this.stage, () => {
-        this.resourceManager.loadScene('exterior2', this.stage, () => {
-          this.resourceManager.loadScene('interior2', this.stage, () => {
-            this.stage.init();
-            this.stage.start();
-          });
+      // this.resourceManager.loadScene('start', this.stage, () => {
+      this.resourceManager.loadScene('exterior2', this.stage, () => {
+        this.resourceManager.loadScene('interior2', this.stage, () => {
+          this.stage.init();
+          this.stage.start();
         });
       });
+      // });
     });
   }
 }

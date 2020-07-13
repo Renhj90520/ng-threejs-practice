@@ -12,7 +12,7 @@ export default class MaterialManager {
   crossFade: TweenLite;
 
   constructor(config) {
-    this.scene = config.scenes[2];
+    this.scene = config.scenes[1];
     this.scenes = config.scenes;
     this.configurables = config.configurables;
     this.initMaterials();
@@ -72,7 +72,7 @@ export default class MaterialManager {
       pool_interior.exposure = 1.25;
     }
 
-    _.each(this.scenes[1].materials, (material) => {
+    _.each(this.scenes[0].materials, (material) => {
       if (material.pbr) {
         material.exposure = 1.2;
       }

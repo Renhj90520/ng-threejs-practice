@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
 import CustomMaterialLoader from './CustomMaterialLoader';
+import { download } from 'src/utils/download';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 export default class SceneLoader {
   geometryBuffer;
   texturePath: any;
@@ -32,7 +34,23 @@ export default class SceneLoader {
   parse(sceneInfo, onLoad) {
     let geometries;
     if (sceneInfo.binary) {
+      console.log(JSON.stringify(sceneInfo.geometries.map((g) => g.uuid)));
       geometries = this.parseBinaryGeometries(sceneInfo.geometries);
+      // for (const geo in geometries) {
+      //   const mesh = new THREE.Mesh(
+      //     geometries[geo],
+      //     new THREE.MeshBasicMaterial()
+      //   );
+      //   const exporter = new GLTFExporter();
+      //   exporter.parse(
+      //     mesh,
+      //     (gltf) => {
+      //       download(JSON.stringify(gltf), geo + '.gltf');
+      //     },
+      //     { binary: false }
+      //   );
+      //   debugger;
+      // }
     } else {
       geometries = this.parseGeometries(sceneInfo.geometries);
     }
@@ -179,7 +197,7 @@ export default class SceneLoader {
         break;
       case 'Line':
         obj = new THREE.Line(
-          getGeometry(objInfo.goemetry),
+          getGeometry(objInfo.geometry),
           getMaterial(objInfo.material),
           objInfo.mode
         );
@@ -260,7 +278,7 @@ export default class SceneLoader {
     if (objInfo.layers !== undefined) {
       obj.layers.mask = objInfo.layers;
     }
-
+    
     return obj;
   }
   parseMaterials(materialInfos, textures) {
