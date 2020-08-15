@@ -34,7 +34,6 @@ export default class SceneLoader {
   parse(sceneInfo, onLoad) {
     let geometries;
     if (sceneInfo.binary) {
-      console.log(JSON.stringify(sceneInfo.geometries.map((g) => g.uuid)));
       geometries = this.parseBinaryGeometries(sceneInfo.geometries);
       // for (const geo in geometries) {
       //   const mesh = new THREE.Mesh(
@@ -278,7 +277,7 @@ export default class SceneLoader {
     if (objInfo.layers !== undefined) {
       obj.layers.mask = objInfo.layers;
     }
-    
+
     return obj;
   }
   parseMaterials(materialInfos, textures) {

@@ -21,7 +21,6 @@ export default class Stage {
   startScene: any;
   exteriorScene: any;
   interiorScene: any;
-  enterRoom: boolean;
   materialManager: MaterialManager;
   ui: UI;
   resourceManager: any;
@@ -46,8 +45,8 @@ export default class Stage {
     this.height = stageEl.nativeElement.clientHeight;
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setClearColor(0xffffff);
-    this.renderer.autoClear = false;
+    // this.renderer.setClearColor(0xffffff);
+    // this.renderer.autoClear = false;
     this.renderer.setPixelRatio(window.devicePixelRatio);
     // this.renderer.domElement.addEventListener('mousemove', (evt) => {
     //   this.mouseX = (evt.pageX / this.width) * 2 - 1;
@@ -64,7 +63,6 @@ export default class Stage {
     this.exteriorScene.add(axesHelper1);
     const axesHelper2 = new THREE.AxesHelper(100);
     this.interiorScene.add(axesHelper2);
-    this.enterRoom = false;
     this.renderer.autoClear = false;
     this.scene.updateMatrixWorld();
     this.initMaterialManager();
@@ -72,11 +70,11 @@ export default class Stage {
     this.initUI();
     this.initObjectPickers();
     this.initObjectsRenderOrder();
-    this.initMaterialsExposure();
+    // this.initMaterialsExposure();
     this.initPool();
     this.initSeaHighlights();
     this.initFlares();
-    this.initDirLight();
+    // this.initDirLight();
     this.initHoverScene();
     // this.initCameraScene();
     this.handleNonVREvents();
@@ -570,7 +568,7 @@ export default class Stage {
     this.hud.update(clock);
     this.water.update(clock);
     this.updateSeaHighlights(clock);
-    this.updateDirLight();
+    // this.updateDirLight();
   }
   updateDirLight() {
     const targetWorldPosition = new THREE.Vector3();
