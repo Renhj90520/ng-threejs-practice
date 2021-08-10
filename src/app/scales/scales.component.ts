@@ -3,7 +3,7 @@ import * as THREE from 'three';
 @Component({
   selector: 'app-scales',
   templateUrl: './scales.component.html',
-  styleUrls: ['./scales.component.css']
+  styleUrls: ['./scales.component.css'],
 })
 export class ScalesComponent implements OnInit {
   scene: THREE.Scene;
@@ -65,16 +65,16 @@ export class ScalesComponent implements OnInit {
   addPlane() {
     const uniforms = {
       u_resolution: {
-        type: 'v2',
-        value: new THREE.Vector2(this.width, this.height)
+        
+        value: new THREE.Vector2(this.width, this.height),
       },
-      u_time: { type: 'f', value: this.startTime }
+      u_time: { value: this.startTime },
     };
     const planeGeo = new THREE.PlaneGeometry(this.width, this.height);
     this.planeMat = new THREE.ShaderMaterial({
       uniforms,
       vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader
+      fragmentShader: this.fragmentShader,
     });
     const plane = new THREE.Mesh(planeGeo, this.planeMat);
 
@@ -87,7 +87,7 @@ export class ScalesComponent implements OnInit {
     this.scene = new THREE.Scene();
 
     const halfRadian = Math.atan(this.height / 2 / 100);
-    const halfDegree = THREE.Math.radToDeg(halfRadian);
+    const halfDegree = THREE.MathUtils.radToDeg(halfRadian);
     this.camera = new THREE.PerspectiveCamera(
       halfDegree * 2,
       this.width / this.height,

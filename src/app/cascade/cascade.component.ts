@@ -5,7 +5,7 @@ import { realdata } from './data';
 @Component({
   selector: 'app-cascade',
   templateUrl: './cascade.component.html',
-  styleUrls: ['./cascade.component.css']
+  styleUrls: ['./cascade.component.css'],
 })
 export class CascadeComponent implements OnInit {
   scene: THREE.Scene;
@@ -17,7 +17,7 @@ export class CascadeComponent implements OnInit {
   graphDimensions = {
     w: 1000,
     d: 2405,
-    h: 800
+    h: 800,
   };
 
   data = {
@@ -34,7 +34,7 @@ export class CascadeComponent implements OnInit {
         "'08",
         "'07",
         "'06",
-        "'05"
+        "'05",
       ],
       z: [
         '1-month',
@@ -47,9 +47,9 @@ export class CascadeComponent implements OnInit {
         '7-year',
         '10-year',
         '20-year',
-        '30-year'
-      ]
-    }
+        '30-year',
+      ],
+    },
   };
   depth: number;
   width: number;
@@ -79,7 +79,7 @@ export class CascadeComponent implements OnInit {
     '#326082',
     '#2f5877',
     '#2c506c',
-    '#243d52'
+    '#243d52',
   ];
   constructor(private el: ElementRef) {}
 
@@ -128,7 +128,7 @@ export class CascadeComponent implements OnInit {
       width: this.height,
       linesHeight: this.b,
       linesWidth: this.a,
-      color: 0xcccccc
+      color: 0xcccccc,
     });
     newGridXY.position.z = -this.depth;
     boundingGrid.add(newGridXY);
@@ -138,7 +138,7 @@ export class CascadeComponent implements OnInit {
       width: this.depth,
       linesHeight: this.b,
       linesWidth: this.c,
-      color: 0xcccccc
+      color: 0xcccccc,
     });
     newGridYZ.rotation.x = Math.PI / 2;
     newGridYZ.position.y = -this.height;
@@ -149,7 +149,7 @@ export class CascadeComponent implements OnInit {
       width: this.height,
       linesHeight: this.c,
       linesWidth: this.a,
-      color: 0xcccccc
+      color: 0xcccccc,
     });
     newGridXZ.position.x = -this.width;
     newGridXZ.rotation.y = Math.PI / 2;
@@ -179,7 +179,7 @@ export class CascadeComponent implements OnInit {
   addWareframe() {
     const wireframeMaterial = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
-      vertexColors: THREE.VertexColors
+      vertexColors: true,
     });
 
     const lineMat = new THREE.LineBasicMaterial({ color: 0xffffff });
@@ -267,7 +267,7 @@ export class CascadeComponent implements OnInit {
     texture.needsUpdate = true;
 
     const spriteMaterial = new THREE.SpriteMaterial({
-      map: texture
+      map: texture,
     });
 
     const sprite = new THREE.Sprite(spriteMaterial);
@@ -277,7 +277,7 @@ export class CascadeComponent implements OnInit {
   createAGrid(opts) {
     const material = new THREE.LineBasicMaterial({
       color: opts.color,
-      opacity: 0.2
+      opacity: 0.2,
     });
 
     const gridObject = new THREE.Object3D();

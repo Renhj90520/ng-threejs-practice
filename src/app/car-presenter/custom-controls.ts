@@ -55,9 +55,9 @@ export default class CustomControls extends THREE.EventDispatcher {
     this.hammer.get('pinch').set({ enable: false });
     this.maxDistance = options.maxDistance || 10;
     this.minDistance = options.minDistance || 4;
-    this.hammer.on('pinchstart', e => {
+    this.hammer.on('pinchstart', (e) => {
       const distanceOrigin = this.distance;
-      this.hammer.on('pinchmove', evt => {
+      this.hammer.on('pinchmove', (evt) => {
         this.distance = distanceOrigin / evt.scale;
         this.distance =
           this.distance > this.maxDistance ? this.maxDistance : this.distance;
@@ -74,7 +74,7 @@ export default class CustomControls extends THREE.EventDispatcher {
   }
 
   setupEvents() {
-    this.container.addEventListener('mousedown', evt => {
+    this.container.addEventListener('mousedown', (evt) => {
       this.container.addEventListener('mousemove', this.onMove);
       this.container.addEventListener('mouseup', this.onMoveEnd);
       this.container.addEventListener('mouseout', this.onMouseOut);
@@ -87,7 +87,7 @@ export default class CustomControls extends THREE.EventDispatcher {
       }
       this.targetOnDown.copy(this.target);
     });
-    this.container.addEventListener('touchstart', evt => {
+    this.container.addEventListener('touchstart', (evt) => {
       this.container.addEventListener('touchmove', this.onMove);
       this.container.addEventListener('touchend', this.onMoveEnd);
       this.container.addEventListener('mouseout', this.onMouseOut);
@@ -99,7 +99,7 @@ export default class CustomControls extends THREE.EventDispatcher {
       }
       this.targetOnDown.copy(this.target);
     });
-    this.container.addEventListener('mousewheel', evt => {
+    this.container.addEventListener('mousewheel', (evt) => {
       if (this.enabled && this.zoomEnabled) {
         evt.preventDefault();
         const delta = evt.originalEvent.deltaY
@@ -109,7 +109,7 @@ export default class CustomControls extends THREE.EventDispatcher {
       }
     });
   }
-  onMove = evt => {
+  onMove = (evt) => {
     const moveVector = new THREE.Vector2();
 
     if (!this.horizontalOnly) {
@@ -140,7 +140,7 @@ export default class CustomControls extends THREE.EventDispatcher {
       this.dispatchEvent({ type: 'move' });
     }
   };
-  onMoveEnd = evt => {
+  onMoveEnd = (evt) => {
     this.container.removeEventListener('mousemove', this.onMove, false);
     this.container.removeEventListener('touchmove', this.onMove, false);
     this.container.removeEventListener('mouseup', this.onMoveEnd, false);
@@ -157,7 +157,7 @@ export default class CustomControls extends THREE.EventDispatcher {
 
     this.dispatchEvent({ type: 'moveEnd' });
   };
-  onMouseOut = evt => {
+  onMouseOut = (evt) => {
     this.container.removeEventListener('mousemove', this.onMove, false);
     this.container.removeEventListener('mouseout', this.onMouseOut, false);
   };
@@ -206,10 +206,10 @@ export default class CustomControls extends THREE.EventDispatcher {
       if (!this.fixedDistance) {
         TweenLite.to(this, duration, {
           distance: target.distanceTo(origin),
-          ease: easing
+          ease: easing,
         }).play();
       }
-      return new Observable(subscriber => {
+      return new Observable((subscriber) => {
         let obj = { val: 0 };
         const v = new THREE.Vector2();
 
@@ -225,7 +225,7 @@ export default class CustomControls extends THREE.EventDispatcher {
           onComplete: () => {
             subscriber.next();
             subscriber.complete();
-          }
+          },
         }).play();
       });
     } else {
@@ -242,7 +242,7 @@ export default class CustomControls extends THREE.EventDispatcher {
       x: target.x,
       y: target.y,
       z: target.z,
-      ease: Power2.easeOut
+      ease: Power2.easeOut,
     }).play();
   }
 
@@ -265,7 +265,7 @@ export default class CustomControls extends THREE.EventDispatcher {
   tweenDistance(newDistance) {
     TweenLite.to(this, 1.2, {
       distance: newDistance,
-      ease: Power2.easeOut
+      ease: Power2.easeOut,
     }).play();
   }
 
@@ -278,7 +278,7 @@ export default class CustomControls extends THREE.EventDispatcher {
     } else if (this.target.x < 0) {
       this.target.x += Math.PI * 2;
     }
-    this.target.y = THREE.Math.clamp(this.target.y, 0, this.clampY);
+    this.target.y = THREE.MathUtils.clamp(this.target.y, 0, this.clampY);
     if (this.horizontalOnly) {
       this.target.y = 1.5;
     }

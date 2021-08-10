@@ -8,12 +8,12 @@ import {
   Power4,
   TweenMax,
   Circ,
-  RoughEase
+  RoughEase,
 } from 'gsap';
 @Component({
   selector: 'app-launchit-earth',
   templateUrl: './launchit-earth.component.html',
-  styleUrls: ['./launchit-earth.component.css']
+  styleUrls: ['./launchit-earth.component.css'],
 })
 export class LaunchitEarthComponent implements OnInit {
   @ViewChild('three', { static: true }) threeEl;
@@ -384,7 +384,7 @@ export class LaunchitEarthComponent implements OnInit {
         ease: Circ.easeInOut,
         onComplete: () => {
           this.starsZoomObject.visible = false;
-        }
+        },
       }
     );
   }
@@ -421,7 +421,7 @@ export class LaunchitEarthComponent implements OnInit {
       size: this.starsSize,
       sizeAttenuation: false,
       color: this.colorBase,
-      fog: true
+      fog: true,
     });
     starsMaterial.needsUpdate = true;
 
@@ -472,7 +472,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       size: 5,
       color: this.colorBase,
-      fog: true
+      fog: true,
     });
 
     const position = new Float32Array(this.starsZoomVerticesArray.length * 3);
@@ -507,8 +507,8 @@ export class LaunchitEarthComponent implements OnInit {
     const rainShaderUniforms = {
       color: { value: this.colorBase },
       texture: {
-        value: new THREE.TextureLoader().load('assets/images/dot-inverted.png')
-      }
+        value: new THREE.TextureLoader().load('assets/images/dot-inverted.png'),
+      },
     };
 
     const rainShaderMaterial = new THREE.ShaderMaterial({
@@ -517,7 +517,7 @@ export class LaunchitEarthComponent implements OnInit {
       fragmentShader: this.particle_fragmentshader,
       transparent: true,
       blending: THREE.AdditiveBlending,
-      depthTest: false
+      depthTest: false,
     });
 
     const positions = new Float32Array(this.rainParticleTotal * 3);
@@ -562,7 +562,7 @@ export class LaunchitEarthComponent implements OnInit {
         destination: new THREE.Vector3(vertex.x, destinationY, vertex.z),
         size: startSize,
         alpha: startAlpha,
-        velocity: startVelocity
+        velocity: startVelocity,
       });
     }
 
@@ -598,9 +598,9 @@ export class LaunchitEarthComponent implements OnInit {
     this.ringPulseBufferGeometry = new THREE.BufferGeometry();
     const ringPulseShaderUniforms = {
       color: { value: this.colorBase },
-      fogColor: { type: 'c', value: this.scene.fog.color },
-      fogNear: { type: 'f', value: this.scene.fog.near },
-      fogFar: { type: 'f', value: this.scene.fog.far }
+      fogColor: {  value: this.scene.fog.color },
+      fogNear: { value: this.scene.fog.near },
+      fogFar: { value: this.scene.fog.far },
     };
 
     const ringPulseShaderMaterial = new THREE.ShaderMaterial({
@@ -610,7 +610,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       depthTest: false,
       fog: true,
-      transparent: true
+      transparent: true,
     });
 
     const positions = new Float32Array(this.ringPulseVerticesArray.length * 3);
@@ -668,7 +668,7 @@ export class LaunchitEarthComponent implements OnInit {
       transparent: true,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
-      depthWrite: false
+      depthWrite: false,
     });
 
     this.ringExplosionMesh = new THREE.Mesh(
@@ -696,7 +696,7 @@ export class LaunchitEarthComponent implements OnInit {
       transparent: true,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const ringPointMesh: any = new THREE.Points(
@@ -766,7 +766,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     this.spikesBufferGeometry = new THREE.BufferGeometry();
@@ -796,7 +796,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     this.ringsInnerMaterial = new THREE.MeshBasicMaterial({
@@ -805,7 +805,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const ringLargeMesh1 = new THREE.Mesh(
@@ -880,7 +880,7 @@ export class LaunchitEarthComponent implements OnInit {
       transparent: true,
       blending: THREE.AdditiveBlending,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const positions = new Float32Array(this.arcAllsVerticesArray.length * 3);
@@ -960,9 +960,9 @@ export class LaunchitEarthComponent implements OnInit {
     this.arcRocketBufferGeometry = new THREE.BufferGeometry();
     const arcRocketShaderUniforms = {
       color: { value: this.colorHighlight },
-      fogColor: { type: 'c', value: this.scene.fog.color },
-      fogNear: { type: 'f', value: this.scene.fog.near },
-      fogFar: { type: 'f', value: this.scene.fog.far }
+      fogColor: {  value: this.scene.fog.color },
+      fogNear: { value: this.scene.fog.near },
+      fogFar: { value: this.scene.fog.far },
     };
 
     this.arcRocketMaterial = new THREE.ShaderMaterial({
@@ -972,7 +972,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       depthTest: false,
       fog: true,
-      transparent: true
+      transparent: true,
     });
 
     const positions = new Float32Array(this.arcRocketVerticesArray.length * 3);
@@ -1011,7 +1011,7 @@ export class LaunchitEarthComponent implements OnInit {
       repeat: -1,
       onUpdate() {
         that.renderArcsRocket();
-      }
+      },
     });
 
     this.arcRocketAnimation.staggerTo(
@@ -1087,9 +1087,9 @@ export class LaunchitEarthComponent implements OnInit {
     this.arcSnakeBufferGeometry = new THREE.BufferGeometry();
     const arcSnakeShaderUniforms = {
       color: { value: this.colorHighlight },
-      fogColor: { type: 'c', value: this.scene.fog.color },
-      fogNear: { type: 'f', value: this.scene.fog.near },
-      fogFar: { type: 'f', value: this.scene.fog.far }
+      fogColor: {  value: this.scene.fog.color },
+      fogNear: { value: this.scene.fog.near },
+      fogFar: { value: this.scene.fog.far },
     };
     const arcSnakeShaderMaterial = new THREE.ShaderMaterial({
       uniforms: arcSnakeShaderUniforms,
@@ -1098,7 +1098,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       depthTest: false,
       fog: true,
-      transparent: true
+      transparent: true,
     });
 
     const positions = new Float32Array(this.arcSnakeVerticesArray.length * 3);
@@ -1137,7 +1137,7 @@ export class LaunchitEarthComponent implements OnInit {
       repeat: -1,
       onUpdate() {
         that.renderArcsSnake();
-      }
+      },
     });
 
     for (let i = 0; i < this.dotSpritesHoverArray.length; i++) {
@@ -1163,12 +1163,12 @@ export class LaunchitEarthComponent implements OnInit {
         1.5,
         {},
         {
-          onStart: function() {
+          onStart: function () {
             this.target.visible = true;
           },
-          onComplete: function() {
+          onComplete: function () {
             this.target.visible = false;
-          }
+          },
         },
         this.lineBufferDivisions * 0.025 * i
       );
@@ -1226,7 +1226,7 @@ export class LaunchitEarthComponent implements OnInit {
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: false
+      alpha: false,
     });
 
     this.renderer.setSize(this.width, this.height);
@@ -1304,7 +1304,7 @@ export class LaunchitEarthComponent implements OnInit {
       fog: false,
       side: THREE.DoubleSide,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
 
     const universeBgMesh = new THREE.Mesh(universeBgGeo, this.universeBgMat);
@@ -1334,7 +1334,7 @@ export class LaunchitEarthComponent implements OnInit {
       side: THREE.BackSide,
       fog: true,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
     globeInnerMaterial.needsUpdate = true;
     const globeInnerMesh = new THREE.Mesh(
@@ -1352,7 +1352,7 @@ export class LaunchitEarthComponent implements OnInit {
       side: THREE.FrontSide,
       fog: true,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
     globeOuterMaterial.needsUpdate = true;
     const globeOuterMesh = new THREE.Mesh(
@@ -1370,7 +1370,7 @@ export class LaunchitEarthComponent implements OnInit {
       opacity: 0,
       fog: false,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
     const globeShieldMesh = new THREE.Mesh(
       globeBufferGeometry,
@@ -1434,8 +1434,8 @@ export class LaunchitEarthComponent implements OnInit {
       const globeCloudMaterial = new THREE.PointsMaterial({
         size: 0.75,
         fog: true,
-        vertexColors: THREE.VertexColors,
-        depthWrite: false
+        vertexColors: true,
+        depthWrite: false,
       });
 
       const colors = new Float32Array(this.globeCloudVerticesArray.length * 3);
@@ -1497,7 +1497,7 @@ export class LaunchitEarthComponent implements OnInit {
       opacity: 0,
       fog: false,
       blending: THREE.AdditiveBlending,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const globeGlowMesh = new THREE.Mesh(
@@ -1525,7 +1525,7 @@ export class LaunchitEarthComponent implements OnInit {
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     for (let i = 0; i < dataMap.length; i++) {
@@ -1560,7 +1560,7 @@ export class LaunchitEarthComponent implements OnInit {
           dotSprite.position.y,
           dotSprite.position.z
         ),
-        type: bookType
+        type: bookType,
       });
 
       this.dotSpritesArray.push(dotSprite);
@@ -1573,7 +1573,7 @@ export class LaunchitEarthComponent implements OnInit {
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
         opacity: 0,
-        depthWrite: false
+        depthWrite: false,
       });
 
       const dotHoverSprite = new THREE.Mesh(dotGeometry, dotHoverMaterial);
@@ -1626,7 +1626,7 @@ export class LaunchitEarthComponent implements OnInit {
       transparent: true,
       blending: THREE.AdditiveBlending,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const dotSpikesBufferGeometry = new THREE.BufferGeometry();
@@ -1665,7 +1665,7 @@ export class LaunchitEarthComponent implements OnInit {
       transparent: true,
       blending: THREE.AdditiveBlending,
       fog: true,
-      depthWrite: false
+      depthWrite: false,
     });
 
     const dotSpikesExtraBufferGeometry = new THREE.BufferGeometry();
@@ -1830,10 +1830,9 @@ export class LaunchitEarthComponent implements OnInit {
       const G = Math.round(f[1]);
       const B = Math.round(f[2]);
 
-      return `rgb(${Math.round((parseInt(t[0].slice(4)) - R) * n) +
-        R},${Math.round((parseInt(t[1]) - G) * n) + G},${Math.round(
-        (parseInt(t[2]) - B) * n
-      ) + B})`;
+      return `rgb(${Math.round((parseInt(t[0].slice(4)) - R) * n) + R},${
+        Math.round((parseInt(t[1]) - G) * n) + G
+      },${Math.round((parseInt(t[2]) - B) * n) + B})`;
     } else {
       const f = parseInt(c0.slice(1), 16);
       const t = parseInt(
@@ -1932,12 +1931,12 @@ export class LaunchitEarthComponent implements OnInit {
       0.25,
       {
         x: this.generateRandomNumber(-10, 10),
-        y: this.generateRandomNumber(-10, 10)
+        y: this.generateRandomNumber(-10, 10),
       },
       {
         x: 0,
         y: 0,
-        ease: roughEase.config({ strenth: 2, points: 20 })
+        ease: roughEase.config({ strenth: 2, points: 20 }),
       }
     );
 
@@ -1947,7 +1946,7 @@ export class LaunchitEarthComponent implements OnInit {
       1,
       {
         x: 1,
-        y: 1
+        y: 1,
       },
       { x: 3, y: 3, ease: Power4.easeOut }
     );
@@ -1956,14 +1955,14 @@ export class LaunchitEarthComponent implements OnInit {
       this.ringExplosionMesh.material,
       0.25,
       {
-        opacity: 0
+        opacity: 0,
       },
       {
         opacity: 1,
         ease: Linear.easeNone,
         onStart: () => {
           this.ringExplosionMesh.visible = true;
-        }
+        },
       },
       0
     );
@@ -1972,7 +1971,7 @@ export class LaunchitEarthComponent implements OnInit {
       this.ringExplosionMesh.material,
       0.75,
       {
-        opacity: 1
+        opacity: 1,
       },
       {
         opacity: 0,
@@ -1980,7 +1979,7 @@ export class LaunchitEarthComponent implements OnInit {
         ease: Linear.easeNone,
         onComplete: () => {
           this.ringExplosionMesh.visible = false;
-        }
+        },
       },
       0.25
     );

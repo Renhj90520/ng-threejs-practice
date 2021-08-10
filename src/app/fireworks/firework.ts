@@ -67,7 +67,7 @@ export class BasicFireWorks extends THREE.Group {
     super();
     this.seed = this.getSeed();
     this.add(this.seed.mesh);
-    this.flowerSizeRate = THREE.Math.mapLinear(
+    this.flowerSizeRate = THREE.MathUtils.mapLinear(
       this.petalsNum,
       this.min,
       this.max,
@@ -107,8 +107,8 @@ export class BasicFireWorks extends THREE.Group {
     if (dice > 0.5) {
       for (let i = 0; i < this.petalsNum; i++) {
         radius = randomNum(60, 120) * 0.01;
-        const theta = THREE.Math.degToRad(Math.random() * 180);
-        const phi = THREE.Math.degToRad(Math.random() * 360);
+        const theta = THREE.MathUtils.degToRad(Math.random() * 180);
+        const phi = THREE.MathUtils.degToRad(Math.random() * 360);
         const vx = Math.sin(theta) * Math.cos(phi) * radius;
         const vy = Math.sin(theta) * Math.sin(phi) * radius;
         const vz = Math.cos(theta) * radius;
@@ -125,12 +125,12 @@ export class BasicFireWorks extends THREE.Group {
 
       radius = randomNum(60, 120) * 0.01;
       for (let i = 0; i < this.petalsNum; i++) {
-        const sphereRate = Math.sin(THREE.Math.degToRad(zStep * i));
-        const vz = Math.cos(THREE.Math.degToRad(zStep * i)) * radius;
+        const sphereRate = Math.sin(THREE.MathUtils.degToRad(zStep * i));
+        const vz = Math.cos(THREE.MathUtils.degToRad(zStep * i)) * radius;
         const vx =
-          Math.cos(THREE.Math.degToRad(xStep * i)) * sphereRate * radius;
+          Math.cos(THREE.MathUtils.degToRad(xStep * i)) * sphereRate * radius;
         const vy =
-          Math.sin(THREE.Math.degToRad(yStep * i)) * sphereRate * radius;
+          Math.sin(THREE.MathUtils.degToRad(yStep * i)) * sphereRate * radius;
         const vel = new THREE.Vector3(vx, vy, vz);
         vel.multiplyScalar(this.flowerSizeRate);
         vels.push(vel);
@@ -195,7 +195,7 @@ export class RichFireWorks extends BasicFireWorks {
     this.max = 150;
     this.min = 100;
     this.petalsNum = randomNum(this.min, this.max);
-    this.flowerSizeRate = THREE.Math.mapLinear(
+    this.flowerSizeRate = THREE.MathUtils.mapLinear(
       this.petalsNum,
       this.min,
       this.max,
@@ -349,7 +349,7 @@ class ParticleMesh {
 
     const { position, velocity, color, mass } = this.mesh.geometry.attributes;
     const decrementRandom = () => (Math.random() > 0.5 ? 0.98 : 0.96);
-    const decrementByVel = v => (Math.random() > 0.5 ? 0 : (1 - v) * 0.1);
+    const decrementByVel = (v) => (Math.random() > 0.5 ? 0 : (1 - v) * 0.1);
 
     for (let i = 0; i < this.particleNum; i++) {
       const { x, y, z } = getOffsetXYZ(i);
@@ -447,17 +447,17 @@ class ParticleMesh {
 
     const shaderMaterial = new THREE.RawShaderMaterial({
       uniforms: {
-        size: { type: 'f', value: textureSize },
+        size: { value: textureSize },
         texture: {
-          type: 't',
-          value: canvasTexture
-        }
+          
+          value: canvasTexture,
+        },
       },
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader
+      fragmentShader: this.fragmentShader,
     });
 
     return new THREE.Points(bufferGeo, shaderMaterial);
@@ -470,7 +470,7 @@ class ParticleSeedMesh extends ParticleMesh {
   update() {
     const { position, velocity, color, mass } = this.mesh.geometry.attributes;
     const decrementRandom = () => (Math.random() > 0.3 ? 0.99 : 0.96);
-    const decrementByVel = v => (Math.random() > 0.3 ? 0 : (1 - v) * 0.1);
+    const decrementByVel = (v) => (Math.random() > 0.3 ? 0 : (1 - v) * 0.1);
     const shake = () => (Math.random() > 0.5 ? 0.05 : -0.05);
     const dice = () => Math.random() > 0.1;
     const _f = friction * 0.98;

@@ -5,7 +5,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 @Component({
   selector: 'app-webgl-galaxy',
   templateUrl: './webgl-galaxy.component.html',
-  styleUrls: ['./webgl-galaxy.component.css']
+  styleUrls: ['./webgl-galaxy.component.css'],
 })
 export class WebglGalaxyComponent implements OnInit {
   scene;
@@ -106,14 +106,14 @@ export class WebglGalaxyComponent implements OnInit {
       vertexShader: this.vertexShader,
       fragmentShader: this.fragmentShader,
       uniforms: {
-        size: { type: 'f', value: 3.3 },
-        t: { type: 'f', value: 0 },
-        z: { type: 'f', value: 0 },
-        pixelRatio: { type: 'f', value: parseFloat(this.height) }
+        size: { value: 3.3 },
+        t: { value: 0 },
+        z: { value: 0 },
+        pixelRatio: { value: parseFloat(this.height) },
       },
       transparent: true,
       depthTest: false,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
     });
 
     const stars = new THREE.BufferGeometry();

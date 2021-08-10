@@ -16,7 +16,7 @@ export default class HotSpot extends THREE.Sprite {
       depthTest: false,
       transparent: true,
       opacity: 0.9,
-      map: loader.load('/assets/carpresenter/textures/car/hotspot.png')
+      map: loader.load('/assets/carpresenter/textures/car/hotspot.png'),
     });
     this.name = parameters.name;
     this.group = parameters.group;
@@ -29,7 +29,7 @@ export default class HotSpot extends THREE.Sprite {
   update(camera) {
     const pos = new THREE.Vector3();
     pos.subVectors(camera.position, this.position).normalize();
-    const process = THREE.Math.clamp(this.orientation.dot(pos), 0, 1);
+    const process = THREE.MathUtils.clamp(this.orientation.dot(pos), 0, 1);
     const scale = this.maxSize * this.quarticOut(process);
     this.scale.set(scale, scale, scale);
   }
@@ -42,7 +42,7 @@ export default class HotSpot extends THREE.Sprite {
         opacity: 0.9,
         onComplete: () => {
           this.pickable = true;
-        }
+        },
       }
     ).play();
   }
@@ -52,7 +52,7 @@ export default class HotSpot extends THREE.Sprite {
       opacity: 0,
       onComplete: () => {
         this.pickable = false;
-      }
+      },
     }).play();
   }
 

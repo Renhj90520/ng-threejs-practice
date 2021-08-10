@@ -123,8 +123,8 @@ export default class Mirror extends THREE.Object3D {
     this.material.uniforms.textureMatrix.value = this.textureMatrix;
     if (
       !(
-        THREE.Math.isPowerOfTwo(textureWidth) &&
-        THREE.Math.isPowerOfTwo(textureHeight)
+        THREE.MathUtils.isPowerOfTwo(textureWidth) &&
+        THREE.MathUtils.isPowerOfTwo(textureHeight)
       )
     ) {
       this.renderTarget.texture.generateMipmaps = false;

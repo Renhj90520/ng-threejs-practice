@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
+import { LegacyJSONLoader } from '../LegencyJSONLoader';
 export default class AutoCamera extends THREE.Object3D {
   cinematicCamera: THREE.PerspectiveCamera;
   bone;

@@ -86,7 +86,7 @@ export default class LookControls {
       } else {
         this.rotateEnd.set(evt.clientX, evt.clientY);
       }
-      
+
       this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart);
       this.rotateStart.copy(this.rotateEnd);
       this.phi +=
@@ -96,7 +96,7 @@ export default class LookControls {
         ((2 * Math.PI * this.rotateDelta.x) / this.domElement.clientWidth) *
         0.5;
 
-      this.phi = THREE.Math.clamp(this.phi, -Math.PI / 2, Math.PI / 2);
+      this.phi = THREE.MathUtils.clamp(this.phi, -Math.PI / 2, Math.PI / 2);
     }
   }
   isPointerLocked(): boolean {

@@ -22,11 +22,10 @@ export default class StrokeMaterial extends CustomShaderMaterial {
   `;
   uniforms = {
     diffuse: {
-      type: 'c',
       value: new THREE.Color(0xffffff),
     },
-    opacity: { type: 'f', value: 1 },
-    objectScale: { type: 'f', value: 1 },
+    opacity: { value: 1 },
+    objectScale: { value: 1 },
   };
   constructor(opts?) {
     super(opts);
@@ -45,7 +44,7 @@ export default class StrokeMaterial extends CustomShaderMaterial {
     cloneTarget = cloneTarget || new StrokeMaterial();
     cloneTarget.name = this.name;
     cloneTarget.transparent = this.transparent;
-    _.each(this.uniforms, (uniform, key) => {
+    _.each(this.uniforms, (uniform: any, key) => {
       const type = uniform.type;
       if (type === 'v2' || type === 'v4') {
         cloneTarget.uniforms[key].value.copy(uniform.value);

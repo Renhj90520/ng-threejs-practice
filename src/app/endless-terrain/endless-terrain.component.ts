@@ -21,7 +21,7 @@ export class EndlessTerrainComponent implements OnInit {
   material = new THREE.MeshPhongMaterial({
     color: 'white',
     shininess: 50,
-    vertexColors: THREE.VertexColors
+    vertexColors: true
   });
   meshes = [];
   t = 0;

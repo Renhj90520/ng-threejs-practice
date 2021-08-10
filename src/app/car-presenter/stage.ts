@@ -62,7 +62,7 @@ export default class Stage extends THREE.Object3D {
     spotLight.position.set(0, 8, 0);
     this.lights.push(spotLight);
     this.add(spotLight);
-    this.lights.forEach(light => {
+    this.lights.forEach((light) => {
       light.updateMatrixWorld(true);
     });
   }
@@ -79,7 +79,7 @@ export default class Stage extends THREE.Object3D {
     const material = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
-      opacity: 0
+      opacity: 0,
     });
     this.rearGlow = new THREE.Mesh(geometry, material);
     this.rearGlow.position.set(0, 0.5, -2);
@@ -112,7 +112,7 @@ export default class Stage extends THREE.Object3D {
       camera: this.camera,
       origin: new THREE.Vector3(0, 0.5, 0),
       clampY: Math.PI / 2,
-      domElement: this.renderer.domElement
+      domElement: this.renderer.domElement,
     });
     this.exteriorControls.setRotation(new THREE.Vector2(0, Math.PI / 4));
     this.exteriorControls.setTargetRotation(
@@ -142,7 +142,7 @@ export default class Stage extends THREE.Object3D {
             this.skyColor1.lerp(skyColor1, progress);
             this.skyColor2.lerp(skyColor2, progress);
           },
-          ease: Power2.easeInOut
+          ease: Power2.easeInOut,
         }).play();
         this.lensFlare.show();
         // this.glow.visible = false;
@@ -154,7 +154,7 @@ export default class Stage extends THREE.Object3D {
             this.skyColor1.lerp(skyColorNight, progress);
             this.skyColor2.lerp(skyColorNight, progress);
           },
-          ease: Power2.easeInOut
+          ease: Power2.easeInOut,
         }).play();
         this.lensFlare.hide();
         // this.glow.visible = true;
@@ -168,16 +168,13 @@ export default class Stage extends THREE.Object3D {
     const matrixWorld = new THREE.Vector3();
     const matrixWOrldNegateDirection = new THREE.Vector3();
     matrixWorld.setFromMatrixPosition(camera.matrixWorld);
-    matrixWOrldNegateDirection
-      .copy(matrixWorld)
-      .normalize()
-      .negate();
+    matrixWOrldNegateDirection.copy(matrixWorld).normalize().negate();
 
     const xAxisDepth = 1 - Math.abs(matrixWOrldNegateDirection.x);
     this.skyColor.copy(this.skyColor1).lerp(this.skyColor2, xAxisDepth);
   }
   refreshCustomMaterials() {
-    this.loaderService.customMaterials.forEach(material => {
+    this.loaderService.customMaterials.forEach((material) => {
       material.refreshLightUniforms(this.lights);
     });
   }
@@ -186,7 +183,7 @@ export default class Stage extends THREE.Object3D {
     this.updateCamera(clock);
     this.updateGlow();
     this.updateControls(clock);
-    this.objects.forEach(obj => {
+    this.objects.forEach((obj) => {
       obj.update(clock, this.camera);
     });
     if (this.vignetting) {
@@ -211,14 +208,18 @@ export default class Stage extends THREE.Object3D {
     const rotationY = this.exteriorControls.rotation.y;
     const n = 0.48;
     if (rotationX < n) {
-      this.lensFlare.scaleFactor = THREE.Math.smootherstep(rotationX, 0.12, n);
+      this.lensFlare.scaleFactor = THREE.MathUtils.smootherstep(
+        rotationX,
+        0.12,
+        n
+      );
     } else {
       this.lensFlare.scaleFactor =
-        1 - THREE.Math.smootherstep(rotationX, n, 0.6);
+        1 - THREE.MathUtils.smootherstep(rotationX, n, 0.6);
     }
 
     this.lensFlare.scaleFactor *=
-      1 - THREE.Math.smoothstep(rotationY, 1.53, 1.57);
+      1 - THREE.MathUtils.smoothstep(rotationY, 1.53, 1.57);
     // if (!this.autoCamera.enabled && this.exteriorView) {
     //   this.lensFlare.scaleFactor = 0;
     // }
@@ -231,7 +232,7 @@ export default class Stage extends THREE.Object3D {
   fadeInRearGlow() {
     TweenLite.to(this.rearGlow.material, 1000, {
       opacity: 0.8,
-      ease: Power2.easeInOut
+      ease: Power2.easeInOut,
     }).play();
   }
   fadeOutRearGlow() {
@@ -240,7 +241,7 @@ export default class Stage extends THREE.Object3D {
       ease: Linear.easeNone,
       onComplete: () => {
         this.remove(this.rearGlow);
-      }
+      },
     }).play();
   }
 }

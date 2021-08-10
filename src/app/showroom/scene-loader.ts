@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
+import { LegacyJSONLoader } from '../LegencyJSONLoader';
 import CustomMaterialLoader from './CustomMaterialLoader';
 import { download } from 'src/utils/download';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';

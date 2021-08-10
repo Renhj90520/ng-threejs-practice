@@ -85,21 +85,21 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
   `;
 
   uniforms = {
-    diffuse: { type: 'c', value: new THREE.Color(0xeeeeee) },
-    opacity: { type: 'f', value: 1 },
-    map: { type: 't', value: null },
+    diffuse: {  value: new THREE.Color(0xeeeeee) },
+    opacity: { value: 1 },
+    map: {  value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
-    lightMap: { type: 't', value: null },
-    lightMapOpacity: { type: 'f', value: 0 },
-    envMap: { type: 't', value: null },
-    combine: { type: 't', value: 0 },
-    fogNear: { type: 'f', value: 1 },
-    fogFar: { type: 'f', value: 2000 },
-    fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    colorStep1: { type: 'c', value: new THREE.Color(0xff0000) },
-    colorStep2: { type: 'c', value: new THREE.Color(0xff00ff) },
-    colorStep3: { type: 'c', value: new THREE.Color(0x0000ff) },
-    lightIntensity: { type: 'f', value: 1 }
+    lightMap: {  value: null },
+    lightMapOpacity: { value: 0 },
+    envMap: {  value: null },
+    combine: {  value: 0 },
+    fogNear: { value: 1 },
+    fogFar: { value: 2000 },
+    fogColor: {  value: new THREE.Color(0xffffff) },
+    colorStep1: {  value: new THREE.Color(0xff0000) },
+    colorStep2: {  value: new THREE.Color(0xff00ff) },
+    colorStep3: {  value: new THREE.Color(0x0000ff) },
+    lightIntensity: { value: 1 },
   };
   lightIntensity: any;
   lightMap: any;
@@ -117,30 +117,30 @@ export default class GroundMaterial extends BasicCustomShaderMaterial {
         uniforms: this.uniforms,
         defines: {
           USE_AOMAP: false,
-          LIGHTMAP_ENABLED: parameters.lightMap !== undefined
-        }
+          LIGHTMAP_ENABLED: parameters.lightMap !== undefined,
+        },
       },
       parameters
     );
     // super(parameters);
     this.setParameters(parameters);
 
-    this.onPropertyChange('colorStep1', val => {
+    this.onPropertyChange('colorStep1', (val) => {
       this.uniforms.colorStep1.value = val;
     });
-    this.onPropertyChange('colorStep2', val => {
+    this.onPropertyChange('colorStep2', (val) => {
       this.uniforms.colorStep2.value = val;
     });
-    this.onPropertyChange('colorStep3', val => {
+    this.onPropertyChange('colorStep3', (val) => {
       this.uniforms.colorStep3.value = val;
     });
-    this.onPropertyChange('lightIntensity', val => {
+    this.onPropertyChange('lightIntensity', (val) => {
       this.uniforms.lightIntensity.value = val;
     });
-    this.onPropertyChange('lightMap', val => {
+    this.onPropertyChange('lightMap', (val) => {
       if (val) this.uniforms.lightMap.value = val;
     });
-    this.onPropertyChange('lightMapOpacity', val => {
+    this.onPropertyChange('lightMapOpacity', (val) => {
       this.uniforms.lightMapOpacity.value = val;
     });
     this.lightIntensity = parameters.lightIntensity || 1;

@@ -117,17 +117,17 @@ export default class BaseAnimationMaterial extends THREE.ShaderMaterial {
         data.uniforms[name] = { value };
       } else if (value.isTexture) {
         data.uniforms[name] = {
-          type: 't',
+          
           value: value.toJSON(meta).uuid
         };
       } else if (value.usColor) {
         data.uniforms[name] = {
-          type: 'c',
+          
           value: value.getHex()
         };
       } else if (value.isVector2) {
         data.uniforms[name] = {
-          type: 'v2',
+          
           value: value.toArray()
         };
       } else if (value.isVector4) {

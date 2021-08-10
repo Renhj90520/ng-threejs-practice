@@ -44,13 +44,13 @@ export default class SeaHighlightsMaterial extends CustomShaderMateial {
     }
   `;
   uniforms = {
-    diffuse: { type: 'c', value: new THREE.Color(0xffffff) },
-    map: { type: 't', value: null },
+    diffuse: {  value: new THREE.Color(0xffffff) },
+    map: {  value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
-    opacity: { type: 'f', value: 1 },
-    threshold: { type: 'f', value: 0 },
-    range: { type: 'f', value: 0.1 },
-    noiseMap: { type: 't', value: null },
+    opacity: { value: 1 },
+    threshold: { value: 0 },
+    range: { value: 0.1 },
+    noiseMap: {  value: null },
   };
   threshold: number;
   sign: number;

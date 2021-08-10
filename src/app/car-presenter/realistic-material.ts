@@ -18,7 +18,7 @@ import {
   dHdxy_fwd,
   perturbNormalArb,
   perturbNormal2Arb,
-  lights
+  lights,
 } from './glsl-fragments';
 export default class RealisticMaterial extends BasicCustomShaderMaterial {
   vertexShader = `
@@ -777,17 +777,17 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     }
   `;
   uniforms = {
-    diffuse: { type: 'c', value: new THREE.Color(0xeeeeee) },
-    opacity: { type: 'f', value: 1 },
-    map: { type: 't', value: null },
-    lightMap: { type: 't', value: null },
+    diffuse: {  value: new THREE.Color(0xeeeeee) },
+    opacity: { value: 1 },
+    map: {  value: null },
+    lightMap: {  value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
-    specularMap: { type: 't', value: null },
-    fogNear: { type: 'f', value: 1 },
-    fogFar: { type: 'f', value: 2000 },
-    fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    emissive: { type: 'c', value: new THREE.Color(0x000000) },
-    wrapRGB: { type: 'v3', value: new THREE.Vector3(1, 1, 1) },
+    specularMap: {  value: null },
+    fogNear: { value: 1 },
+    fogFar: { value: 2000 },
+    fogColor: {  value: new THREE.Color(0xffffff) },
+    emissive: {  value: new THREE.Color(0x000000) },
+    wrapRGB: {  value: new THREE.Vector3(1, 1, 1) },
     pointLightColor: { type: 'fv', value: [0, 0, 0] },
     pointLightPosition: { type: 'fv', value: [0, 0, 0] },
     pointLightDistance: { type: 'fv1', value: [] },
@@ -803,19 +803,19 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
     spotLightDecay: { type: 'fv1', value: [] },
-    envMap: { type: 't', value: null },
-    flipEnvMap: { type: 'f', value: -1 },
-    reflectivity: { type: 'f', value: 0.15 },
-    refractionRatio: { type: 'f', value: 0.98 },
-    normalMap: { type: 't', value: null },
-    normalScale: { type: 'v2', value: new THREE.Vector2(1, 1) },
-    specular: { type: 'c', value: new THREE.Color(0x111111) },
-    shininess: { type: 'f', value: 30 },
-    emissiveMap: { type: 't', value: null },
-    emissiveColor: { type: 'c', value: null },
-    emissiveIntensity: { type: 'f', value: 1 },
-    reflectionMask: { type: 't', value: null },
-    combine: { type: 'f', value: 0 }
+    envMap: {  value: null },
+    flipEnvMap: { value: -1 },
+    reflectivity: { value: 0.15 },
+    refractionRatio: { value: 0.98 },
+    normalMap: {  value: null },
+    normalScale: {  value: new THREE.Vector2(1, 1) },
+    specular: {  value: new THREE.Color(0x111111) },
+    shininess: { value: 30 },
+    emissiveMap: {  value: null },
+    emissiveColor: {  value: null },
+    emissiveIntensity: { value: 1 },
+    reflectionMask: {  value: null },
+    combine: { value: 0 },
   };
   useVertexTexture: any;
   emissive: any;
@@ -843,16 +843,16 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
           SKINNED: false,
           // USE_EMISSIVEMAP: parameters.emissiveMap !== undefined,
           USE_REFLECTIONMASK: parameters.reflectionMask !== undefined,
-          USE_EMISSIVECOLOR: parameters.emissiveColor !== undefined
-        }
+          USE_EMISSIVECOLOR: parameters.emissiveColor !== undefined,
+        },
       },
       parameters
     );
     this.setParameters(parameters);
-    this.onPropertyChange('color', val => {
+    this.onPropertyChange('color', (val) => {
       this.uniforms.diffuse.value = val;
     });
-    this.onPropertyChange('map', val => {
+    this.onPropertyChange('map', (val) => {
       this.uniforms.map.value = val;
       if (val) {
         this.uniforms.offsetRepeat.value.set(
@@ -863,50 +863,50 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
         );
       }
     });
-    this.onPropertyChange('opacity', val => {
+    this.onPropertyChange('opacity', (val) => {
       this.uniforms.opacity.value = val;
     });
-    this.onPropertyChange('emissive', val => {
+    this.onPropertyChange('emissive', (val) => {
       this.uniforms.emissive.value = val;
     });
-    this.onPropertyChange('lightMap', val => {
+    this.onPropertyChange('lightMap', (val) => {
       this.uniforms.lightMap.value = val;
       this.defines.LIGHTMAP_ENABLED = !!val;
     });
-    this.onPropertyChange('skinning', val => {
+    this.onPropertyChange('skinning', (val) => {
       this.useVertexTexture = !!val;
       this.defines.SKINNED = !!val;
     });
-    this.onPropertyChange('envMap', val => {
+    this.onPropertyChange('envMap', (val) => {
       this.uniforms.envMap.value = val;
     });
-    this.onPropertyChange('reflectivity', val => {
+    this.onPropertyChange('reflectivity', (val) => {
       this.uniforms.reflectivity.value = val;
     });
-    this.onPropertyChange('shininess', val => {
+    this.onPropertyChange('shininess', (val) => {
       this.uniforms.shininess.value = val;
     });
-    this.onPropertyChange('specular', val => {
+    this.onPropertyChange('specular', (val) => {
       this.uniforms.specular.value = val;
     });
-    this.onPropertyChange('emissiveMap', val => {
+    this.onPropertyChange('emissiveMap', (val) => {
       this.uniforms.emissiveMap.value = val;
     });
-    this.onPropertyChange('emissiveColor', val => {
+    this.onPropertyChange('emissiveColor', (val) => {
       this.uniforms.emissiveColor.value = val;
     });
-    this.onPropertyChange('emissiveIntensity', val => {
+    this.onPropertyChange('emissiveIntensity', (val) => {
       this.uniforms.emissiveIntensity.value = val;
     });
-    this.onPropertyChange('normalMap', val => {
+    this.onPropertyChange('normalMap', (val) => {
       this.uniforms.normalMap.value = val;
     });
-    this.onPropertyChange('specularMap', val => {
+    this.onPropertyChange('specularMap', (val) => {
       if (val) {
         this.uniforms.specularMap.value = val;
       }
     });
-    this.onPropertyChange('reflectionMask', val => {
+    this.onPropertyChange('reflectionMask', (val) => {
       if (val) {
         this.uniforms.reflectionMask.value = val;
       }
@@ -934,13 +934,13 @@ export default class RealisticMaterial extends BasicCustomShaderMaterial {
     const targetMatrixWorld = new THREE.Vector3();
     const lightMatrixWorld = new THREE.Vector3();
     const directionalLightColor = this.uniforms.directionalLightColor.value;
-    const directionalLightDirection = this.uniforms.directionalLightDirection
-      .value;
+    const directionalLightDirection =
+      this.uniforms.directionalLightDirection.value;
     const hemisphereLightSkyColor = this.uniforms.hemisphereLightSkyColor.value;
-    const hemisphereLightGroundColor = this.uniforms.hemisphereLightGroundColor
-      .value;
-    const hemisphereLightDirection = this.uniforms.hemisphereLightDirection
-      .value;
+    const hemisphereLightGroundColor =
+      this.uniforms.hemisphereLightGroundColor.value;
+    const hemisphereLightDirection =
+      this.uniforms.hemisphereLightDirection.value;
     const pointLightColor = this.uniforms.pointLightColor.value;
     const pointLightPosition = this.uniforms.pointLightPosition.value;
     const pointLightDistance = this.uniforms.pointLightDistance.value;

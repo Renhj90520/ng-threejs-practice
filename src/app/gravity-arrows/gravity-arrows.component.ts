@@ -157,7 +157,7 @@ export class GravityArrowsComponent implements OnInit {
       .makeRotationX(Math.PI / 2)
       .setPosition(0, 0.15, 0);
 
-    arrowGeo.applyMatrix(matrix);
+    arrowGeo.applyMatrix4(matrix);
 
     return new THREE.BufferGeometry().fromGeometry(arrowGeo);
   }

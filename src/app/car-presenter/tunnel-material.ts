@@ -65,21 +65,21 @@ export default class TunnelMaterial extends BasicCustomShaderMaterial {
     }
   `;
   uniforms = {
-    diffuse: { type: 'c', value: new THREE.Color(0xeeeeee) },
-    opacity: { type: 'f', value: 1 },
-    map: { type: 't', value: null },
+    diffuse: {  value: new THREE.Color(0xeeeeee) },
+    opacity: { value: 1 },
+    map: {  value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
-    envMap: { type: 't', value: null },
-    combine: { type: 't', value: 0 },
-    fogNear: { type: 'f', value: 1 },
-    fogFar: { type: 'f', value: 2000 },
-    fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    baseColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    bgColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    glowColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    gradientHeight: { type: 'f', value: 5 },
-    glowPosition: { type: 'v3', value: new THREE.Vector3(5, 5, 5) },
-    brightness: { type: 'f', value: 1 }
+    envMap: {  value: null },
+    combine: {  value: 0 },
+    fogNear: { value: 1 },
+    fogFar: { value: 2000 },
+    fogColor: {  value: new THREE.Color(0xffffff) },
+    baseColor: {  value: new THREE.Color(0xffffff) },
+    bgColor: {  value: new THREE.Color(0xffffff) },
+    glowColor: {  value: new THREE.Color(0xffffff) },
+    gradientHeight: { value: 5 },
+    glowPosition: {  value: new THREE.Vector3(5, 5, 5) },
+    brightness: { value: 1 },
   };
   bgColor: any;
   baseColor: any;
@@ -94,27 +94,27 @@ export default class TunnelMaterial extends BasicCustomShaderMaterial {
       {
         vertexShader: this.vertexShader,
         fragmentShader: this.fragmentShader,
-        uniforms: this.uniforms
+        uniforms: this.uniforms,
       },
       parameters
     );
     this.setParameters(parameters);
-    this.onPropertyChange('glowPosition', val => {
+    this.onPropertyChange('glowPosition', (val) => {
       this.uniforms.glowPosition.value = val;
     });
-    this.onPropertyChange('baseColor', val => {
+    this.onPropertyChange('baseColor', (val) => {
       this.uniforms.baseColor.value = val;
     });
-    this.onPropertyChange('glowColor', val => {
+    this.onPropertyChange('glowColor', (val) => {
       this.uniforms.glowColor.value = val;
     });
-    this.onPropertyChange('bgColor', val => {
+    this.onPropertyChange('bgColor', (val) => {
       this.uniforms.bgColor.value = val;
     });
-    this.onPropertyChange('gradientHeight', val => {
+    this.onPropertyChange('gradientHeight', (val) => {
       this.uniforms.gradientHeight.value = val;
     });
-    this.onPropertyChange('brightness', val => {
+    this.onPropertyChange('brightness', (val) => {
       this.uniforms.brightness.value = val;
     });
     this.bgColor = parameters.bgColor || new THREE.Color(0xeeeeee);

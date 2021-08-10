@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as _ from 'lodash';
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { LegacyJSONLoader } from 'three/examples/jsm/loaders/deprecated/LegacyJSONLoader';
+import { LegacyJSONLoader } from '../LegencyJSONLoader';
 import * as THREE from 'three';
 @Injectable()
 export class LoaderService {

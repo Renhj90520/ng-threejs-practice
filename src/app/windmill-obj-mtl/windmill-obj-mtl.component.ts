@@ -6,7 +6,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 @Component({
   selector: 'app-windmill-obj-mtl',
   templateUrl: './windmill-obj-mtl.component.html',
-  styleUrls: ['./windmill-obj-mtl.component.css']
+  styleUrls: ['./windmill-obj-mtl.component.css'],
 })
 export class WindmillObjMtlComponent implements OnInit {
   scene;
@@ -60,7 +60,7 @@ export class WindmillObjMtlComponent implements OnInit {
     const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
     const planeMat = new THREE.MeshPhongMaterial({
       map: texture,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
     });
     const plane = new THREE.Mesh(planeGeo, planeMat);
     plane.rotation.x = Math.PI * -0.5;
@@ -83,9 +83,9 @@ export class WindmillObjMtlComponent implements OnInit {
   addWindmill() {
     const objLoader = new OBJLoader();
     const mtlLoader = new MTLLoader();
-    mtlLoader.load('/assets/windmill-fixed.mtl', materials => {
+    mtlLoader.load('/assets/windmill-fixed.mtl', (materials) => {
       objLoader.setMaterials(materials);
-      objLoader.load('/assets/windmill.obj', evt => {
+      objLoader.load('/assets/windmill.obj', (evt) => {
         const root = evt;
         this.scene.add(root);
 
@@ -107,7 +107,7 @@ export class WindmillObjMtlComponent implements OnInit {
     camera: any
   ) {
     const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
-    const halfFovY = THREE.Math.degToRad(camera.fov * 0.5);
+    const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
 
     const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
 

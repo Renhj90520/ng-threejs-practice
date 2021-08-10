@@ -18,14 +18,14 @@ class CustomShaderMaterial extends THREE.ShaderMaterial {
 
   onPropertyChange(propertyName, callback) {
     Object.defineProperty(this, propertyName, {
-      get: function() {
+      get: function () {
         return this['_' + propertyName];
       },
-      set: function(value) {
+      set: function (value) {
         this['_' + propertyName] = value;
         callback.call(this, value);
       },
-      configurable: true
+      configurable: true,
     });
   }
 
@@ -77,15 +77,15 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
     }
   `;
   uniforms: any = {
-    diffuse: { type: 'c', value: new THREE.Color(0xeeeeee) },
-    opacity: { type: 'f', value: 1 },
-    map: { type: 't', value: null },
+    diffuse: {  value: new THREE.Color(0xeeeeee) },
+    opacity: { value: 1 },
+    map: {  value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
-    envMap: { type: 't', value: null },
-    combine: { type: 'f', value: 0 },
-    fogNear: { type: 'f', value: 1 },
-    fogFar: { type: 'f', value: 2000 },
-    fogColor: { type: 'c', value: new THREE.Color(0xffffff) }
+    envMap: {  value: null },
+    combine: { value: 0 },
+    fogNear: { value: 1 },
+    fogFar: { value: 2000 },
+    fogColor: {  value: new THREE.Color(0xffffff) },
   };
   color: THREE.Color;
   map: any;
@@ -96,13 +96,13 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
     parameters = _.extend({
       vertexShader: this.vertexShader,
       fragmentShader: this.fragmentShader,
-      uniforms: this.uniforms
+      uniforms: this.uniforms,
     });
     // this.setParameters(parameters);
-    this.onPropertyChange('color', val => {
+    this.onPropertyChange('color', (val) => {
       this.uniforms.diffuse.value = val;
     });
-    this.onPropertyChange('map', val => {
+    this.onPropertyChange('map', (val) => {
       this.uniforms.map.value = val;
       if (val) {
         this.uniforms.offsetRepeat.value.set(
@@ -113,15 +113,15 @@ export default class BasicCustomShaderMaterial extends CustomShaderMaterial {
         );
       }
     });
-    this.onPropertyChange('opacity', val => {
+    this.onPropertyChange('opacity', (val) => {
       this.uniforms.opacity.value = val;
     });
-    this.onPropertyChange('combine', val => {
+    this.onPropertyChange('combine', (val) => {
       if (this.uniforms.combine) {
         this.uniforms.combine.value = val;
       }
     });
-    this.onPropertyChange('envMap', val => {
+    this.onPropertyChange('envMap', (val) => {
       if (val) this.uniforms.envMap.value = val;
     });
     this.fog = parameters.fog;

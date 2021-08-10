@@ -45,45 +45,41 @@ export default class VignettingMaterial extends BasicCustomShaderMaterial {
   `;
   uniforms = {
     diffuse: {
-      type: 'c',
-      value: new THREE.Color(0xeeeeee)
+      
+      value: new THREE.Color(0xeeeeee),
     },
     opacity: {
-      type: 'f',
-      value: 1
+      value: 1,
     },
     map: {
-      type: 't',
-      value: null
+      
+      value: null,
     },
     offsetRepeat: {
       type: 'v4',
-      value: new THREE.Vector4(0, 0, 1, 1)
+      value: new THREE.Vector4(0, 0, 1, 1),
     },
     envMap: {
-      type: 't',
-      value: null
+      
+      value: null,
     },
     combine: {
-      type: 't',
-      value: 0
+      
+      value: 0,
     },
     fogNear: {
-      type: 'f',
-      value: 1
+      value: 1,
     },
     fogFar: {
-      type: 'f',
-      value: 2000
+      value: 2000,
     },
     fogColor: {
-      type: 'c',
-      value: new THREE.Color(0xffffff)
+      
+      value: new THREE.Color(0xffffff),
     },
     cameraDistance: {
-      type: 'f',
-      value: 8
-    }
+      value: 8,
+    },
   };
   constructor(parameters) {
     super(parameters);

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 @Component({
   selector: 'app-regular-polygon',
   templateUrl: './regular-polygon.component.html',
-  styleUrls: ['./regular-polygon.component.css']
+  styleUrls: ['./regular-polygon.component.css'],
 })
 export class RegularPolygonComponent implements OnInit {
   scene: THREE.Scene;
@@ -54,15 +54,15 @@ export class RegularPolygonComponent implements OnInit {
   addPlane() {
     const uniforms = {
       u_resolution: {
-        type: 'v2',
-        value: new THREE.Vector2(this.width, this.height)
-      }
+        
+        value: new THREE.Vector2(this.width, this.height),
+      },
     };
     const planeGeo = new THREE.PlaneGeometry(this.width, this.height);
     this.planeMat = new THREE.ShaderMaterial({
       uniforms,
       vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader
+      fragmentShader: this.fragmentShader,
     });
     const plane = new THREE.Mesh(planeGeo, this.planeMat);
 
@@ -75,7 +75,7 @@ export class RegularPolygonComponent implements OnInit {
     this.scene = new THREE.Scene();
 
     const halfRadian = Math.atan(this.height / 2 / 100);
-    const halfDegree = THREE.Math.radToDeg(halfRadian);
+    const halfDegree = THREE.MathUtils.radToDeg(halfRadian);
     this.camera = new THREE.PerspectiveCamera(
       halfDegree * 2,
       this.width / this.height,

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 @Component({
   selector: 'app-metaballs',
   templateUrl: './metaballs.component.html',
-  styleUrls: ['./metaballs.component.css']
+  styleUrls: ['./metaballs.component.css'],
 })
 export class MetaballsComponent implements OnInit {
   scene: THREE.Scene;
@@ -59,19 +59,19 @@ export class MetaballsComponent implements OnInit {
       const y = Math.random() * (this.height - 2 * radius) + radius;
       this.balls.push({
         info: new THREE.Vector3(x, y, radius),
-        mvInfo: { vx: Math.random() * 10 - 5, vy: Math.random() * 10 - 5 }
+        mvInfo: { vx: Math.random() * 10 - 5, vy: Math.random() * 10 - 5 },
       });
     }
     const uniforms = {
-      uWidth: { type: 'f', value: this.width },
-      uHeight: { type: 'f', value: this.height },
-      uBalls: { type: 'v3v', value: this.balls.map(ball => ball.info) }
+      uWidth: { value: this.width },
+      uHeight: { value: this.height },
+      uBalls: { type: 'v3v', value: this.balls.map((ball) => ball.info) },
     };
     const planeGeo = new THREE.PlaneGeometry(this.width, this.height);
     this.planeMat = new THREE.ShaderMaterial({
       uniforms,
       vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader
+      fragmentShader: this.fragmentShader,
     });
     const plane = new THREE.Mesh(planeGeo, this.planeMat);
 
@@ -84,7 +84,7 @@ export class MetaballsComponent implements OnInit {
     this.scene = new THREE.Scene();
 
     const halfRadian = Math.atan(this.height / 2 / 100);
-    const halfDegree = THREE.Math.radToDeg(halfRadian);
+    const halfDegree = THREE.MathUtils.radToDeg(halfRadian);
     this.camera = new THREE.PerspectiveCamera(
       halfDegree * 2,
       this.width / this.height,

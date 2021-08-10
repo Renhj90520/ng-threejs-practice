@@ -1,10 +1,10 @@
-import { Component, OnInit, ElementRef, HostListener } from "@angular/core";
-import * as THREE from "three";
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import * as THREE from 'three';
 
 @Component({
-  selector: "app-hover-explode",
-  templateUrl: "./hover-explode.component.html",
-  styleUrls: ["./hover-explode.component.css"]
+  selector: 'app-hover-explode',
+  templateUrl: './hover-explode.component.html',
+  styleUrls: ['./hover-explode.component.css'],
 })
 export class HoverExplodeComponent implements OnInit {
   scene: THREE.Scene;
@@ -15,48 +15,48 @@ export class HoverExplodeComponent implements OnInit {
   color1 = [0 / 255, 110 / 255, 255 / 255];
   color2 = [0 / 255, 255 / 255, 140 / 255];
   data =
-    "#000000000000000000011110000000000000000000" +
-    "#000000000000000011111111110000000000000000" +
-    "#000000000000001111111111111100000000000000" +
-    "#000000000000011111111111111110000000000000" +
-    "#000000000000111111111111111111000000000000" +
-    "#000000000001111111111111111111100000000000" +
-    "#000000000011111111111111111111110000000000" +
-    "#000000000011111111111111111111110000000000" +
-    "#000000000111111111111111111111111000000000" +
-    "#000000000111111111111111111111111000000000" +
-    "#000000001111111111111111111111111100000000" +
-    "#000000001111111111111111111111111100000000" +
-    "#000000001111111111111111111111111100000000" +
-    "#000000001111111111111111111111111100000000" +
-    "#000000001111111111111111111111111100000000" +
-    "#000000000111111111111111111111111000000000" +
-    "#000000000111111111111111111111111000000000" +
-    "#000000000111111111111111111111111000000000" +
-    "#000000000011111111111111111111110000000000" +
-    "#000000000011111111111111111111110000000000" +
-    "#000000000001111111111111111111100000000000" +
-    "#000000000001111111111111111111100000000000" +
-    "#000000000000111111111111111111000000000000" +
-    "#000000000000111111111111111110000000000000" +
-    "#000000000000011111111111111110000000000000" +
-    "#000000000000001111111111111100000000000000" +
-    "#000000000000001111111111111100000000000000" +
-    "#000000000000001111111111111000000000000000" +
-    "#000000000000000111111111111000000000000000" +
-    "#000000000000000111111111111000000000000000" +
-    "#000000000000000111111111111000000000000000" +
-    "#000000000000000111111111111000000000000000" +
-    "#000000000000000011111111110000000000000000" +
-    "#000000000000000010000000010000000000000000" +
-    "#000000000000000011111111110000000000000000" +
-    "#000000000000000010000000010000000000000000" +
-    "#000000000000000011111111110000000000000000" +
-    "#000000000000000010000000010000000000000000" +
-    "#000000000000000011111111110000000000000000" +
-    "#000000000000000000100001000000000000000000" +
-    "#000000000000000000110011000000000000000000" +
-    "#000000000000000000011110000000000000000000";
+    '#000000000000000000011110000000000000000000' +
+    '#000000000000000011111111110000000000000000' +
+    '#000000000000001111111111111100000000000000' +
+    '#000000000000011111111111111110000000000000' +
+    '#000000000000111111111111111111000000000000' +
+    '#000000000001111111111111111111100000000000' +
+    '#000000000011111111111111111111110000000000' +
+    '#000000000011111111111111111111110000000000' +
+    '#000000000111111111111111111111111000000000' +
+    '#000000000111111111111111111111111000000000' +
+    '#000000001111111111111111111111111100000000' +
+    '#000000001111111111111111111111111100000000' +
+    '#000000001111111111111111111111111100000000' +
+    '#000000001111111111111111111111111100000000' +
+    '#000000001111111111111111111111111100000000' +
+    '#000000000111111111111111111111111000000000' +
+    '#000000000111111111111111111111111000000000' +
+    '#000000000111111111111111111111111000000000' +
+    '#000000000011111111111111111111110000000000' +
+    '#000000000011111111111111111111110000000000' +
+    '#000000000001111111111111111111100000000000' +
+    '#000000000001111111111111111111100000000000' +
+    '#000000000000111111111111111111000000000000' +
+    '#000000000000111111111111111110000000000000' +
+    '#000000000000011111111111111110000000000000' +
+    '#000000000000001111111111111100000000000000' +
+    '#000000000000001111111111111100000000000000' +
+    '#000000000000001111111111111000000000000000' +
+    '#000000000000000111111111111000000000000000' +
+    '#000000000000000111111111111000000000000000' +
+    '#000000000000000111111111111000000000000000' +
+    '#000000000000000111111111111000000000000000' +
+    '#000000000000000011111111110000000000000000' +
+    '#000000000000000010000000010000000000000000' +
+    '#000000000000000011111111110000000000000000' +
+    '#000000000000000010000000010000000000000000' +
+    '#000000000000000011111111110000000000000000' +
+    '#000000000000000010000000010000000000000000' +
+    '#000000000000000011111111110000000000000000' +
+    '#000000000000000000100001000000000000000000' +
+    '#000000000000000000110011000000000000000000' +
+    '#000000000000000000011110000000000000000000';
   objectArray = [];
   animationQueue = [];
   ANIMATION_FRAME_LENGTH = 30;
@@ -75,7 +75,7 @@ export class HoverExplodeComponent implements OnInit {
   ngOnInit() {
     for (let i = 0; i < this.data.length; i++) {
       const d = this.data[i];
-      if (d === "#") {
+      if (d === '#') {
         this.bitmap.push([]);
       } else {
         this.bitmap[this.bitmap.length - 1].push(+d);
@@ -104,15 +104,15 @@ export class HoverExplodeComponent implements OnInit {
               this.color1[2] * frac + this.color2[2] * (1 - frac)
             ),
             transparent: true,
-            opacity: THREE.Math.randFloat(0.4, 0.6),
-            side: THREE.DoubleSide
+            opacity: THREE.MathUtils.randFloat(0.4, 0.6),
+            side: THREE.DoubleSide,
           });
 
           const circleMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color(1, 1, 1),
             transparent: true,
-            opacity: THREE.Math.randFloat(0.8, 1),
-            side: THREE.DoubleSide
+            opacity: THREE.MathUtils.randFloat(0.8, 1),
+            side: THREE.DoubleSide,
           });
 
           const planeMesh = new THREE.Mesh(planeGeo, planeMat);
@@ -121,7 +121,7 @@ export class HoverExplodeComponent implements OnInit {
             yOffset - i / this.BITMAP_SKIP,
             0
           );
-          const randWidth = THREE.Math.randFloat(0.6, 1.2);
+          const randWidth = THREE.MathUtils.randFloat(0.6, 1.2);
           const randHeight = randWidth;
           planeMesh.scale.set(randWidth, randHeight, 1);
           this.scene.add(planeMesh);
@@ -129,11 +129,15 @@ export class HoverExplodeComponent implements OnInit {
 
           const circleMesh = new THREE.Mesh(circleGeo, circleMat);
           circleMesh.position.set(
-            xOffset + j / this.BITMAP_SKIP + THREE.Math.randFloat(-0.5, 0.5),
-            yOffset - i / this.BITMAP_SKIP + THREE.Math.randFloat(-0.5, 0.5),
+            xOffset +
+              j / this.BITMAP_SKIP +
+              THREE.MathUtils.randFloat(-0.5, 0.5),
+            yOffset -
+              i / this.BITMAP_SKIP +
+              THREE.MathUtils.randFloat(-0.5, 0.5),
             0.1
           );
-          const randRadius = THREE.Math.randFloat(0.05, 0.1);
+          const randRadius = THREE.MathUtils.randFloat(0.05, 0.1);
           circleMesh.scale.set(randRadius, randRadius, 1);
           this.scene.add(circleMesh);
           this.objectArray.push([circleMesh, false]);
@@ -150,7 +154,7 @@ export class HoverExplodeComponent implements OnInit {
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true
+      alpha: true,
     });
     this.renderer.setClearColor(0x212121, 0);
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -158,7 +162,7 @@ export class HoverExplodeComponent implements OnInit {
     this.el.nativeElement.appendChild(this.renderer.domElement);
 
     this.viewHeight =
-      2 * Math.tan(THREE.Math.degToRad(this.fov / 2)) * this.cameraPos[2];
+      2 * Math.tan(THREE.MathUtils.degToRad(this.fov / 2)) * this.cameraPos[2];
     this.viewWidth = this.viewHeight * this.screenAspectRatio;
     this.camera = new THREE.PerspectiveCamera(
       this.fov,
@@ -202,7 +206,7 @@ export class HoverExplodeComponent implements OnInit {
           const mouseRepelVector = new THREE.Vector3()
             .subVectors(startPosVector, this.mouseScaled)
             .multiplyScalar(
-              THREE.Math.randFloat(
+              THREE.MathUtils.randFloat(
                 this.INTERACT_DISTANCE + 0.5,
                 this.INTERACT_DISTANCE + 2
               ) - dist
@@ -242,7 +246,7 @@ export class HoverExplodeComponent implements OnInit {
     return frac * (2 - frac);
   }
 
-  @HostListener("mousemove", ["$event"])
+  @HostListener('mousemove', ['$event'])
   mousemove(evt) {
     this.mouse.x = evt.clientX;
     this.mouse.y = evt.clientY;

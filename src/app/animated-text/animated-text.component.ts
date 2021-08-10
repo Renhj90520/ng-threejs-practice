@@ -3,7 +3,7 @@ import {
   OnInit,
   ElementRef,
   HostListener,
-  HostBinding
+  HostBinding,
 } from '@angular/core';
 import * as THREE from 'three';
 import TextAnimation from './text-animation';
@@ -11,7 +11,7 @@ import { TimelineMax, Power1, TweenMax } from 'gsap';
 @Component({
   selector: 'app-animated-text',
   templateUrl: './animated-text.component.html',
-  styleUrls: ['./animated-text.component.css']
+  styleUrls: ['./animated-text.component.css'],
 })
 export class AnimatedTextComponent implements OnInit {
   @HostBinding('class.drag') mouseDown = false;
@@ -33,7 +33,7 @@ export class AnimatedTextComponent implements OnInit {
   }
   addText() {
     const loader = new THREE.FontLoader();
-    loader.load('/assets/droid_sans_bold.typeface.js', font => {
+    loader.load('/assets/droid_sans_bold.typeface.js', (font) => {
       const geometry = new THREE.TextGeometry('AS THE WORLD TURNS', {
         size: 40,
         height: 12,
@@ -41,7 +41,7 @@ export class AnimatedTextComponent implements OnInit {
         bevelSize: 2,
         bevelThickness: 2,
         bevelEnabled: true,
-        font
+        font,
       });
 
       geometry.computeBoundingBox();
@@ -59,7 +59,7 @@ export class AnimatedTextComponent implements OnInit {
         anchorZ
       );
 
-      geometry.applyMatrix(matrix);
+      geometry.applyMatrix4(matrix);
 
       this.tessellateRepeat(geometry, 1.0, 2);
 
@@ -310,7 +310,7 @@ export class AnimatedTextComponent implements OnInit {
 
   seek(dx) {
     const progress = this.tl.progress();
-    const p = THREE.Math.clamp(progress + dx * this.seekSpeed, 0, 1);
+    const p = THREE.MathUtils.clamp(progress + dx * this.seekSpeed, 0, 1);
     this.tl.progress(p);
   }
   addLights() {

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 @Component({
   selector: 'app-render-target',
   templateUrl: './render-target.component.html',
-  styleUrls: ['./render-target.component.css']
+  styleUrls: ['./render-target.component.css'],
 })
 export class RenderTargetComponent implements OnInit {
   scene: THREE.Scene;
@@ -207,7 +207,7 @@ export class RenderTargetComponent implements OnInit {
         ? THREE.HalfFloatType
         : THREE.FloatType,
       depthBuffer: false,
-      stencilBuffer: false
+      stencilBuffer: false,
     });
 
     this.rtt2 = this.rtt.clone();
@@ -220,15 +220,15 @@ export class RenderTargetComponent implements OnInit {
       fog: false,
       lights: false,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
 
     this.physicsMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        mouse: { type: 'v3', value: this.mouse },
-        pmouse: { type: 'v3', value: this.pmouse },
-        resolution: { type: 'v2', value: this.res },
-        texture: { type: 't' }
+        mouse: { value: this.mouse },
+        pmouse: { value: this.pmouse },
+        resolution: { value: this.res },
+        texture: { value: null },
       },
       vertexShader: this.basic_vert,
       fragmentShader: this.physics_frag,
@@ -237,13 +237,13 @@ export class RenderTargetComponent implements OnInit {
       fog: false,
       lights: false,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
 
     this.lightsMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        resolution: { type: 'v2', value: this.res },
-        texture: { type: 't' }
+        resolution: { value: this.res },
+        texture: { value: null },
       },
       vertexShader: this.basic_vert,
       fragmentShader: this.light_frag,
@@ -252,7 +252,7 @@ export class RenderTargetComponent implements OnInit {
       fog: false,
       lights: false,
       depthWrite: false,
-      depthTest: false
+      depthTest: false,
     });
 
     const geometry = new THREE.BufferGeometry();
@@ -295,14 +295,14 @@ export class RenderTargetComponent implements OnInit {
       this.pmouse.copy(this.mouse);
     }
     this.mesh.material = this.physicsMaterial;
-    (this.mesh
-      .material as THREE.ShaderMaterial).uniforms.texture.value = this.rtt2.texture;
+    (this.mesh.material as THREE.ShaderMaterial).uniforms.texture.value =
+      this.rtt2.texture;
     this.renderer.setRenderTarget(this.rtt);
     this.renderer.render(this.scene, this.camera);
 
     this.mesh.material = this.lightsMaterial;
-    (this.mesh
-      .material as THREE.ShaderMaterial).uniforms.texture.value = this.rtt.texture;
+    (this.mesh.material as THREE.ShaderMaterial).uniforms.texture.value =
+      this.rtt.texture;
     this.renderer.setRenderTarget(null);
     this.renderer.render(this.scene, this.camera);
 

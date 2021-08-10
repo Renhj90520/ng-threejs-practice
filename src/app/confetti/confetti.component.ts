@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 @Component({
   selector: 'app-confetti',
   templateUrl: './confetti.component.html',
-  styleUrls: ['./confetti.component.css']
+  styleUrls: ['./confetti.component.css'],
 })
 export class ConfettiComponent implements OnInit {
   scene: THREE.Scene;
@@ -113,24 +113,24 @@ export class ConfettiComponent implements OnInit {
   }
   createConfetti() {
     // const shaderAttributes = {
-    //   aAnimation: { type: 'v2', value: null },
-    //   aTranslation: { type: 'v3', value: null },
-    //   aControlPoint0: { type: 'v3', value: null },
-    //   aControlPoint1: { type: 'v3', value: null },
+    //   aAnimation: {  value: null },
+    //   aTranslation: {  value: null },
+    //   aControlPoint0: {  value: null },
+    //   aControlPoint1: {  value: null },
     //   aAxisAngle: { type: 'v4', value: null },
-    //   aFrontColor: { type: 'c', value: null },
-    //   aBackColor: { type: 'c', value: null }
+    //   aFrontColor: {  value: null },
+    //   aBackColor: {  value: null }
     // };
 
     this.shaderUniforms = {
-      uTime: { type: 'f', value: 0 }
+      uTime: { type: 'f', value: 0 },
     };
 
     const confettiMaterial = new THREE.ShaderMaterial({
       uniforms: this.shaderUniforms,
       vertexShader: this.vertexShader,
       fragmentShader: this.fragmentShader,
-      side: THREE.DoubleSide
+      side: THREE.DoubleSide,
     });
 
     const quads = 150000;
@@ -310,7 +310,7 @@ export class ConfettiComponent implements OnInit {
       const offset = {
         start: i * chunkSize * 3,
         index: i * chunkSize * 3,
-        count: Math.min(triangles - i * chunkSize, chunkSize) * 3
+        count: Math.min(triangles - i * chunkSize, chunkSize) * 3,
       };
       geometry.groups.push(offset);
     }
@@ -336,7 +336,7 @@ export class ConfettiComponent implements OnInit {
 
     this.renderer = new THREE.WebGLRenderer({
       premultipliedAlpha: false,
-      stencil: false
+      stencil: false,
     });
     this.renderer.setSize(width, height);
     this.renderer.setClearColor(0xf5f5f5, 1);

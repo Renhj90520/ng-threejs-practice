@@ -18,7 +18,7 @@ import {
   dHdxy_fwd,
   perturbNormalArb,
   perturbNormal2Arb,
-  lights
+  lights,
 } from './glsl-fragments';
 
 export default class SteelMaterial extends RealisticMaterial {
@@ -818,18 +818,18 @@ export default class SteelMaterial extends RealisticMaterial {
     }
   `;
   uniforms: any = {
-    diffuse: { type: 'c', value: new THREE.Color(0xeeeeee) },
-    diffuse2: { type: 'c', value: new THREE.Color(0xffffff) },
-    colorTransition: { type: 'f', value: 0 },
-    opacity: { type: 'f', value: 1 },
-    map: { type: 't', value: null },
-    lightMap: { type: 't', value: null },
+    diffuse: {  value: new THREE.Color(0xeeeeee) },
+    diffuse2: {  value: new THREE.Color(0xffffff) },
+    colorTransition: { value: 0 },
+    opacity: { value: 1 },
+    map: {  value: null },
+    lightMap: {  value: null },
     offsetRepeat: { type: 'v4', value: new THREE.Vector4(0, 0, 1, 1) },
-    fogNear: { type: 'f', value: 1 },
-    fogFar: { type: 'f', value: 2000 },
-    fogColor: { type: 'c', value: new THREE.Color(0xffffff) },
-    emissive: { type: 'c', value: new THREE.Color(0x000000) },
-    wrapRGB: { type: 'v3', value: new THREE.Vector3(1, 1, 1) },
+    fogNear: { value: 1 },
+    fogFar: { value: 2000 },
+    fogColor: {  value: new THREE.Color(0xffffff) },
+    emissive: {  value: new THREE.Color(0x000000) },
+    wrapRGB: {  value: new THREE.Vector3(1, 1, 1) },
     pointLightColor: { type: 'fv', value: [0, 0, 0] },
     pointLightPosition: { type: 'fv', value: [0, 0, 0] },
     pointLightDistance: { type: 'fv1', value: [] },
@@ -845,23 +845,23 @@ export default class SteelMaterial extends RealisticMaterial {
     spotLightAngleCos: { type: 'fv1', value: [] },
     spotLightExponent: { type: 'fv1', value: [] },
     spotLightDecay: { type: 'fv1', value: [] },
-    lightVariance: { type: 'f', value: 0 },
-    envMap: { type: 't', value: null },
-    flipEnvMap: { type: 'f', value: -1 },
-    reflectivity: { type: 'f', value: 0.15 },
-    refractionRatio: { type: 'f', value: 0.98 },
-    normalMap: { type: 't', value: null },
-    normalScale: { type: 'v2', value: new THREE.Vector2(1, 1) },
-    specular: { type: 'c', value: new THREE.Color(0x111111) },
-    shininess: { type: 'f', value: 30 },
-    emissiveMap: { type: 't', value: null },
-    emissiveColor: { type: 'c', value: null },
-    emissiveIntensity: { type: 'f', value: 1 },
-    carLength: { type: 'f', value: 1 },
-    reflectionMask: { type: 't', value: null },
-    paintMask: { type: 't', value: null },
-    envMapOffset: { type: 'f', value: 0 },
-    flipN: { type: 'f', value: 1 }
+    lightVariance: { value: 0 },
+    envMap: {  value: null },
+    flipEnvMap: { value: -1 },
+    reflectivity: { value: 0.15 },
+    refractionRatio: { value: 0.98 },
+    normalMap: {  value: null },
+    normalScale: {  value: new THREE.Vector2(1, 1) },
+    specular: {  value: new THREE.Color(0x111111) },
+    shininess: { value: 30 },
+    emissiveMap: {  value: null },
+    emissiveColor: {  value: null },
+    emissiveIntensity: { value: 1 },
+    carLength: { value: 1 },
+    reflectionMask: {  value: null },
+    paintMask: {  value: null },
+    envMapOffset: { value: 0 },
+    flipN: { value: 1 },
   };
   color2: THREE.Color;
   carLength: any;
@@ -883,30 +883,30 @@ export default class SteelMaterial extends RealisticMaterial {
           USE_REFLECTIONMASK: parameters.reflectionMask !== undefined,
           USE_PAINTMASK: parameters.paintMask !== undefined,
           USE_EMISSIVECOLOR: parameters.emissiveColor !== undefined,
-          TRANSPARENT_MODE: false
-        }
+          TRANSPARENT_MODE: false,
+        },
       },
       parameters
     );
     this.setParameters(parameters);
-    this.onPropertyChange('color2', val => {
+    this.onPropertyChange('color2', (val) => {
       this.uniforms.diffuse2.value = val;
     });
-    this.onPropertyChange('colorTransition', val => {
+    this.onPropertyChange('colorTransition', (val) => {
       this.uniforms.colorTransition.value = val;
     });
-    this.onPropertyChange('carLength', val => {
+    this.onPropertyChange('carLength', (val) => {
       this.uniforms.carLength.value = val;
     });
-    this.onPropertyChange('paintMask', val => {
+    this.onPropertyChange('paintMask', (val) => {
       if (val) {
         this.uniforms.paintMask.value = val;
       }
     });
-    this.onPropertyChange('envMapOffset', val => {
+    this.onPropertyChange('envMapOffset', (val) => {
       this.uniforms.envMapOffset.value = val;
     });
-    this.onPropertyChange('transparentMode', val => {
+    this.onPropertyChange('transparentMode', (val) => {
       this.defines.TRANSPARENT_MODE = val;
       this.needsUpdate = true;
     });

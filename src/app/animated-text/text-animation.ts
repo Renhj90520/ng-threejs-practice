@@ -60,7 +60,7 @@ export default class TextAnimation {
       const centroidN = new THREE.Vector3().copy(centroid).normalize();
 
       const delay = (maxLength - centroid.length()) * lengthFactor;
-      const duration = THREE.Math.randFloat(minDuration, maxDuration);
+      const duration = THREE.MathUtils.randFloat(minDuration, maxDuration);
 
       for (v = 0; v < 6; v += 2) {
         aAnimation.array[i2 + v] = delay + strenth * Math.random();
@@ -81,7 +81,7 @@ export default class TextAnimation {
 
       axis.normalize();
 
-      angle = Math.PI * THREE.Math.randFloat(0.5, 2);
+      angle = Math.PI * THREE.MathUtils.randFloat(0.5, 2);
 
       for (v = 0; v < 12; v += 4) {
         aAxisAngle.array[i4 + v] = axis.x;
@@ -103,26 +103,26 @@ export default class TextAnimation {
           'uniform float uAngle;',
           'attribute vec2 aAnimation;',
           'attribute vec3 aEndPosition;',
-          'attribute vec4 aAxisAngle;'
+          'attribute vec4 aAxisAngle;',
         ],
         vertexInit: [
           'float tDelay = aAnimation.x;',
           'float tDuration = aAnimation.y;',
           'float tTime = clamp(uTime - tDelay, 0., tDuration);',
-          'float tProgress = ease(tTime, 0., 1., tDuration);'
+          'float tProgress = ease(tTime, 0., 1., tDuration);',
         ],
         vertexPosition: [
           'transformed = mix(transformed, aEndPosition, tProgress);',
           'float angle = aAxisAngle.w * tProgress;',
           'vec4 tQuat = quatFromAxisAngle(aAxisAngle.xyz, angle);',
-          'transformed = rotateVector(tQuat, transformed);'
-        ]
+          'transformed = rotateVector(tQuat, transformed);',
+        ],
       },
       {
         // diffuse: 0x444444,
         // specular: 0xcccccc,
         // shininess: 4,
-        uTime: { type: 'f', value: 0 }
+        uTime: { value: 0 },
       }
     );
 

@@ -13,7 +13,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 @Component({
   selector: 'app-vr-sonic',
   templateUrl: './vr-sonic.component.html',
-  styleUrls: ['./vr-sonic.component.css']
+  styleUrls: ['./vr-sonic.component.css'],
 })
 export class VrSonicComponent implements OnInit {
   @ViewChild('threecontainer', { static: true }) threeContainer;
@@ -77,7 +77,7 @@ export class VrSonicComponent implements OnInit {
       const p = this.carPath.points[i];
       const geometry = new THREE.TorusGeometry(3, 0.5, 8, 50);
       const material = new THREE.MeshBasicMaterial({
-        color: new THREE.Color('yellow')
+        color: new THREE.Color('yellow'),
       });
 
       const circle = new THREE.Mesh(geometry, material);
@@ -89,8 +89,8 @@ export class VrSonicComponent implements OnInit {
   }
   addSonic() {
     const loader = new GLTFLoader();
-    loader.load('/assets/sonic.glb', gltf => {
-      gltf.scene.traverse(node => {
+    loader.load('/assets/sonic.glb', (gltf) => {
+      gltf.scene.traverse((node) => {
         if (node instanceof THREE.Mesh) {
           node.castShadow = true;
           (node.material as THREE.Material).side = THREE.DoubleSide;
@@ -119,8 +119,8 @@ export class VrSonicComponent implements OnInit {
   }
   addSkyIsland() {
     const loader = new GLTFLoader();
-    loader.load('/assets/sky-island.glb', gltf => {
-      gltf.scene.traverse(node => {
+    loader.load('/assets/sky-island.glb', (gltf) => {
+      gltf.scene.traverse((node) => {
         if (node instanceof THREE.Mesh) {
           node.castShadow = true;
           (node.material as THREE.Material).side = THREE.DoubleSide;
@@ -193,9 +193,9 @@ export class VrSonicComponent implements OnInit {
 
     const material = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
-      vertexColors: THREE.FaceColors,
+      vertexColors: false,
       transparent: true,
-      opacity: 1
+      opacity: 1,
     });
 
     const tube = new THREE.Mesh(geometry, material);
@@ -262,9 +262,9 @@ export class VrSonicComponent implements OnInit {
           onComplete: () => {
             TweenLite.to(this.infoEl.nativeElement, 0.75, {
               css: { fontSize: '14px', opacity: 0 },
-              ease: Power4.easeOut
+              ease: Power4.easeOut,
             });
-          }
+          },
         });
       }
     }

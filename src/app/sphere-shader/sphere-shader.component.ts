@@ -5,7 +5,7 @@ import * as SimplexNoise from 'simplex-noise';
 @Component({
   selector: 'app-sphere-shader',
   templateUrl: './sphere-shader.component.html',
-  styleUrls: ['./sphere-shader.component.css']
+  styleUrls: ['./sphere-shader.component.css'],
 })
 export class SphereShaderComponent implements OnInit {
   scene: THREE.Scene;
@@ -60,15 +60,15 @@ export class SphereShaderComponent implements OnInit {
 
     const shaderMat = new THREE.ShaderMaterial({
       uniforms: {
-        color: { type: 'c', value: new THREE.Color(0x0aa0f0) },
-        texture: { type: 't', value: this.getTexture() },
-        textureAmplitude: { type: 'f', value: 1.0 }
+        color: {  value: new THREE.Color(0x0aa0f0) },
+        texture: {  value: this.getTexture() },
+        textureAmplitude: { value: 1.0 },
       },
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader
+      fragmentShader: this.fragmentShader,
     });
     shaderMat.uniforms.texture.value.wrapS = THREE.RepeatWrapping;
     shaderMat.uniforms.texture.value.wrapT = THREE.RepeatWrapping;

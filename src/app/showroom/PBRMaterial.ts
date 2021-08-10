@@ -696,99 +696,91 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
   };
   uniforms = {
     uAOPBRFactor: {
-      type: 'f',
       value: 1,
     },
     uAlbedoPBRFactor: {
-      type: 'f',
       value: 1,
     },
     uGlossinessPBRFactor: {
-      type: 'f',
       value: 1,
     },
     uMetalnessPBRFactor: {
-      type: 'f',
       value: 1,
     },
     uNormalMapFactor: {
-      type: 'f',
       value: 1,
     },
     uSpecularF0Factor: {
-      type: 'f',
       value: 1,
     },
     uEnvironmentExposure: {
-      type: 'f',
       value: 1,
     },
     uOpacityFactor: {
-      type: 'f',
       value: 1,
     },
     sTextureAlbedoMap: {
-      type: 't',
+      
       value: null,
     },
     sTextureAlbedoMap2: {
-      type: 't',
+      
       value: null,
     },
     sTextureNormalMap: {
-      type: 't',
+      
       value: null,
     },
     sTextureNormalMap2: {
-      type: 't',
+      
       value: null,
     },
     sTextureAOMap: {
-      type: 't',
+      
       value: null,
     },
     sTextureAOMap2: {
-      type: 't',
+      
       value: null,
     },
     sTextureMetalGlossMap: {
-      type: 't',
+      
       value: null,
     },
     sTexturePackedMap: {
-      type: 't',
+      
       value: null,
     },
     sTextureEmissiveMap: {
-      type: 't',
+      
       value: null,
     },
     sTextureLightMap: {
-      type: 't',
+      
       value: null,
     },
     sTextureLightMapM: {
-      type: 't',
+      
       value: null,
     },
     sTextureLightMapDir: {
-      type: 't',
+      
       value: null,
     },
     sSpecularPBR: {
-      type: 't',
+      
       value: null,
     },
     sPanoramaPBR: {
-      type: 't',
+      
       value: null,
     },
     uTextureEnvironmentSpecularPBRLodRange: {
-      type: 'v2',
+      
       value: new THREE.Vector2(10, 5),
     },
     uTextureEnvironmentSpecularPBRTextureSize: {
-      type: 'v2',
+      
       value: new THREE.Vector2(),
     },
     uDiffuseSPH: {
@@ -816,15 +808,13 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
       value: 0,
     },
     uColor: {
-      type: 'c',
+      
       value: null,
     },
     uAlphaTest: {
-      type: 'f',
       value: 0,
     },
     uContrast: {
-      type: 'f',
       value: 1.1,
     },
     offsetRepeat: {
@@ -836,11 +826,11 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
       value: new THREE.Vector4(0, 0, 1, 1),
     },
     viewLightDir: {
-      type: 'v3',
+      
       value: new THREE.Vector3(),
     },
     lightColor: {
-      type: 'c',
+      
       value: new THREE.Color(),
     },
     highlights: {
@@ -1033,7 +1023,7 @@ export default class PBRMaterial extends CustomRawShaderMaterial {
       this.createOptions,
       this.resourceManager
     );
-    material.uuid = THREE.Math.generateUUID();
+    material.uuid = THREE.MathUtils.generateUUID();
     return material;
   }
 }
