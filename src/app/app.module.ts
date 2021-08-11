@@ -53,6 +53,7 @@ import { CloudTemperatureComponent } from './heatmap-draw/cloud-temperature/clou
 import { VisualmapComponent } from './heatmap-draw/visualmap/visualmap.component';
 import { AnimationClothComponent } from './animation-cloth/animation-cloth.component';
 import { LonelyCandleComponent } from './lonely-candle/lonely-candle.component';
+import { PortalSceneComponent } from './portal-scene/portal-scene.component';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { LonelyCandleComponent } from './lonely-candle/lonely-candle.component';
     CloudTemperatureComponent,
     VisualmapComponent,
     AnimationClothComponent,
-    LonelyCandleComponent
+    LonelyCandleComponent,
+    PortalSceneComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
