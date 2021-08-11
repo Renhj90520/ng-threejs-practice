@@ -52,6 +52,7 @@ import { ValveDrawComponent } from './heatmap-draw/valve-draw/valve-draw.compone
 import { CloudTemperatureComponent } from './heatmap-draw/cloud-temperature/cloud-temperature.component';
 import { VisualmapComponent } from './heatmap-draw/visualmap/visualmap.component';
 import { AnimationClothComponent } from './animation-cloth/animation-cloth.component';
+import { LonelyCandleComponent } from './lonely-candle/lonely-candle.component';
 
 @NgModule({
   declarations: [
@@ -101,7 +102,8 @@ import { AnimationClothComponent } from './animation-cloth/animation-cloth.compo
     ValveDrawComponent,
     CloudTemperatureComponent,
     VisualmapComponent,
-    AnimationClothComponent
+    AnimationClothComponent,
+    LonelyCandleComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
