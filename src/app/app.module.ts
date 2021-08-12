@@ -55,6 +55,7 @@ import { AnimationClothComponent } from './animation-cloth/animation-cloth.compo
 import { LonelyCandleComponent } from './lonely-candle/lonely-candle.component';
 import { PortalSceneComponent } from './portal-scene/portal-scene.component';
 import { DuoComponent } from './duo/duo.component';
+import { YoyoComponent } from './yoyo/yoyo.component';
 
 @NgModule({
   declarations: [
@@ -107,7 +108,8 @@ import { DuoComponent } from './duo/duo.component';
     AnimationClothComponent,
     LonelyCandleComponent,
     PortalSceneComponent,
-    DuoComponent
+    DuoComponent,
+    YoyoComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
