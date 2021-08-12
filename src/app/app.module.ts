@@ -54,6 +54,7 @@ import { VisualmapComponent } from './heatmap-draw/visualmap/visualmap.component
 import { AnimationClothComponent } from './animation-cloth/animation-cloth.component';
 import { LonelyCandleComponent } from './lonely-candle/lonely-candle.component';
 import { PortalSceneComponent } from './portal-scene/portal-scene.component';
+import { DuoComponent } from './duo/duo.component';
 
 @NgModule({
   declarations: [
@@ -105,7 +106,8 @@ import { PortalSceneComponent } from './portal-scene/portal-scene.component';
     VisualmapComponent,
     AnimationClothComponent,
     LonelyCandleComponent,
-    PortalSceneComponent
+    PortalSceneComponent,
+    DuoComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
