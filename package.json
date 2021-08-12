@@ -23,7 +23,7 @@
     "core-js": "^2.5.4",
     "createjs-module": "^0.8.3",
     "easeljs": "^1.0.2",
-    "gsap": "^2.1.2",
+    "gsap": "^3.6.0",
     "hammerjs": "^2.0.8",
     "lodash": "^4.17.11",
     "matter-js": "^0.14.2",
