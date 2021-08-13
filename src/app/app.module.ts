@@ -56,6 +56,7 @@ import { LonelyCandleComponent } from './lonely-candle/lonely-candle.component';
 import { PortalSceneComponent } from './portal-scene/portal-scene.component';
 import { DuoComponent } from './duo/duo.component';
 import { YoyoComponent } from './yoyo/yoyo.component';
+import { SmokeComponent } from './smoke/smoke.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import { YoyoComponent } from './yoyo/yoyo.component';
     LonelyCandleComponent,
     PortalSceneComponent,
     DuoComponent,
-    YoyoComponent
+    YoyoComponent,
+    SmokeComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
