@@ -57,6 +57,7 @@ import { PortalSceneComponent } from './portal-scene/portal-scene.component';
 import { DuoComponent } from './duo/duo.component';
 import { YoyoComponent } from './yoyo/yoyo.component';
 import { SmokeComponent } from './smoke/smoke.component';
+import { BrokenGlassComponent } from './broken-glass/broken-glass.component';
 
 @NgModule({
   declarations: [
@@ -111,7 +112,8 @@ import { SmokeComponent } from './smoke/smoke.component';
     PortalSceneComponent,
     DuoComponent,
     YoyoComponent,
-    SmokeComponent
+    SmokeComponent,
+    BrokenGlassComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
