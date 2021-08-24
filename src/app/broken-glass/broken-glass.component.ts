@@ -17,7 +17,7 @@ export class BrokenGlassComponent implements OnInit {
 
   max = 1000;
   glassGeo: THREE.BufferGeometry;
-  vertices: THREE.BufferAttribute;
+  vertices: any;
   initial: any[];
 
   vertexShader = `
