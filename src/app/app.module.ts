@@ -59,6 +59,7 @@ import { YoyoComponent } from './yoyo/yoyo.component';
 import { SmokeComponent } from './smoke/smoke.component';
 import { BrokenGlassComponent } from './broken-glass/broken-glass.component';
 import { HoverEffectComponent } from './hover-effect/hover-effect.component';
+import { CarouselOglComponent } from './carousel-ogl/carousel-ogl.component';
 
 @NgModule({
   declarations: [
@@ -115,7 +116,8 @@ import { HoverEffectComponent } from './hover-effect/hover-effect.component';
     YoyoComponent,
     SmokeComponent,
     BrokenGlassComponent,
-    HoverEffectComponent
+    HoverEffectComponent,
+    CarouselOglComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [

@@ -1,0 +1,231 @@
+<div id="app"></div>
+
+<div id="slides" data-slides>
+  <div class="slide" data-slide data-current>
+    <span class="slide__title font-display" data-slide-title>
+      From the depths of the sea
+    </span>
+
+    <span class="slide__subtitle font-body" data-slide-subtitle>
+      you can't hear any sound, only your heartbeat
+    </span>
+  </div>
+
+  <div class="slide" data-slide>
+    <span class="slide__title font-display" data-slide-title>
+      The real colors of nature
+    </span>
+
+    <span class="slide__subtitle font-body" data-slide-subtitle>
+      come out in Autumn, when the leaves start falling
+    </span>
+  </div>
+
+  <div class="slide" data-slide>
+    <span class="slide__title font-display" data-slide-title>
+      Kids are the future of our world
+    </span>
+
+    <span class="slide__subtitle font-body" data-slide-subtitle>
+      It's our duty to preserve it
+    </span>
+  </div>
+
+  <div class="slide" data-slide>
+    <span class="slide__title font-display" data-slide-title>
+      "I like trains"
+    </span>
+
+    <span class="slide__subtitle font-body" data-slide-subtitle>
+      [dott. Sheldon Cooper]
+    </span>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="font-display" data-dir="-1">Previous</button>
+  <button class="font-display" data-dir="1">Next</button>
+</div>
+
+<script type="x-shader/x-fragment" data-fragment-shader>
+  precision highp float;
+
+  uniform vec2 uScreenSize;
+  uniform float uProgress;
+  uniform sampler2D uTexture0;
+  uniform vec2 uTexture0Size;
+  uniform sampler2D uTexture1;
+  uniform vec2 uTexture1Size;
+  uniform float uRotationDirection;
+
+  varying vec2 vUv;
+
+  #define PI 3.14159265359
+
+  float Circle(in vec2 st, in float radius, in float blur){
+    return 1. - smoothstep(radius - (radius*blur), radius+(radius*blur), dot(st,st) * 4.0);
+  }
+
+  mat2 Rotate(float angle) {
+    return mat2(
+      cos(angle), -sin(angle),
+      sin(angle), cos(angle)
+    );
+  }
+
+  vec2 calculateTextureUV(vec2 st, vec2 textureSize) {
+    // An implementation of CSS `background-size: cover`
+    // using http://stackoverflow.com/a/6565988 and my own crappy math
+    vec2 s = uScreenSize; // Screen
+    vec2 i = textureSize; // Image
+    float rs = s.x / s.y;
+    float ri = i.x / i.y;
+    vec2 new = rs < ri ? vec2(i.x * s.y / i.y, s.y) : vec2(s.x, i.y * s.x / i.x);
+    vec2 offset = (rs < ri ? vec2((new.x - s.x) / 2.0, 0.0) : vec2(0.0, (new.y - s.y) / 2.0)) / new;
+    vec2 uv = st * s / new + offset;
+
+    return uv;
+  }
+
+  void main() {
+    vec2 st = vUv;
+
+    // UVs used to align the circular masks at the center of the screen
+    vec2 centeredST = vUv - 0.5;
+    centeredST.x *= uScreenSize.x / uScreenSize.y;
+
+    vec3 color = vec3(0.0);
+
+    vec2 tex0UV = calculateTextureUV(st, uTexture0Size);
+    vec2 tex1UV = calculateTextureUV(st, uTexture1Size);
+
+
+    /*
+     * Background
+     */
+    float scale = (1.0 - smoothstep(0.45, 0.9, uProgress)*0.1);
+    vec2 uv0_A = (tex0UV - 0.5) * scale + 0.5;
+
+    scale = (0.9 + smoothstep(0.3, 1.0, uProgress)*0.1);
+    vec2 uv0_B = (tex1UV - 0.5) * scale + 0.5;
+
+    float progress = smoothstep(1.0, 0.65, uProgress);
+
+    vec3 t0_A  = texture2D(uTexture0, uv0_A).rgb;
+    vec3 t0_B  = texture2D(uTexture1, uv0_B).rgb;
+    vec3 t0 = mix(t0_B, t0_A, progress);
+
+    color = t0;
+
+
+    /*
+     * Big circle
+     */
+
+    // Scaled UVs
+    scale = (1.0 - smoothstep(0.3, 1.0, uProgress)*0.5);
+    vec2 uv1_A = (tex0UV - 0.5) * scale + 0.5;
+
+    scale = (0.2 + smoothstep(0.4, 0.8, uProgress)*0.8);
+    vec2 uv1_B = (tex1UV - 0.5) * scale + 0.5;
+
+    // Rotated UVs
+    float rotation = PI*smoothstep(0.25, 0.95, uProgress)*uRotationDirection;
+    uv1_A = (uv1_A - 0.5)*Rotate(rotation) + 0.5;
+    uv1_B = (uv1_B - 0.5)*Rotate(PI+rotation) + 0.5;
+
+    // Mask
+    float c1 = Circle(centeredST, 2.4, 0.01);
+
+    // Change the opacity of the texture
+    progress = smoothstep(0.9, 0.5, uProgress);
+
+    // Masked texture
+    vec3 t1_A = texture2D(uTexture0, uv1_A).rgb;
+    vec3 t1_B = texture2D(uTexture1, uv1_B).rgb;
+    vec3 t1 = mix(t1_B, t1_A, progress);
+    t1 *= c1;
+
+    // Remove this mask from the previous layer
+    t0 *= 1.0 - c1;
+
+
+    /*
+     * Medium circle
+     */
+
+    // Scaled UVs
+    scale = (1.0 - smoothstep(0.2, 0.95, uProgress)*0.6);
+    vec2 uv2_A = (tex0UV - 0.5) * scale + 0.5;
+
+    scale = (0.2 + smoothstep(0.2, 0.95, uProgress)*0.8);
+    vec2 uv2_B = (tex1UV - 0.5) * scale + 0.5;
+
+    // Rotated UVs
+    rotation = PI*smoothstep(0.2, 0.9, uProgress)*uRotationDirection;
+    uv2_A = (uv2_A - 0.5)*Rotate(rotation) + 0.5;
+    uv2_B = (uv2_B - 0.5)*Rotate(PI+rotation) + 0.5;
+
+    // Mask
+    float c2 = Circle(centeredST, 1.0, 0.01);
+
+    // Change the opacity of the texture
+    progress = smoothstep(0.85, 0.4, uProgress);
+
+    // Masked texture
+    vec3 t2_A = texture2D(uTexture0, uv2_A).rgb;
+    vec3 t2_B = texture2D(uTexture1, uv2_B).rgb;
+    vec3 t2 = mix(t2_B, t2_A, progress);
+    t2 *= c2;
+
+    t1 *= 1.0 - c2; // Remove this mask from the previous layer
+
+
+    /*
+     * Small circle
+     */
+
+    // Scaled UVs
+    scale = (1.0 - smoothstep(0.1, 0.9, uProgress)*0.85);
+    vec2 uv3_A = (tex0UV - 0.5) * scale + 0.5;
+
+    scale = (0.15 + smoothstep(0.1, 0.9, uProgress)*0.85);
+    vec2 uv3_B = (tex1UV - 0.5) * scale + 0.5;
+
+    // Rotated UVs
+    rotation = PI*smoothstep(0.15, 0.85, uProgress)*uRotationDirection;
+    uv3_A = (uv3_A - 0.5)*Rotate(rotation) + 0.5;
+    uv3_B = (uv3_B - 0.5)*Rotate(PI+rotation) + 0.5;
+
+    // Change the opacity of the texture
+    progress = smoothstep(0.8, 0.3, uProgress);
+
+    // Mask
+    float c3 = Circle(centeredST, 0.2, 0.01);
+
+    // Masked texture (based on the alpha value)
+    vec3 t3_A = texture2D(uTexture0, uv3_A).rgb;
+    vec3 t3_B = texture2D(uTexture1, uv3_B).rgb;
+    vec3 t3 = mix(t3_B, t3_A, progress);
+    t3 *= c3;
+
+    // Remove this mask from the previous layer
+    t2 *= 1.0 - c3;
+
+    color = t0 + t1 + t2 + t3;
+
+    gl_FragColor = vec4(color, 1.0);
+  }
+</script>
+<script type="x-shader/x-vertex" data-vertex-shader>
+  attribute vec2 uv;
+  attribute vec2 position;
+
+  varying vec2 vUv;
+
+  void main() {
+    gl_Position = vec4(position, 0, 1);
+
+    vUv = uv;
+  }
+</script>

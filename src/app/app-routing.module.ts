@@ -30,11 +30,12 @@ import { RenderTargetComponent } from './render-target/render-target.component';
 import { BreatheComponent } from './breathe/breathe.component';
 import { ShowroomComponent } from './showroom/showroom.component';
 import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
+import { CarouselOglComponent } from './carousel-ogl/carousel-ogl.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: GalleryComponent
+    component: GalleryComponent,
   },
   { path: 'launchit', component: LaunchitEarthComponent },
   { path: 'vrsonic', component: VrSonicComponent },
@@ -64,11 +65,12 @@ const routes: Routes = [
   { path: 'breathe', component: BreatheComponent },
   { path: 'carpresenter', component: CarPresenterComponent },
   { path: 'showroom', component: ShowroomComponent },
-  { path: 'heatmapdraw', component: HeatmapDrawComponent }
+  { path: 'heatmapdraw', component: HeatmapDrawComponent },
+  { path: 'carousel', component: CarouselOglComponent },
 ];
 @NgModule({
   declarations: [],
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

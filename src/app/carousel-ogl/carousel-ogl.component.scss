@@ -1,0 +1,128 @@
+* {
+  box-sizing: border-box;
+}
+:host {
+  display: block;
+}
+#app {
+  height: 100vh;
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#controls {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  left: 0;
+  mix-blend-mode: difference;
+  padding: 0 4px;
+  pointer-events: none;
+  position: fixed;
+  top: 50%;
+  touch-action: none;
+  transform: translateY(-50%);
+  width: 100%;
+  z-index: 2;
+
+  @media (min-width: 1024px) {
+    padding: 0 30px;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    outline: none;
+    padding: 0;
+    pointer-events: auto;
+    position: relative;
+    touch-action: auto;
+
+    &[data-dir='-1'] {
+      transform: rotate(-90deg);
+    }
+
+    &[data-dir='1'] {
+      transform: rotate(90deg);
+    }
+
+    &::after {
+      bottom: -0.5em;
+      background-color: currentColor;
+      content: '';
+      display: block;
+      height: 2px;
+      left: 0;
+      position: absolute;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: 0.35s transform;
+      width: 100%;
+    }
+
+    &:hover {
+      &::after {
+        transform: scaleX(1);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 16px;
+    }
+  }
+}
+
+#slides {
+  align-self: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  mix-blend-mode: difference;
+  padding: 0 60px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+
+  @media (min-width: 1024px) {
+    padding: 0 100px;
+  }
+}
+
+.slide {
+  align-items: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+
+  &__title {
+    font-size: 34px;
+    line-height: 0.7;
+    margin-bottom: 0.85em;
+
+    @media (min-width: 1024px) {
+      font-size: 80px;
+      line-height: 1;
+      margin-bottom: 0.25em;
+    }
+  }
+
+  &__subtitle {
+    letter-spacing: 0.1em;
+
+    @media (min-width: 1024px) {
+      font-size: 22px;
+    }
+  }
+}
+[hidden] {
+  display: none !important;
+}

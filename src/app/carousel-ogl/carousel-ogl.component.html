@@ -1,0 +1,25 @@
+<div id="app" #stage></div>
+
+<div id="slides" data-slides>
+  <div
+    class="slide"
+    data-slide
+    [hidden]="i !== currentTextureIndex"
+    *ngFor="let slide of slides; let i = index"
+  >
+    <span class="slide__title font-display" data-slide-title>
+      {{ slide.title }}
+    </span>
+
+    <span class="slide__subtitle font-body" data-slide-subtitle>
+      {{ slide.subtitle }}
+    </span>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="font-display" data-dir="-1" (click)="change(-1)">
+    Previous
+  </button>
+  <button class="font-display" data-dir="1" (click)="change(1)">Next</button>
+</div>
