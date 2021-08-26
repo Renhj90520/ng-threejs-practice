@@ -68,7 +68,7 @@ export class CarouselOglComponent implements OnInit, AfterViewInit {
       float rs = s.x / s.y;
       float ri = i.x / i.y;
       vec2 new  = rs < ri ? vec2(i.x * s.y / i.y, s.y) : vec2(s.x, i.y * s.x / i.x);
-      vec2 offset = (rs < ri ? vec2((new.x - s.x) / 2., 0.) : vec2(0., (new.y - s.y) / 2.));
+      vec2 offset = (rs < ri ? vec2((new.x - s.x) / 2., 0.) : vec2(0., (new.y - s.y) / 2.)) / new;
 
       vec2 uv = st * s / new + offset;
 
@@ -84,8 +84,8 @@ export class CarouselOglComponent implements OnInit, AfterViewInit {
 
       vec3 color = vec3(0.);
 
-      vec2 tex0UV = calculateTextureUV(st, uTexture0Size);
-      vec2 tex1UV = calculateTextureUV(st, uTexture1Size);
+      vec2 tex0UV =  calculateTextureUV(st, uTexture0Size);
+      vec2 tex1UV =  calculateTextureUV(st, uTexture1Size);
 
 
       // background
@@ -215,6 +215,7 @@ export class CarouselOglComponent implements OnInit, AfterViewInit {
       subtitle: '[dott. Sheldon Cooper]',
     },
   ];
+  geometry: THREE.PlaneGeometry;
   constructor(private el: ElementRef) {}
   ngAfterViewInit(): void {
     this.initNativeElements();
@@ -238,7 +239,7 @@ export class CarouselOglComponent implements OnInit, AfterViewInit {
     this.addBackground();
   }
   addBackground() {
-    const geometry = new THREE.PlaneGeometry(this.width, this.height);
+    this.geometry = new THREE.PlaneGeometry(this.width, this.height);
     this.material = new THREE.ShaderMaterial({
       vertexShader: this.vertexShader,
       fragmentShader: this.fragmentShader,
@@ -253,7 +254,7 @@ export class CarouselOglComponent implements OnInit, AfterViewInit {
       },
     });
 
-    const mesh = new THREE.Mesh(geometry, this.material);
+    const mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(mesh);
   }
   initTHREE() {
@@ -390,7 +391,14 @@ export class CarouselOglComponent implements OnInit, AfterViewInit {
     this.width = this.el.nativeElement.clientWidth;
     this.height = this.el.nativeElement.clientHeight;
 
+    this.material.uniforms.uScreenSize.value = new THREE.Vector2(
+      this.width,
+      this.height
+    );
     this.camera.aspect = this.width / this.height;
+    const halfRadian = Math.atan(this.height / 2 / 100);
+    const halfDegree = THREE.MathUtils.radToDeg(halfRadian);
+    this.camera.fov = halfDegree * 2;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.width, this.height);
   }
