@@ -60,6 +60,7 @@ import { SmokeComponent } from './smoke/smoke.component';
 import { BrokenGlassComponent } from './broken-glass/broken-glass.component';
 import { HoverEffectComponent } from './hover-effect/hover-effect.component';
 import { CarouselOglComponent } from './carousel-ogl/carousel-ogl.component';
+import { BeatingHeartComponent } from './beating-heart/beating-heart.component';
 
 @NgModule({
   declarations: [
@@ -117,7 +118,8 @@ import { CarouselOglComponent } from './carousel-ogl/carousel-ogl.component';
     SmokeComponent,
     BrokenGlassComponent,
     HoverEffectComponent,
-    CarouselOglComponent
+    CarouselOglComponent,
+    BeatingHeartComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
