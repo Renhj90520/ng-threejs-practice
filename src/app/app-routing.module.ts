@@ -31,6 +31,7 @@ import { BreatheComponent } from './breathe/breathe.component';
 import { ShowroomComponent } from './showroom/showroom.component';
 import { HeatmapDrawComponent } from './heatmap-draw/heatmap-draw.component';
 import { CarouselOglComponent } from './carousel-ogl/carousel-ogl.component';
+import { SpaceGlobeComponent } from './space-globe/space-globe.component';
 
 const routes: Routes = [
   {
@@ -67,6 +68,7 @@ const routes: Routes = [
   { path: 'showroom', component: ShowroomComponent },
   { path: 'heatmapdraw', component: HeatmapDrawComponent },
   { path: 'carousel', component: CarouselOglComponent },
+  { path: 'space', component: SpaceGlobeComponent },
 ];
 @NgModule({
   declarations: [],

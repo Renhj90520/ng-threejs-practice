@@ -61,6 +61,7 @@ import { BrokenGlassComponent } from './broken-glass/broken-glass.component';
 import { HoverEffectComponent } from './hover-effect/hover-effect.component';
 import { CarouselOglComponent } from './carousel-ogl/carousel-ogl.component';
 import { BeatingHeartComponent } from './beating-heart/beating-heart.component';
+import { SpaceGlobeComponent } from './space-globe/space-globe.component';
 
 @NgModule({
   declarations: [
@@ -119,7 +120,8 @@ import { BeatingHeartComponent } from './beating-heart/beating-heart.component';
     BrokenGlassComponent,
     HoverEffectComponent,
     CarouselOglComponent,
-    BeatingHeartComponent
+    BeatingHeartComponent,
+    SpaceGlobeComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [
